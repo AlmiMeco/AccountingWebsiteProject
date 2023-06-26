@@ -1,10 +1,10 @@
 package com.cydeo.accounting_app.enums;
 
-public enum ClientVendorTypeEnum {
+public enum ClientVendorType {
     VENDOR_TYPE("Vendor"), CLIENT_VENDOR_TYPE("Client");
     private final String value;
 
-    ClientVendorTypeEnum(String value) {
+    ClientVendorType(String value) {
         this.value = value;
     }
 
