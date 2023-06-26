@@ -13,9 +13,9 @@ public class UserDTO {
 
     private String userName, password, confirmPassword, firstName, lastName, phone;
 
-//    private RoleDTO role;
+    private RoleDTO role;
 
-//    private CompanyDTO company;
+    private CompanyDTO company;
 
     private boolean isOnlyAdmin;
 
