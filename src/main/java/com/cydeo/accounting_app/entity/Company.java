@@ -1,5 +1,6 @@
 package com.cydeo.accounting_app.entity;
 
+import com.cydeo.accounting_app.enums.CompanyStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

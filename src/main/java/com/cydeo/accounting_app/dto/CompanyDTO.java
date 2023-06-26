@@ -1,5 +1,6 @@
 package com.cydeo.accounting_app.dto;
 
+import com.cydeo.accounting_app.enums.CompanyStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
