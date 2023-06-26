@@ -24,6 +24,7 @@ public class SecurityServiceImpl implements SecurityService {
             throw new UsernameNotFoundException("This user does not exist");
         }
         return new UserPrincipal(user);
+
     }
 
 }
