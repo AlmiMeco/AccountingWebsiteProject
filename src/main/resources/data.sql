@@ -42,12 +42,12 @@ values ('2023-04-09 00:00:00', 1, false, '2023-04-09 00:00:00', 1, 'Root User'),
 --      'Active Tech','+1 (215) 245-3687', 'https://www.activetech.com', 6, 'PASSIVE');
 
 insert into users(insert_date_time, insert_user_id, is_deleted, last_update_date_time, last_update_user_id,
-                  username, password, firstname, lastname, phone, role_id, enabled)
+                  username, password, firstname, lastname, phone, role_id, company_id, enabled)
 values
 -- COMPANY-1 / CYDEO / ROOT USER
 ('2023-04-09 00:00:00', 1, false, '2023-04-09 00:00:00', 1,
  'root@cydeo.com', '$2a$10$nAB5j9G1c3JHgg7qzhiIXO7cqqr5oJ3LXRNQJKssDUwHXzDGUztNK',
- 'Robert', 'Martin', '+1 (852) 564-5874', 1, true);
+ 'Robert', 'Martin', '+1 (852) 564-5874', 1, 1 true);
 -- -- COMPANY-2 / Green Tech / ADMIN-1
 -- ('2023-04-09 00:00:00', 1, false, '2023-04-09 00:00:00', 1,
 --  'admin@greentech.com', '$2a$10$nAB5j9G1c3JHgg7qzhiIXO7cqqr5oJ3LXRNQJKssDUwHXzDGUztNK',
