@@ -1,5 +1,6 @@
 package com.cydeo.accounting_app.service.implementation;
 
+import com.cydeo.accounting_app.dto.UserDTO;
 import com.cydeo.accounting_app.repository.UserRepository;
 import com.cydeo.accounting_app.service.UserService;
 import org.springframework.stereotype.Service;
