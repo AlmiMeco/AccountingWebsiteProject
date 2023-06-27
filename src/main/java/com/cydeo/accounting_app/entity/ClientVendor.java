@@ -1,5 +1,6 @@
 package com.cydeo.accounting_app.entity;
 
+import com.cydeo.accounting_app.enums.ClientVendorType;
 import com.cydeo.accounting_app.enums.ClientVendorTypeEnum;
 import lombok.*;
 
@@ -16,7 +17,7 @@ public class ClientVendor extends BaseEntity {
     private String phone;
     private String website;
     @Enumerated(EnumType.STRING)
-    private ClientVendorTypeEnum clientVendorTypeEnum;
+    private ClientVendorType clientVendorTypeEnum;
     @OneToOne
     @Column(name = "address_id")
     private Address address;
