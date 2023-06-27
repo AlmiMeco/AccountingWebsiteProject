@@ -1,9 +1,14 @@
 package com.cydeo.accounting_app.entity;
 
 import com.cydeo.accounting_app.enums.ClientVendorTypeEnum;
+import lombok.*;
 
 import javax.persistence.*;
-
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
 @Entity
 @Table(name = "clients_vendors")
 public class ClientVendorEntity extends BaseEntity {
