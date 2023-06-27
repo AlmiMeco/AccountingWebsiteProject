@@ -1,7 +1,7 @@
 package com.cydeo.accounting_app.entity;
 
 import com.cydeo.accounting_app.enums.ClientVendorType;
-import com.cydeo.accounting_app.enums.ClientVendorTypeEnum;
+
 import lombok.*;
 
 import javax.persistence.*;
