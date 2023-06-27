@@ -51,10 +51,7 @@ public class ClientVendorServiceImpl implements ClientVendorService {
     public ClientVendorDTO deleteClientVendorById(Long id) {
         // later who have to delete logic ?
         ClientVendor convert = mapperUtil.convert(id, new ClientVendor());
-        Optional<ClientVendor> clientVendor = clientVendorRepository.delete(id);
-        clientVendor.orElseThrow(() -> new NoSuchElementException("Client vendor can not delete"));
         convert.setIsDeleted(true);
-        convert.setId(clientVendor.get().id);
         return mapperUtil.convert(convert, new ClientVendorDTO());
     }
 
