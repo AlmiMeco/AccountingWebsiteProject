@@ -3,7 +3,7 @@ package com.cydeo.accounting_app.entity;
 import com.cydeo.accounting_app.enums.ClientVendorType;
 
 import lombok.*;
-import org.hibernate.annotations.Cascade;
+
 
 import javax.persistence.*;
 @NoArgsConstructor
