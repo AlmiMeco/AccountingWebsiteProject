@@ -1,7 +1,7 @@
 package com.cydeo.accounting_app.dto;
 
 import com.cydeo.accounting_app.enums.ClientVendorType;
-import com.sun.istack.NotNull;
+
 import lombok.*;
 
 @Setter
