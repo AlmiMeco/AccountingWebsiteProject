@@ -11,7 +11,7 @@ import javax.persistence.*;
 @ToString
 @Entity
 @Table(name = "clients_vendors")
-public class ClientVendorEntity extends BaseEntity {
+public class ClientVendor extends BaseEntity {
     private String clientVendorName;
     private String phone;
     private String website;
