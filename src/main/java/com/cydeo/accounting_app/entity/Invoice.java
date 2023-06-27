@@ -5,9 +5,7 @@ import com.cydeo.accounting_app.enums.InvoiceType;
 import lombok.*;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Getter
@@ -21,7 +19,9 @@ import java.time.LocalDate;
 public class Invoice extends BaseEntity{
 
     private String invoiceNo;
+    @Enumerated(EnumType.STRING)
     private InvoiceStatus invoiceStatus;
+    @Enumerated(EnumType.STRING)
     private InvoiceType invoiceType;
     private LocalDate date;
     @ManyToOne
