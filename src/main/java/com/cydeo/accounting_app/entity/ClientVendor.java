@@ -4,6 +4,7 @@ import com.cydeo.accounting_app.enums.ClientVendorType;
 
 import lombok.*;
 
+
 import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,11 +18,11 @@ public class ClientVendor extends BaseEntity {
     private String phone;
     private String website;
     @Enumerated(EnumType.STRING)
-    private ClientVendorType clientVendorTypeEnum;
-    @OneToOne
-    @Column(name = "address_id")
+    private ClientVendorType clientVendorType;
+    @JoinColumn(name = "address_id")
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Address address;
-    @Column(name = "company_id")
+    @JoinColumn(name = "company_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Company company;
 
