@@ -6,10 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Getter
 @Setter
@@ -19,11 +16,12 @@ import javax.persistence.Table;
 @Table(name = "products")
 public class Product extends BaseEntity {
 
-    String name;
-    int quantityInStock;
-    int lowLimitAlert;
-    ProductUnit productUnit;
+    private String name;
+    private int quantityInStock;
+    private int lowLimitAlert;
+    @Enumerated(value = EnumType.STRING)
+    private ProductUnit productUnit;
     @ManyToOne
-    Category category;
+    private Category category;
 
 }

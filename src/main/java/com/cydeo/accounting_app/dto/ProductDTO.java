@@ -10,11 +10,11 @@ import lombok.*;
 @ToString
 public class ProductDTO {
 
-    Long id;
-    String name;
-    Integer quantityInStock;
-    Integer lowLimitAlert;
-    ProductUnit productUnit;
-    CategoryDTO category;
+    private Long id;
+    private String name;
+    private Integer quantityInStock;
+    private Integer lowLimitAlert;
+    private ProductUnit productUnit;
+    private CategoryDTO category;
 
 }
