@@ -6,10 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Getter
@@ -25,6 +22,7 @@ public class InvoiceProduct extends BaseEntity{
     private BigDecimal price;
     private int tax;
     private BigDecimal profitLoss;
+    @Column(name = "remaining_quantity")
     private int remainingQty;
     @ManyToOne(fetch = FetchType.LAZY)
     private Invoice invoice;
