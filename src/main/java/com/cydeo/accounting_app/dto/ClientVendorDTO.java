@@ -1,5 +1,6 @@
 package com.cydeo.accounting_app.dto;
 
+import com.cydeo.accounting_app.enums.ClientVendorType;
 import com.sun.istack.NotNull;
 import lombok.*;
 
@@ -14,6 +15,6 @@ public class ClientVendorDTO {
         private String phone;
         private String website;
         private ClientVendorType clientVendorType;
-        private AddressDto address;
-        private CompanyDto company;
+        private AddressDTO address;
+        private CompanyDTO company;
 }
