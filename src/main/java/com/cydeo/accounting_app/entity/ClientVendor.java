@@ -19,9 +19,8 @@ public class ClientVendor extends BaseEntity {
     private String website;
     @Enumerated(EnumType.STRING)
     private ClientVendorType clientVendorType;
-    @OneToOne
     @Column(name = "address_id")
-    @Cascade({org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.PERSIST})
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Address address;
     @Column(name = "company_id")
     @ManyToOne(fetch = FetchType.LAZY)
