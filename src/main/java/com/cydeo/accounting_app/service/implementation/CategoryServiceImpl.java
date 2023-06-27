@@ -8,7 +8,9 @@ import com.cydeo.accounting_app.service.CategoryService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -27,5 +29,11 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDTO findById(Long source) {
         Optional<Category> byId= categoryRepository.findById(source);
         return mapperUtil.convert(byId, new CategoryDTO());
+    }
+
+    @Override
+    public List<CategoryDTO> getCategoryList() {
+        List<Category> categoryList = categoryRepository.finAll();
+        return categoryList.stream().map(newCategoryList -> mapperUtil.convert(newCategoryList, new CategoryDTO())).collect(Collectors.toList());
     }
 }
