@@ -9,6 +9,9 @@ import com.cydeo.accounting_app.service.UserService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -32,4 +35,13 @@ public class UserServiceImpl implements UserService {
         var user = userRepository.findById(id);
         return mapper.convert(user, new UserDTO());
     }
+
+    @Override
+    public List<UserDTO> listAllUsers() {
+
+        return userRepository.findAll().stream()
+                .map(i -> mapper.convert(i, new UserDTO()))
+                .collect(Collectors.toList());
+    }
+
 }

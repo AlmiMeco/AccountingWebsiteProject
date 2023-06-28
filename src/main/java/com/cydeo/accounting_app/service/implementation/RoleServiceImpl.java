@@ -36,7 +36,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public List<RoleDTO> listAllRoles() {
 
-        return repository.getAllRoles().stream()
+        return repository.findAll().stream()
                 .map(i -> mapper.convert(i, new RoleDTO()))
                 .collect(Collectors.toList());
     }
