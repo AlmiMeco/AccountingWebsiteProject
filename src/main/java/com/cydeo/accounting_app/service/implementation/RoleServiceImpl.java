@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class RoleServiceImpl implements RoleService {
 
@@ -33,7 +35,10 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public List<RoleDTO> listAllRoles() {
-        return null;
+
+        return repository.getAllRoles().stream()
+                .map(i -> mapper.convert(i, new RoleDTO()))
+                .collect(Collectors.toList());
     }
 
 
