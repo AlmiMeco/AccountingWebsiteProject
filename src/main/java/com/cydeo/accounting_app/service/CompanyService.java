@@ -8,4 +8,8 @@ public interface CompanyService {
 
     List<CompanyDTO> listAllCompanies();
     CompanyDTO findById(Long id);
+
+    CompanyDTO updateCompany (CompanyDTO companyDTO);
+
+    void deleteCompany(Long id);
 }

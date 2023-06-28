@@ -4,13 +4,11 @@ import com.cydeo.accounting_app.dto.CompanyDTO;
 import com.cydeo.accounting_app.service.CompanyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/company")
+@RequestMapping("/companies")
 public class CompanyController {
 
     private final CompanyService companyService;
@@ -21,19 +19,26 @@ public class CompanyController {
 
     @GetMapping("/create")
     public String companyCreate(Model model) {
-        model.addAttribute("company", new CompanyDTO());
+        model.addAttribute("newCompany", new CompanyDTO());
         return "/company/company-create";
     }
 
     @GetMapping("/list")
     public String companyList(Model model) {
-        model.addAttribute("companyList", companyService.listAllCompanies());
+        model.addAttribute("companies", companyService.listAllCompanies());
         return "/company/company-list";
     }
 
     @GetMapping("/update/{id}")
     public String editCompany(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("companies", companyService.findById(id));
+        model.addAttribute("company", companyService.findById(id));
         return "/company/company-update";
+    }
+
+    @PostMapping("/update/{id}")
+    public String updateCompany(@PathVariable("id") Long id,
+                                     @ModelAttribute("company") CompanyDTO companyDTO) {
+        companyService.updateCompany(companyDTO);
+        return "redirect:/company/list";
     }
 }
