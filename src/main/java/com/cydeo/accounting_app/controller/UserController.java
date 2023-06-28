@@ -6,9 +6,7 @@ import com.cydeo.accounting_app.service.RoleService;
 import com.cydeo.accounting_app.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,10 +33,20 @@ public class UserController {
         return "user/user-create";
     }
 
+    @PostMapping("/create")
+    public String userCreatePost(@ModelAttribute("newUser") UserDTO newlyCreatedUser){
+
+        userService.save(newlyCreatedUser);
+
+        return "redirect:/user/user-create";
+
+    }
+
     @GetMapping("/list")
     public String listUser(Model model){
-        //        Not Working (requires UserService impl -> listAllUsers() method)
+
         model.addAttribute("users", userService.listAllUsers() );
+//        Not currently working Company is hardcoded -> Field error in object 'newUser' on field 'company': rejected value [];
 
         return "user/user-list";
 
@@ -46,12 +54,14 @@ public class UserController {
 
     @GetMapping("/update/{id}")
     public String editUser(@PathVariable("id") Long id, Model model){
-        //        Not Working (requires UserService impl -> findById() method)
-        model.addAttribute("users", userService.findById(id));
+
+        model.addAttribute("user", userService.findById(id));
 
         return "user/user-update";
 
     }
+
+//    @PostMapping("/update/")
 
 
 }

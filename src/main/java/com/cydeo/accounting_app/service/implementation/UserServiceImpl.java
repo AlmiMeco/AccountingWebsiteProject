@@ -44,4 +44,9 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void save(UserDTO userDTO) {
+        userRepository.save(mapper.convert(userDTO, new User()));
+    }
+
 }

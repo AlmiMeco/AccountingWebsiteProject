@@ -11,4 +11,6 @@ public interface UserService {
     UserDTO findById(Long id);
 
     List<UserDTO> listAllUsers();
+
+    void save(UserDTO userDTO);
 }
