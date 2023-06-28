@@ -2,6 +2,7 @@ package com.cydeo.accounting_app.service.implementation;
 
 import com.cydeo.accounting_app.dto.CompanyDTO;
 import com.cydeo.accounting_app.entity.Company;
+import com.cydeo.accounting_app.enums.CompanyStatus;
 import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.repository.CompanyRepository;
 import com.cydeo.accounting_app.service.CompanyService;
@@ -54,7 +55,34 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public void deleteCompany(Long id) {
+    public void activateCompany(Long id) {
 
+        Optional<Company> foundCompany = companyRepository.findById(id);
+
+        if (foundCompany.isPresent()) {
+            foundCompany.get().setIsDeleted(false);
+            foundCompany.get().setCompanyStatus(CompanyStatus.ACTIVE);
+            companyRepository.save(foundCompany.get());
+        }
+    }
+
+        @Override
+        public void deactivateCompany(Long id) {
+
+            Optional<Company> foundCompany = companyRepository.findById(id);
+
+            if(foundCompany.isPresent()) {
+                foundCompany.get().setIsDeleted(true);
+                foundCompany.get().setCompanyStatus(CompanyStatus.PASSIVE);
+                companyRepository.save(foundCompany.get());
+            }
+
+    }
+
+    @Override
+    public CompanyDTO createCompany(CompanyDTO companyDTO) {
+        Company newCompany = mapper.convert(companyDTO, new Company());
+        newCompany.setCompanyStatus(CompanyStatus.PASSIVE);
+        return mapper.convert(companyRepository.save(newCompany), new CompanyDTO());
     }
 }
