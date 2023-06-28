@@ -4,7 +4,9 @@ import com.cydeo.accounting_app.dto.UserDTO;
 import com.cydeo.accounting_app.service.UserService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserDTOConverter implements Converter<String , UserDTO> {
 
     private final UserService userService;
