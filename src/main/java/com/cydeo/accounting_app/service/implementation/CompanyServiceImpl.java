@@ -42,7 +42,7 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public CompanyDTO updateCompany(CompanyDTO companyDTO) {
         //Find current company
-        Company company1 = companyRepository.findCompanyById(companyDTO.getId()).get();  //has id
+        Company company1 = companyRepository.findCompanyById(companyDTO.getId()).orElseThrow(()-> new NoSuchElementException("Company is not found"));  //has id
         //Map update company dto to entity object
         Company convertedCompany = mapper.convert(company1, new Company());   // has id?
         //set id to the converted object
