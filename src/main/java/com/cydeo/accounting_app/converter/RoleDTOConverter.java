@@ -4,7 +4,9 @@ import com.cydeo.accounting_app.dto.RoleDTO;
 import com.cydeo.accounting_app.service.RoleService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
+@Component
 public class RoleDTOConverter implements Converter<String, RoleDTO> {
 
 

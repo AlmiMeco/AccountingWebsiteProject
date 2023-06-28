@@ -6,9 +6,10 @@ import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.repository.RoleRepository;
 import com.cydeo.accounting_app.service.RoleService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
 public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository repository;

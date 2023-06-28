@@ -1,4 +1,4 @@
-package com.cydeo.accounting_app.controllers;
+package com.cydeo.accounting_app.controller;
 
 import com.cydeo.accounting_app.dto.UserDTO;
 import com.cydeo.accounting_app.service.UserService;
