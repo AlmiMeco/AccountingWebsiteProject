@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO findById(Long id) {
-        var user = userRepository.findById(id);
+        var user = userRepository.getUserById(id);
         return mapper.convert(user, new UserDTO());
     }
 

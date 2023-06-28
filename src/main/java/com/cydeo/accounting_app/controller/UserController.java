@@ -37,6 +37,7 @@ public class UserController {
     public String userCreatePost(@ModelAttribute("newUser") UserDTO newlyCreatedUser){
 
         userService.save(newlyCreatedUser);
+//        Not currently working Company is hardcoded -> Field error in object 'newUser' on field 'company': rejected value [];
 
         return "redirect:/user/user-create";
 
@@ -46,7 +47,6 @@ public class UserController {
     public String listUser(Model model){
 
         model.addAttribute("users", userService.listAllUsers() );
-//        Not currently working Company is hardcoded -> Field error in object 'newUser' on field 'company': rejected value [];
 
         return "user/user-list";
 
@@ -56,12 +56,23 @@ public class UserController {
     public String editUser(@PathVariable("id") Long id, Model model){
 
         model.addAttribute("user", userService.findById(id));
-
+        model.addAttribute("userRoles", roleService.listAllRoles());
+        model.addAttribute("companies", List.of(new CompanyDTO()));
         return "user/user-update";
 
     }
 
-//    @PostMapping("/update/")
+
+
+//    @PostMapping("/update")
+//    public String editUserPost(@ModelAttribute("user") UserDTO updatedUser){
+//
+//        userService.save(updatedUser);
+////        Not currently working Company is hardcoded -> Field error in object 'newUser' on field 'company': rejected value [];
+//
+//        return "redirect:user/user-update";
+//
+//    }
 
 
 }
