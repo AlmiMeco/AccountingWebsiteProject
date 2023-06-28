@@ -26,4 +26,10 @@ public class UserServiceImpl implements UserService {
                 () -> new UsernameNotFoundException("This user does not exist"));
         return mapper.convert(user,new UserDTO());
     }
+
+    @Override
+    public UserDTO findById(Long id) {
+        var user = userRepository.findById(id);
+        return mapper.convert(user, new UserDTO());
+    }
 }

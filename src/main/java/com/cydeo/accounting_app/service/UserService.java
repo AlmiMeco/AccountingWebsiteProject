@@ -5,4 +5,6 @@ import com.cydeo.accounting_app.dto.UserDTO;
 public interface UserService {
 
     UserDTO findByUsername(String Username);
+
+    UserDTO findById(Long id);
 }
