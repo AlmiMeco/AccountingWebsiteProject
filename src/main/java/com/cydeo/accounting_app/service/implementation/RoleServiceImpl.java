@@ -7,8 +7,16 @@ import com.cydeo.accounting_app.repository.RoleRepository;
 import com.cydeo.accounting_app.service.RoleService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+
 import java.util.List;
 
+
+import org.springframework.stereotype.Service;
+
+
+import java.util.stream.Collectors;
+
+@Service
 public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository repository;
@@ -32,7 +40,12 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public List<RoleDTO> listAllRoles() {
-        return null;
+
+
+        return repository.findAll().stream()
+                .map(i -> mapper.convert(i, new RoleDTO()))
+                .collect(Collectors.toList());
+
     }
 
 

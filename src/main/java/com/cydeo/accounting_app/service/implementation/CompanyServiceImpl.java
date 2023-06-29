@@ -41,17 +41,22 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CompanyDTO updateCompany(CompanyDTO companyDTO) {
-        //Find current company
-        Company company1 = companyRepository.findCompanyById(companyDTO.getId()).orElseThrow(()-> new NoSuchElementException("Company is not found"));  //has id
-        //Map update company dto to entity object
-        Company convertedCompany = mapper.convert(company1, new Company());   // has id?
-        //set id to the converted object
-        convertedCompany.setId(company1.id);
-        //save the updated company in the db
-        companyRepository.save(convertedCompany);
+    public void updateCompany(Long id, CompanyDTO companyDTO) {
 
-        return findById(convertedCompany.id);
+        Company company = mapper.convert(companyDTO, new Company());
+        companyRepository.findCompanyById(id).ifPresent(company1 -> {
+            company1.setId(company.getId());
+            company1.setIsDeleted(company.getIsDeleted());
+            company1.setTitle(company.getTitle());
+            company1.setPhone(company.getPhone());
+            company1.setAddress(company.getAddress());
+            company1.setWebsite(company.getWebsite());
+            Optional <Company> updatedCompany = companyRepository.findCompanyById(id);
+            companyRepository.save(updatedCompany.orElseThrow());
+
+        });
+
+
     }
 
     @Override
@@ -84,5 +89,15 @@ public class CompanyServiceImpl implements CompanyService {
         Company newCompany = mapper.convert(companyDTO, new Company());
         newCompany.setCompanyStatus(CompanyStatus.PASSIVE);
         return mapper.convert(companyRepository.save(newCompany), new CompanyDTO());
+    }
+
+    @Override
+    public void saveCompany(CompanyDTO companyDTO) {
+        if (companyDTO.getCompanyStatus()==null)
+            companyDTO.setCompanyStatus(CompanyStatus.PASSIVE);
+       companyRepository.save(mapper.convert(companyDTO, new Company()));
+
+
+
     }
 }
