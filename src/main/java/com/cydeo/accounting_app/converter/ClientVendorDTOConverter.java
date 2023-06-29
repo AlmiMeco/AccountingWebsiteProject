@@ -1,4 +1,4 @@
-package com.cydeo.accounting_app.convert;
+package com.cydeo.accounting_app.converter;
 
 import com.cydeo.accounting_app.dto.ClientVendorDTO;
 import com.cydeo.accounting_app.service.ClientVendorService;
