@@ -65,7 +65,7 @@ public class UserPrincipal implements UserDetails {
      * to show logged-in user firstname and lastname in UI dropdown menu
      */
     public String getFullNameForProfile() {
-        return "";
+        return user.getFirstname() + " " + user.getLastname();
     }
 
     /**
@@ -74,7 +74,7 @@ public class UserPrincipal implements UserDetails {
      * @return The title of logged-in user's Company in String
      */
     public String getCompanyTitleForProfile() {
-        return "";
+        return user.getCompany().getTitle();
     }
 
 }
