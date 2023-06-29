@@ -51,6 +51,6 @@ public class CompanyController {
     CompanyDTO companyDTO) {
        companyService.updateCompany(id,companyDTO);
 
-        return "redirect:/company/company-update";
+        return "redirect:/companies-update";
     }
 }
