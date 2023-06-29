@@ -1,5 +1,7 @@
 package com.cydeo.accounting_app.service.implementation;
 
+import com.cydeo.accounting_app.entity.Address;
+import com.cydeo.accounting_app.enums.ClientVendorType;
 import com.cydeo.accounting_app.repository.ClientVendorRepository;
 import com.cydeo.accounting_app.dto.ClientVendorDTO;
 import com.cydeo.accounting_app.entity.ClientVendor;
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
 public class ClientVendorServiceImpl implements ClientVendorService {
     private final ClientVendorRepository clientVendorRepository;
     private final MapperUtil mapperUtil;
+
     public ClientVendorServiceImpl(ClientVendorRepository clientVendorRepository,
                                    MapperUtil mapperUtil) {
         this.clientVendorRepository = clientVendorRepository;
@@ -48,11 +51,24 @@ public class ClientVendorServiceImpl implements ClientVendorService {
     }
 
     @Override
-    public ClientVendorDTO deleteClientVendorById(Long id) {
-        // later who have to delete logic ?
-        ClientVendor convert = mapperUtil.convert(id, new ClientVendor());
-        convert.setIsDeleted(true);
-        return mapperUtil.convert(convert, new ClientVendorDTO());
+    public String listOfCountry() {
+        // later i need inject Address repository and return Address list
+        String country = new Address().getCountry();
+        return country;
+    }
+
+    @Override
+    public List<ClientVendorType> clientVendorType() {
+        return List.of(ClientVendorType.values());
+    }
+
+    @Override
+    public void deleteClientVendorById(Long id) {
+        Optional<ClientVendor> optionalClientVendor = clientVendorRepository.findById(id);
+        ClientVendor existingClientVendor = optionalClientVendor
+                .orElseThrow(() -> new NoSuchElementException("Client vendor not found"));
+        existingClientVendor.setIsDeleted(true);
+        clientVendorRepository.save(existingClientVendor);
     }
 
     @Override
@@ -61,7 +77,9 @@ public class ClientVendorServiceImpl implements ClientVendorService {
         Optional<ClientVendor> byId = clientVendorRepository.findById(id);
         ClientVendor convert = mapperUtil.convert(clientVendorDTO, new ClientVendor());
         convert.setId(byId.get().id);
-        return mapperUtil.convert(convert, new ClientVendorDTO());
+        convert.setAddress(byId.get().getAddress());
+        ClientVendor save = clientVendorRepository.save(convert);
+        return mapperUtil.convert(save, new ClientVendorDTO());
     }
 }
 
