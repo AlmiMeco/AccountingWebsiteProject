@@ -15,6 +15,7 @@ public class CompanyController {
 
     private final CompanyService companyService;
 
+
     public CompanyController(CompanyService companyService) {
         this.companyService = companyService;
     }
@@ -41,13 +42,16 @@ public class CompanyController {
     @GetMapping("/update/{id}")
     public String editCompany(@PathVariable("id") Long id, Model model) {
         model.addAttribute("company", companyService.findById(id));
+        model.addAttribute("countries", List.of(new String()));
+
         return "/company/company-update";
     }
 
     @PostMapping("/update/{id}")
-    public String updateCompany(@PathVariable("id") Long id,
-                                     @ModelAttribute("company") CompanyDTO companyDTO) {
-        companyService.updateCompany(companyDTO);
-        return "redirect:/company/list";
+    public String updateCompany(@PathVariable("id") Long id, @ModelAttribute("company")
+    CompanyDTO companyDTO) {
+       companyService.updateCompany(id,companyDTO);
+
+        return "redirect:/company/company-update";
     }
 }
