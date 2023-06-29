@@ -27,10 +27,10 @@ public class User extends BaseEntity {
 
     private boolean enabled;
 
-    @ManyToOne()
+    @ManyToOne
     private Role role;
 
-    @ManyToOne()
+    @ManyToOne
     private Company company;
 
 }
