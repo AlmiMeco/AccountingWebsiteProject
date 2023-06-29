@@ -4,7 +4,6 @@ import com.cydeo.accounting_app.dto.CompanyDTO;
 import com.cydeo.accounting_app.service.CompanyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
