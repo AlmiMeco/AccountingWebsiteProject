@@ -27,6 +27,7 @@ public class User extends BaseEntity {
 
     private boolean enabled;
 
+
     @ManyToOne
     private Role role;
 
