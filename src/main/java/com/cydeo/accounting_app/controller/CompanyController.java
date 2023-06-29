@@ -7,6 +7,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/companies")
 public class CompanyController {
@@ -20,7 +22,14 @@ public class CompanyController {
     @GetMapping("/create")
     public String companyCreate(Model model) {
         model.addAttribute("newCompany", new CompanyDTO());
+        model.addAttribute("countries", List.of(new String()));
         return "/company/company-create";
+    }
+
+    @PostMapping("/create")
+    public String companyInsert(@ModelAttribute("newCompany") CompanyDTO companyDTO) {
+        companyService.saveCompany(companyDTO);
+        return "redirect:/company/company-create";
     }
 
     @GetMapping("/list")

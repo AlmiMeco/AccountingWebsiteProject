@@ -17,4 +17,6 @@ public interface CompanyService {
 
     CompanyDTO createCompany (CompanyDTO companyDTO);
 
+    void saveCompany(CompanyDTO companyDTO);
+
 }
