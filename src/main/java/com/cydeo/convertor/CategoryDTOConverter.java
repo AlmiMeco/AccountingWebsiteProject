@@ -5,8 +5,6 @@ import com.cydeo.accounting_app.service.CategoryService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.Column;
-
 @Component
 public class CategoryDTOConverter implements Converter<String, CategoryDTO> {
 
