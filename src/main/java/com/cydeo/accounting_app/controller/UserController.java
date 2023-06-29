@@ -2,6 +2,7 @@ package com.cydeo.accounting_app.controller;
 
 import com.cydeo.accounting_app.dto.CompanyDTO;
 import com.cydeo.accounting_app.dto.UserDTO;
+import com.cydeo.accounting_app.service.CompanyService;
 import com.cydeo.accounting_app.service.RoleService;
 import com.cydeo.accounting_app.service.UserService;
 import org.springframework.stereotype.Controller;
@@ -16,10 +17,12 @@ public class UserController {
 
     private final UserService userService;
     private final RoleService roleService;
+    private final CompanyService companyService;
 
-    public UserController(UserService userService, RoleService roleService) {
+    public UserController(UserService userService, RoleService roleService, CompanyService companyService) {
         this.userService = userService;
         this.roleService = roleService;
+        this.companyService = companyService;
     }
 
 
@@ -28,7 +31,7 @@ public class UserController {
 
         model.addAttribute("newUser", new UserDTO());
         model.addAttribute("userRoles", roleService.listAllRoles());
-        model.addAttribute("companies", List.of(new CompanyDTO()));
+        model.addAttribute("companies", companyService.listAllCompanies());
 
         return "user/user-create";
     }
@@ -65,7 +68,8 @@ public class UserController {
 
         model.addAttribute("user", userService.findById(id));
         model.addAttribute("userRoles", roleService.listAllRoles());
-        model.addAttribute("companies", List.of(new CompanyDTO()));
+        model.addAttribute("companies", companyService.listAllCompanies());
+
         return "user/user-update";
 
     }
