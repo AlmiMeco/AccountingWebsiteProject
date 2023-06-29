@@ -37,9 +37,8 @@ public class UserController {
     public String userCreatePost(@ModelAttribute("newUser") UserDTO newlyCreatedUser){
 
         userService.save(newlyCreatedUser);
-//        Not currently working Company is hardcoded -> Field error in object 'newUser' on field 'company': rejected value [];
 
-        return "redirect:/users/create";
+        return "redirect:/users/list";
 
     }
 
@@ -73,15 +72,14 @@ public class UserController {
 
 
 
-//    @PostMapping("/update")
-//    public String editUserPost(@ModelAttribute("user") UserDTO updatedUser){
-//
-//        userService.save(updatedUser);
-////        Not currently working Company is hardcoded -> Field error in object 'newUser' on field 'company': rejected value [];
-//
-//        return "redirect:user/user-update";
-//
-//    }
+    @PostMapping("/update/{id}")
+    public String editUserPost(@PathVariable("id") Long id, @ModelAttribute("user") UserDTO updatedUser){
+
+        userService.save(updatedUser);
+
+        return "redirect:/users/list";
+
+    }
 
 
 }
