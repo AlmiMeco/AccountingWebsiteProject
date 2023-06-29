@@ -39,7 +39,7 @@ public class UserController {
         userService.save(newlyCreatedUser);
 //        Not currently working Company is hardcoded -> Field error in object 'newUser' on field 'company': rejected value [];
 
-        return "redirect:/user/user-create";
+        return "redirect:/users/create";
 
     }
 
@@ -49,6 +49,15 @@ public class UserController {
         model.addAttribute("users", userService.listAllUsers() );
 
         return "user/user-list";
+
+    }
+
+    @GetMapping("/delete/{id}")
+    public String userDelete(@PathVariable("id") Long id){
+
+        userService.softDelete(id);
+
+        return "redirect:/users/list";
 
     }
 

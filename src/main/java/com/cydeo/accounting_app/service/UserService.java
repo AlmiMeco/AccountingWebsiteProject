@@ -13,4 +13,9 @@ public interface UserService {
     List<UserDTO> listAllUsers();
 
     void save(UserDTO userDTO);
+
+    void softDelete(Long id);
+
+    void delete(Long id);
+
 }

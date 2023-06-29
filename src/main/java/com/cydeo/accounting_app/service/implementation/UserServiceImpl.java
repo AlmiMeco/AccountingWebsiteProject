@@ -49,4 +49,21 @@ public class UserServiceImpl implements UserService {
         userRepository.save(mapper.convert(userDTO, new User()));
     }
 
+    @Override
+    public void softDelete(Long id) {
+
+        User user = userRepository.getUserById(id);
+        user.setIsDeleted(true);
+        userRepository.save(user);
+
+    }
+
+    @Override
+    public void delete(Long id) {
+
+        User user = userRepository.getUserById(id);
+        userRepository.delete(user);
+
+    }
+
 }
