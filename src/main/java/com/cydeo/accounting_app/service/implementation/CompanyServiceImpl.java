@@ -41,7 +41,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public void updateCompany(Long id, CompanyDTO companyDTO) {
+    public CompanyDTO updateCompany(Long id, CompanyDTO companyDTO) {
 
         Company company = mapper.convert(companyDTO, new Company());
         companyRepository.findCompanyById(id).ifPresent(company1 -> {
@@ -56,7 +56,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         });
 
-
+        return mapper.convert(companyRepository.findCompanyById(id), new CompanyDTO());
     }
 
     @Override
