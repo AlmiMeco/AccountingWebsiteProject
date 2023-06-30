@@ -102,6 +102,14 @@ public class SalesInvoiceController {
         return "redirect:/salesInvoices/update/"+invoiceId;
     }
 
+    @GetMapping("/print/{invoiceId}")
+    public String removeInvoice(@PathVariable("invoiceId") Long invoiceId, Model model){
+        model.addAttribute("invoice",invoiceService.findById(invoiceId));
+        model.addAttribute("invoiceProducts", invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId));
+        model.addAttribute("company", invoiceService.getCurrentCompany());
+        return "invoice/invoice_print";
+    }
+
     @ModelAttribute
     public void commonModel(Model model){
         model.addAttribute("clients", clientVendorService.listAllClientVendorsByType(ClientVendorType.CLIENT));
