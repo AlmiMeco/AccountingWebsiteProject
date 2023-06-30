@@ -15,6 +15,7 @@ import com.cydeo.accounting_app.service.SecurityService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,8 +40,10 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
     }
 
     @Override
-    public List<InvoiceDTO> listAllInvoicesByType(InvoiceType type) {
-        return invoiceRepository.findAllByInvoiceType(type).stream()
+    public List<InvoiceDTO> listAllInvoicesByTypeAndCompany(InvoiceType type,Long companyId) {
+
+        return invoiceRepository.findAllByInvoiceTypeAndCompany(type,companyId).stream()
+                .sorted(Comparator.comparing(Invoice::getId).reversed())
                 .map(invoice -> mapperUtil.convert(invoice,new InvoiceDTO()))
                 .collect(Collectors.toList());
     }
@@ -49,6 +52,7 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
         Invoice invoice = mapperUtil.convert(invoiceDTO, new Invoice());
         invoice.setInvoiceType(type);
         invoice.setInvoiceStatus(InvoiceStatus.AWAITING_APPROVAL);
+        invoice.setCompany(getCompany());
         invoiceRepository.save(invoice);
     }
 
@@ -76,11 +80,12 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
     @Override
     public InvoiceDTO createInvoice(InvoiceType type) {
         InvoiceDTO invoiceDTO = new InvoiceDTO();
-        String lastInvoiceNo =  invoiceRepository.findMaxInvoiceIdByType(type.getValue().toUpperCase());
+        List<String> listInvoiceNoByType = invoiceRepository.findMaxInvoiceIdByType(type.getValue().toUpperCase());
         int value;
-        if(lastInvoiceNo.isEmpty()){
+        if(listInvoiceNoByType.size()==0){
             value=0;
         }else {
+            String lastInvoiceNo = listInvoiceNoByType.get(listInvoiceNoByType.size()-1);
             value =Integer.parseInt(lastInvoiceNo.substring(2));
             value++;
         }
