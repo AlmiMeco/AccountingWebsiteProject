@@ -1,6 +1,7 @@
 package com.cydeo.accounting_app.controller;
 
 import com.cydeo.accounting_app.dto.CompanyDTO;
+import com.cydeo.accounting_app.service.AddressService;
 import com.cydeo.accounting_app.service.CompanyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,16 +14,18 @@ import java.util.List;
 public class CompanyController {
 
     private final CompanyService companyService;
+    private final AddressService addressService;
 
 
-    public CompanyController(CompanyService companyService) {
+    public CompanyController(CompanyService companyService, AddressService addressService) {
         this.companyService = companyService;
+        this.addressService = addressService;
     }
 
     @GetMapping("/create")
     public String companyCreate(Model model) {
         model.addAttribute("newCompany", new CompanyDTO());
-        model.addAttribute("countries", List.of(new String()));
+        model.addAttribute("countries", List.of(addressService.listOfCountries()));
         return "/company/company-create";
     }
 
@@ -41,7 +44,7 @@ public class CompanyController {
     @GetMapping("/update/{id}")
     public String editCompany(@PathVariable("id") Long id, Model model) {
         model.addAttribute("company", companyService.findById(id));
-        model.addAttribute("countries", List.of(new String()));
+        model.addAttribute("countries", List.of(addressService.listOfCountries()).get(0));
 
         return "/company/company-update";
     }
