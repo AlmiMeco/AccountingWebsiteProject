@@ -11,4 +11,10 @@ public interface CategoryService {
     List<CategoryDTO> getCategoryList();
 
     boolean isCategoryDescriptionExist(CategoryDTO categoryDTO);
+
+    CategoryDTO create(CategoryDTO categoryDto);
+
+    CategoryDTO update(Long categoryId, CategoryDTO categoryDto);
+
+    void delete(Long categoryId);
 }
