@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class LoggedInUserService {
     protected final SecurityService securityService;
-    protected final MapperUtil mapperUtil;
+    protected MapperUtil mapperUtil;
 
     public LoggedInUserService(SecurityService securityService, MapperUtil mapperUtil) {
         this.securityService = securityService;

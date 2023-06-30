@@ -1,66 +1,44 @@
 package com.cydeo.accounting_app.service.implementation;
 
 import com.cydeo.accounting_app.entity.Address;
-import com.cydeo.accounting_app.entity.Company;
-import com.cydeo.accounting_app.entity.User;
 import com.cydeo.accounting_app.enums.ClientVendorType;
 import com.cydeo.accounting_app.repository.ClientVendorRepository;
 import com.cydeo.accounting_app.dto.ClientVendorDTO;
 import com.cydeo.accounting_app.entity.ClientVendor;
 import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.service.ClientVendorService;
-import com.cydeo.accounting_app.service.LoggedInUserService;
-import com.cydeo.accounting_app.service.SecurityService;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class ClientVendorServiceImpl extends LoggedInUserService implements ClientVendorService {
+public class ClientVendorServiceImpl implements ClientVendorService {
     private final ClientVendorRepository clientVendorRepository;
     private final MapperUtil mapperUtil;
 
-    public ClientVendorServiceImpl(SecurityService securityService,
-                                   MapperUtil mapperUtil,
-                                   ClientVendorRepository clientVendorRepository,
-                                   MapperUtil mapperUtil1) {
-        super(securityService, mapperUtil);
+    public ClientVendorServiceImpl(ClientVendorRepository clientVendorRepository,
+                                   MapperUtil mapperUtil) {
         this.clientVendorRepository = clientVendorRepository;
-        this.mapperUtil = mapperUtil1;
-    }
-
-    @Override
-    protected User getCurrentUser() {
-        return super.getCurrentUser();
-    }
-
-    @Override
-    protected Company getCompany() {
-        return super.getCompany();
+        this.mapperUtil = mapperUtil;
     }
 
     @Override
     public ClientVendorDTO findById(Long id) {
         // create own exception later logic ?
         Optional<ClientVendor> byId = clientVendorRepository.findById(id);
-        ClientVendor clientVendor = byId.orElseThrow(() -> new NoSuchElementException("Client vendor not found "+id));
+        ClientVendor clientVendor = byId.orElseThrow(() -> new NoSuchElementException("Client vendor not found"));
         return mapperUtil.convert(clientVendor, new ClientVendorDTO());
     }
 
     @Override
     public List<ClientVendorDTO> getAllClientVendors() {
-        Long currentCompanyId = getCompany().getId();
-        List<ClientVendor> allClientVendors = clientVendorRepository.findAllByCompanyId(currentCompanyId);
+        // who can see list of Vendor Logic?
+        List<ClientVendor> allClientVendors = clientVendorRepository.findAll();
         return allClientVendors.stream()
-                .sorted(Comparator.comparing(client -> {
-                    Company company = client.getCompany();
-                    return company.getCompanyStatus().name() + company.getTitle();
-                }))
-                .map(convert->mapperUtil.convert(convert,new ClientVendorDTO()))
+                .map(client -> mapperUtil.convert(client, new ClientVendorDTO()))
                 .collect(Collectors.toList());
     }
 
@@ -88,7 +66,7 @@ public class ClientVendorServiceImpl extends LoggedInUserService implements Clie
     public void deleteClientVendorById(Long id) {
         Optional<ClientVendor> optionalClientVendor = clientVendorRepository.findById(id);
         ClientVendor existingClientVendor = optionalClientVendor
-                .orElseThrow(() -> new NoSuchElementException("Client vendor not found "+id));
+                .orElseThrow(() -> new NoSuchElementException("Client vendor not found"));
         existingClientVendor.setIsDeleted(true);
         clientVendorRepository.save(existingClientVendor);
     }
