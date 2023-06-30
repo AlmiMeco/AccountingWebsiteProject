@@ -18,4 +18,6 @@ public interface UserService {
 
     void delete(Long id);
 
+    boolean isEmailAlreadyExisting(UserDTO userDTO);
+
 }
