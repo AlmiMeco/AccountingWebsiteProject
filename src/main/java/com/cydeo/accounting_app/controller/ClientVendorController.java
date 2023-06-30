@@ -47,9 +47,14 @@ public class ClientVendorController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateClientVendor(@PathVariable("id") Long id,
+    public String updateClientVendor(@Valid @PathVariable("id") Long id,
                                      @ModelAttribute("clientVendor") ClientVendorDTO clientVendorDTO,
-                                     Model model) {
+                                     BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()){
+            model.addAttribute("clientVendorName",bindingResult);
+            return "/clientVendor/clientVendor-update";
+        }
+
         model.addAttribute("clientVendor",
                 clientVendorService.updateClientVendor(id, clientVendorDTO));
         return "redirect:/clientVendors/list";

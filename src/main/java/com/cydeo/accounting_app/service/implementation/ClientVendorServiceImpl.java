@@ -22,15 +22,10 @@ import java.util.stream.Collectors;
 @Service
 public class ClientVendorServiceImpl extends LoggedInUserService implements ClientVendorService {
     private final ClientVendorRepository clientVendorRepository;
-    private final MapperUtil mapperUtil;
 
-    public ClientVendorServiceImpl(SecurityService securityService,
-                                   MapperUtil mapperUtil,
-                                   ClientVendorRepository clientVendorRepository,
-                                   MapperUtil mapperUtil1) {
+    public ClientVendorServiceImpl(SecurityService securityService, MapperUtil mapperUtil, ClientVendorRepository clientVendorRepository) {
         super(securityService, mapperUtil);
         this.clientVendorRepository = clientVendorRepository;
-        this.mapperUtil = mapperUtil1;
     }
 
     @Override
