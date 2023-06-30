@@ -17,4 +17,6 @@ public interface ClientVendorService {
     ClientVendorDTO createClientVendor(ClientVendorDTO clientVendorDTO);
 
     Object listOfCountry();
+
+    List<ClientVendorDTO> listAllClientVendorsByType(ClientVendorType type);
 }
