@@ -100,7 +100,6 @@ public class PurchasesInvoiceController {
             return "invoice/purchase-invoice-update"+invoiceId;
         }
         invoiceProductService.saveInvoiceProduct(invoiceProductDTO,invoiceId);
-        System.out.println(invoiceProductDTO);
         return "redirect:/purchaseInvoices/update/"+invoiceId;
     }
 
@@ -117,7 +116,7 @@ public class PurchasesInvoiceController {
     @ModelAttribute
     public void commonModel(Model model){
         model.addAttribute("vendors", clientVendorService.listAllClientVendorsByType(ClientVendorType.VENDOR));
-        model.addAttribute("invoices",invoiceService.listAllInvoicesByType(InvoiceType.PURCHASE));
+        model.addAttribute("invoices",invoiceService.listAllInvoicesByTypeAndCompany(InvoiceType.PURCHASE,invoiceService.getCurrentCompany().getId()));
         model.addAttribute("products", productService.getProductList());
     }
 
