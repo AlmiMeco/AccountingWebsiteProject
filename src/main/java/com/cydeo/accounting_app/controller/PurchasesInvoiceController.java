@@ -1,5 +1,6 @@
 package com.cydeo.accounting_app.controller;
 
+import com.cydeo.accounting_app.dto.CompanyDTO;
 import com.cydeo.accounting_app.dto.InvoiceDTO;
 import com.cydeo.accounting_app.dto.InvoiceProductDTO;
 import com.cydeo.accounting_app.enums.ClientVendorType;
@@ -103,6 +104,16 @@ public class PurchasesInvoiceController {
         System.out.println(invoiceProductDTO);
         return "redirect:/purchaseInvoices/update/"+invoiceId;
     }
+
+    @GetMapping("/print/{invoiceId}")
+    public String removeInvoice(@PathVariable("invoiceId") Long invoiceId, Model model){
+        model.addAttribute("invoice",invoiceService.findById(invoiceId));
+        model.addAttribute("invoiceProducts", invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId));
+        model.addAttribute("company", invoiceService.getCurrentCompany());
+        return "invoice/invoice_print";
+    }
+
+
 
     @ModelAttribute
     public void commonModel(Model model){

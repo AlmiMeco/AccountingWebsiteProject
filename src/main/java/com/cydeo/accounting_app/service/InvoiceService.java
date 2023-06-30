@@ -1,5 +1,6 @@
 package com.cydeo.accounting_app.service;
 
+import com.cydeo.accounting_app.dto.CompanyDTO;
 import com.cydeo.accounting_app.dto.InvoiceDTO;
 import com.cydeo.accounting_app.dto.ProductDTO;
 import com.cydeo.accounting_app.enums.InvoiceType;
@@ -23,4 +24,6 @@ public interface InvoiceService {
     InvoiceDTO createInvoice(InvoiceType type);
 
     String findLastInvoiceId();
+
+    CompanyDTO getCurrentCompany();
 }

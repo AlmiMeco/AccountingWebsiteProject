@@ -1,7 +1,9 @@
 package com.cydeo.accounting_app.service.implementation;
 
+import com.cydeo.accounting_app.dto.CompanyDTO;
 import com.cydeo.accounting_app.dto.InvoiceDTO;
 import com.cydeo.accounting_app.dto.ProductDTO;
+import com.cydeo.accounting_app.entity.Company;
 import com.cydeo.accounting_app.entity.Invoice;
 import com.cydeo.accounting_app.enums.InvoiceStatus;
 import com.cydeo.accounting_app.enums.InvoiceType;
@@ -90,4 +92,12 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
     public String findLastInvoiceId() {
         return String.valueOf(invoiceRepository.findMaxNumberInvoiceId());
     }
+
+    @Override
+    public CompanyDTO getCurrentCompany() {
+        Company company = getCompany();
+        return mapperUtil.convert(company,new CompanyDTO());
+    }
+
+
 }
