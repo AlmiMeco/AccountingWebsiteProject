@@ -1,6 +1,5 @@
 package com.cydeo.accounting_app.controller;
 
-import com.cydeo.accounting_app.dto.CompanyDTO;
 import com.cydeo.accounting_app.dto.InvoiceDTO;
 import com.cydeo.accounting_app.dto.InvoiceProductDTO;
 import com.cydeo.accounting_app.enums.ClientVendorType;
