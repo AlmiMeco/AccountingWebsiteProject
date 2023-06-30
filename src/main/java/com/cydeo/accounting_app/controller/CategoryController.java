@@ -34,33 +34,49 @@ public class CategoryController {
 
     @PostMapping("/create")
     public String createCategory(@Valid @ModelAttribute("newCategory") CategoryDTO categoryDTO, BindingResult bindingResult) {
+        boolean categoryDescriptionExist = categoryService.isCategoryDescriptionExist(categoryDTO);
+
+        if (categoryDescriptionExist){
+            bindingResult.rejectValue("description"," ","This category description already exists");
+        }
+
+        if (bindingResult.hasErrors()){
+            return "/category/category-create";
+        }
+        categoryService.create(categoryDTO);
+        return "redirect:/categories/list";
+    }
 
 
+    @GetMapping("/update/{categoryId}")
+    public String showUpdateCategory(@PathVariable("categoryId") Long categoryId, Model model) {
+        model.addAttribute("category", categoryService.findById(categoryId));
+        return "/category/category-update";
+    }
+
+
+    @PostMapping("/update/{categoryId}")
+    public String updateClientVendor(@Valid @ModelAttribute("category") CategoryDTO categoryDTO, BindingResult bindingResult,@PathVariable("categoryId") Long categoryId) {
+        categoryDTO.setId(categoryId);
+        boolean categoryDescriptionExist = categoryService.isCategoryDescriptionExist(categoryDTO);
+
+        if (categoryDescriptionExist) {
+            bindingResult.rejectValue("description", " ", "This category description already exists");
+        }
+
+        if (bindingResult.hasErrors()) {
+            return "/category/category-update";
+        }
+
+        categoryService.update(categoryId, categoryDTO);
 
         return "redirect:/categories/list";
     }
 
 
-    @GetMapping("/update/{id}")
-    public String showUpdateCategory(@PathVariable("id") Long id, Model model) {
-
-        return "/clientVendor/clientVendor-update";
-    }
-
-
-    @PostMapping("/update/{id}")
-    public String updateClientVendor(@PathVariable("id") Long id,
-                                     @ModelAttribute("clientVendor") CategoryDTO categoryDTO,
-                                     Model model) {
-
-
-        return "redirect:/categories/list";
-    }
-
-
-    @GetMapping("/delete/{id}")
-    public String deleteCategory(@PathVariable("id") Long id) {
-//        categoryService.deleteCategoryById(id);
+    @GetMapping("/delete/{categoryId}")
+    public String delete(@PathVariable("categoryId") Long categoryId) {
+        categoryService.delete(categoryId);
         return "redirect:/categories/list";
     }
 
