@@ -76,11 +76,12 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
     @Override
     public InvoiceDTO createInvoice(InvoiceType type) {
         InvoiceDTO invoiceDTO = new InvoiceDTO();
-        String lastInvoiceNo =  invoiceRepository.findMaxInvoiceIdByType(type.getValue().toUpperCase());
+        List<String> listInvoiceNoByType = invoiceRepository.findMaxInvoiceIdByType(type.getValue().toUpperCase());
         int value;
-        if(lastInvoiceNo.isEmpty()){
+        if(listInvoiceNoByType.size()==0){
             value=0;
         }else {
+            String lastInvoiceNo = listInvoiceNoByType.get(listInvoiceNoByType.size()-1);
             value =Integer.parseInt(lastInvoiceNo.substring(2));
             value++;
         }
