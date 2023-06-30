@@ -80,8 +80,8 @@ public class ClientVendorServiceImpl extends LoggedInUserService implements Clie
     }
 
     @Override
-    public List<ClientVendorDTO> listAllClientVendorsByType(ClientVendorType type) {
-        return clientVendorRepository.findClientVendorsByClientVendorType(type).stream()
+    public List<ClientVendorDTO> listAllClientVendorsByTypeAndCompany(ClientVendorType type) {
+        return clientVendorRepository.findClientVendorsByClientVendorTypeAndCompanyId(type,getCompany().id).stream()
                 .map(clientVendor -> mapperUtil.convert(clientVendor,new ClientVendorDTO()))
                 .collect(Collectors.toList());
     }

@@ -40,9 +40,9 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
     }
 
     @Override
-    public List<InvoiceDTO> listAllInvoicesByTypeAndCompany(InvoiceType type,Long companyId) {
+    public List<InvoiceDTO> listAllInvoicesByType(InvoiceType type) {
 
-        return invoiceRepository.findAllByInvoiceTypeAndCompany(type,companyId).stream()
+        return invoiceRepository.findAllByInvoiceTypeAndCompany(type, getCompany().id).stream()
                 .sorted(Comparator.comparing(Invoice::getId).reversed())
                 .map(invoice -> mapperUtil.convert(invoice,new InvoiceDTO()))
                 .collect(Collectors.toList());
