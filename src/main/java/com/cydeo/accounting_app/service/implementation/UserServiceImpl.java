@@ -45,7 +45,7 @@ public class UserServiceImpl extends LoggedInUserService implements UserService 
 
         Long loggedInUserCompanyId = getCompany().id;
 
-        List<User> allUsersBelongingToCompany = userRepository.findAllByCompanyId(loggedInUserCompanyId);
+        List<User> allUsersBelongingToCompany = userRepository.findAllByCompany(loggedInUserCompanyId);
 
         return allUsersBelongingToCompany.stream()
                 .sorted(Comparator.comparing(i -> {
