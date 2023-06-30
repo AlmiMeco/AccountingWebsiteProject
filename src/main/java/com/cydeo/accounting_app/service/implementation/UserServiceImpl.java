@@ -1,6 +1,7 @@
 package com.cydeo.accounting_app.service.implementation;
 
 import com.cydeo.accounting_app.dto.UserDTO;
+import com.cydeo.accounting_app.entity.Company;
 import com.cydeo.accounting_app.entity.User;
 import com.cydeo.accounting_app.mapper.MapperUtil;
 
@@ -11,6 +12,7 @@ import com.cydeo.accounting_app.service.UserService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,7 +43,15 @@ public class UserServiceImpl extends LoggedInUserService implements UserService 
     @Override
     public List<UserDTO> listAllUsers() {
 
-        return userRepository.findAll().stream()
+        Long loggedInUserCompanyId = getCompany().id;
+
+        List<User> allUsersBelongingToCompany = userRepository.findAllByCompanyId(loggedInUserCompanyId);
+
+        return allUsersBelongingToCompany.stream()
+                .sorted(Comparator.comparing(i -> {
+                    Company company = i.getCompany();
+                    return company.getCompanyStatus().name() + company.getTitle();
+                } ))
                 .map(i -> mapperUtil.convert(i, new UserDTO()))
                 .collect(Collectors.toList());
     }
