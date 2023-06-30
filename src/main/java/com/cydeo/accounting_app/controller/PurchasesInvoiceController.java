@@ -116,7 +116,7 @@ public class PurchasesInvoiceController {
     @ModelAttribute
     public void commonModel(Model model){
         model.addAttribute("vendors", clientVendorService.listAllClientVendorsByTypeAndCompany(ClientVendorType.VENDOR));
-        model.addAttribute("invoices",invoiceService.listAllInvoicesByTypeAndCompany(InvoiceType.PURCHASE,invoiceService.getCurrentCompany().getId()));
+        model.addAttribute("invoices",invoiceService.listAllInvoicesByType(InvoiceType.PURCHASE));
         model.addAttribute("products", productService.getProductList());
     }
 
