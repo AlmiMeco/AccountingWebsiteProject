@@ -44,4 +44,18 @@ public class UserDTO {
 
     private boolean isOnlyAdmin;
 
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
+        checkConfirmPassword();
+    }
+
+    private void checkConfirmPassword(){
+
+        if (this.password == null || this.confirmPassword == null) {
+            return;
+        }else if (!this.password.equals(this.confirmPassword))
+            this.confirmPassword = null;
+    }
+
 }
