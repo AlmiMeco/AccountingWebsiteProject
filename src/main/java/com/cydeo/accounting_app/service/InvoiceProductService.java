@@ -12,7 +12,9 @@ public interface InvoiceProductService {
 
     List<InvoiceProductDTO> findAllInvoiceProductsByInvoiceId(Long id);
 
-    void saveInvoiceProduct(InvoiceProductDTO invoiceProductDTO,Long invoiceId);
+    void saveInvoiceProduct(InvoiceProductDTO invoiceProductDTO, Long invoiceId);
 
     void deleteInvoiceProductById(Long id);
+
+    List<InvoiceProductDTO> findAllInvoiceProductsByProductId(Long id);
 }
