@@ -54,13 +54,9 @@ public class ClientVendorServiceImpl extends LoggedInUserService implements Clie
     @Override
     public List<ClientVendorDTO> getAllClientVendors() {
         Long currentCompanyId = getCompany().getId();
-        List<ClientVendor> allClientVendors = clientVendorRepository.findAllByCompanyId(currentCompanyId);
+        List<ClientVendor> allClientVendors = clientVendorRepository.findAllByCompany(currentCompanyId);
         return allClientVendors.stream()
-                .sorted(Comparator.comparing(client -> {
-                    Company company = client.getCompany();
-                    return company.getCompanyStatus().name() + company.getTitle();
-                }))
-                .map(convert->mapperUtil.convert(convert,new ClientVendorDTO()))
+                .map(clientVendor->mapperUtil.convert(clientVendor,new ClientVendorDTO()))
                 .collect(Collectors.toList());
     }
 
@@ -68,6 +64,9 @@ public class ClientVendorServiceImpl extends LoggedInUserService implements Clie
     public ClientVendorDTO createClientVendor(ClientVendorDTO clientVendorDTO) {
         // who will create ClientVendor
         ClientVendor convert = mapperUtil.convert(clientVendorDTO, new ClientVendor());
+        if (convert.getCompany()==null){
+            convert.setCompany(getCompany());
+        }
         ClientVendor save = clientVendorRepository.save(convert);
         return mapperUtil.convert(save, new ClientVendorDTO());
     }
@@ -106,6 +105,7 @@ public class ClientVendorServiceImpl extends LoggedInUserService implements Clie
         Optional<ClientVendor> byId = clientVendorRepository.findById(id);
         ClientVendor convert = mapperUtil.convert(clientVendorDTO, new ClientVendor());
         convert.setId(byId.get().id);
+        convert.setCompany(byId.get().getCompany());
         convert.setAddress(byId.get().getAddress());
         ClientVendor save = clientVendorRepository.save(convert);
         return mapperUtil.convert(save, new ClientVendorDTO());
