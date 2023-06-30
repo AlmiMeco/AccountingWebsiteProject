@@ -13,8 +13,6 @@ import java.util.List;
 public interface ClientVendorRepository extends JpaRepository<ClientVendor,Long> {
     List<ClientVendor> findAllByCompanyId(Long currentCompanyId);
 
-    List<ClientVendor> findClientVendorsByClientVendorType(ClientVendorType type);
-
     @Query("SELECT cv " +
             "FROM ClientVendor cv " +
             "WHERE cv.clientVendorType = ?1 " +
