@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.math.BigDecimal;
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,6 +21,7 @@ public class InvoiceDTO {
     private InvoiceType invoiceType;
     private LocalDate date;
     private CompanyDTO company;
+    @NotNull
     private ClientVendorDTO clientVendor;
     private BigDecimal price;
     private Integer tax;
