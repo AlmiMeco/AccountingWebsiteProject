@@ -14,6 +14,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
 //    Created bc Optional<User> findById() method was not working;
     User getUserById(Long id);
 
-    List<User> findAllByCompany(Long companyIdOfLoggedUser);
+    List<User> findAllByCompanyId(Long companyIdOfLoggedUser);
 
+    List<User> findAllByRoleId(long id);
 }
