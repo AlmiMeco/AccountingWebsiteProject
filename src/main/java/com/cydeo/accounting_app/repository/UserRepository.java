@@ -16,4 +16,5 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     List<User> findAllByCompanyId(Long companyIdOfLoggedUser);
 
+    List<User> findAllByRoleId(long id);
 }

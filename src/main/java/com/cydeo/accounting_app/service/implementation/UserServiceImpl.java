@@ -45,6 +45,16 @@ public class UserServiceImpl extends LoggedInUserService implements UserService 
 
         Long loggedInUserCompanyId = getCompany().id;
 
+        if (userRepository.getUserById(loggedInUserCompanyId).getRole().getId() == 1L) {
+
+             List<User> adminUsers = userRepository.findAllByRoleId(2L);
+
+             return adminUsers.stream()
+                     .map(i -> mapperUtil.convert(i, new UserDTO()))
+                     .collect(Collectors.toList());
+
+        }
+
         List<User> allUsersBelongingToCompany = userRepository.findAllByCompanyId(loggedInUserCompanyId);
 
         return allUsersBelongingToCompany.stream()
