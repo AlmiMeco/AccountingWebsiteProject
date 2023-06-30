@@ -32,28 +32,19 @@ public class UserController {
     public String userCreate(Model model){
 
         model.addAttribute("newUser", new UserDTO());
-        model.addAttribute("userRoles", roleService.listAllRoles());
-        model.addAttribute("companies", companyService.listAllCompanies());
 
         return "user/user-create";
     }
 
     @PostMapping("/create")
-    public String userCreatePost(@Valid @ModelAttribute("newUser") UserDTO newlyCreatedUser, BindingResult bindingResult, Model model){
+    public String userCreatePost(@Valid @ModelAttribute("newUser") UserDTO newlyCreatedUser, BindingResult bindingResult){
 
         boolean emailAlreadyExists = userService.isEmailAlreadyExisting(newlyCreatedUser);
 
-        if (emailAlreadyExists) {
-            bindingResult.rejectValue("username"," ","A user with this email already exists");
-        }
+        if (emailAlreadyExists) {bindingResult.rejectValue("username"," ","A user with this email already exists");}
 
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {return "user/user-create";}
 
-            model.addAttribute("userRoles", roleService.listAllRoles());
-            model.addAttribute("companies", companyService.listAllCompanies());
-
-            return "user/user-create";
-        }
         userService.save(newlyCreatedUser);
 
         return "redirect:/users/list";
@@ -82,8 +73,6 @@ public class UserController {
     public String editUser(@PathVariable("id") Long id, Model model){
 
         model.addAttribute("user", userService.findById(id));
-        model.addAttribute("userRoles", roleService.listAllRoles());
-        model.addAttribute("companies", companyService.listAllCompanies());
 
         return "user/user-update";
 
@@ -99,6 +88,14 @@ public class UserController {
         return "redirect:/users/list";
 
     }
+
+
+    @ModelAttribute
+    public void commonAttributes(Model model){
+        model.addAttribute("userRoles", roleService.listAllRoles());
+        model.addAttribute("companies", companyService.listAllCompanies());
+    }
+
 
 
 }
