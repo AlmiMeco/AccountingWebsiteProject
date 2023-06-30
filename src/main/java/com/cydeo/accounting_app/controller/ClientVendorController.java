@@ -3,7 +3,10 @@ import com.cydeo.accounting_app.dto.ClientVendorDTO;
 import com.cydeo.accounting_app.service.ClientVendorService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/clientVendors")
@@ -27,8 +30,12 @@ public class ClientVendorController {
     }
 
     @PostMapping("/create")
-    public String createClientVendor(@ModelAttribute("newClientVendor") ClientVendorDTO clientVendorDTO,
-                                     Model model) {
+    public String createClientVendor(@Valid @ModelAttribute("newClientVendor") ClientVendorDTO clientVendorDTO,
+                                      BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()){
+            model.addAttribute("clientVendorName",bindingResult);
+            return "clientVendor/clientVendor-create";
+        }
         clientVendorService.createClientVendor(clientVendorDTO);
         return "redirect:/clientVendors/list";
     }
