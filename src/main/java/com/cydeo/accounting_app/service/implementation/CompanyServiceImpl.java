@@ -1,6 +1,7 @@
 package com.cydeo.accounting_app.service.implementation;
 
 import com.cydeo.accounting_app.dto.CompanyDTO;
+import com.cydeo.accounting_app.entity.Address;
 import com.cydeo.accounting_app.entity.Company;
 import com.cydeo.accounting_app.enums.CompanyStatus;
 import com.cydeo.accounting_app.mapper.MapperUtil;
