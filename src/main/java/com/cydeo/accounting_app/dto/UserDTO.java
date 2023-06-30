@@ -18,12 +18,11 @@ public class UserDTO {
     @NotBlank(message = "Email is a required field")
     private String username;
 
-    @NotBlank
+
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*_0-9])(.{4,})$", message = "Password should be at least 4 characters long and needs to contain 1 capital letter, 1 small letter and 1 special character or number")
     private String password;
 
-    @NotBlank
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*_0-9])(.{4,})$")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*_0-9])(.{4,})$", message = "\"Confirm Password\" must match \"Password\"")
     private String confirmPassword;
 
     @NotBlank(message = "First Name is a required field")

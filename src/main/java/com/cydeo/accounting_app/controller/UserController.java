@@ -7,8 +7,10 @@ import com.cydeo.accounting_app.service.RoleService;
 import com.cydeo.accounting_app.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -37,8 +39,15 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public String userCreatePost(@ModelAttribute("newUser") UserDTO newlyCreatedUser){
+    public String userCreatePost(@Valid @ModelAttribute("newUser") UserDTO newlyCreatedUser, BindingResult bindingResult, Model model){
 
+        if (bindingResult.hasErrors()){
+
+            model.addAttribute("userRoles", roleService.listAllRoles());
+            model.addAttribute("companies", companyService.listAllCompanies());
+
+            return "user/user-create";
+        }
         userService.save(newlyCreatedUser);
 
         return "redirect:/users/list";
