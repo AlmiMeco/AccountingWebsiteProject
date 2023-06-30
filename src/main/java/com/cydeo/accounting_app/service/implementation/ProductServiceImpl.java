@@ -37,4 +37,12 @@ public class ProductServiceImpl implements ProductService {
                 .map(newProductList -> mapperUtil.convert(newProductList, new ProductDTO()))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<ProductDTO> findAllProductsWithCategoryId(Long categoryId) {
+        return productRepository.findAllByCategoryId(categoryId)
+                .stream()
+                .map(product -> mapperUtil.convert(product, new ProductDTO()))
+                .collect(Collectors.toList());
+    }
 }
