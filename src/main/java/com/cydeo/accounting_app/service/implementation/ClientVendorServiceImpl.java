@@ -80,6 +80,13 @@ public class ClientVendorServiceImpl extends LoggedInUserService implements Clie
     }
 
     @Override
+    public List<ClientVendorDTO> listAllClientVendorsByType(ClientVendorType type) {
+        return clientVendorRepository.findClientVendorsByClientVendorType(type).stream()
+                .map(clientVendor -> mapperUtil.convert(clientVendor,new ClientVendorDTO()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<ClientVendorType> clientVendorType() {
         return List.of(ClientVendorType.values());
     }
@@ -103,6 +110,7 @@ public class ClientVendorServiceImpl extends LoggedInUserService implements Clie
         ClientVendor save = clientVendorRepository.save(convert);
         return mapperUtil.convert(save, new ClientVendorDTO());
     }
+
 }
 
 
