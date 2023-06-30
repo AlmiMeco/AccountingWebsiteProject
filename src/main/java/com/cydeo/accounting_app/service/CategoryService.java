@@ -9,4 +9,6 @@ public interface CategoryService {
     CategoryDTO findById(Long id);
 
     List<CategoryDTO> getCategoryList();
+
+    boolean isCategoryDescriptionExist(CategoryDTO categoryDTO);
 }
