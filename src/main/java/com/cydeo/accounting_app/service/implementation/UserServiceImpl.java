@@ -89,4 +89,15 @@ public class UserServiceImpl extends LoggedInUserService implements UserService 
 
     }
 
+    @Override
+    public boolean isEmailAlreadyExisting(UserDTO userDTO) {
+
+        User existingUser = userRepository.getUserById(userDTO.getId());
+
+        if (existingUser == null) {return false;}
+
+        return !existingUser.getUsername().equals(userDTO.getUsername());
+
+    }
+
 }
