@@ -76,6 +76,7 @@ public class UserServiceImpl extends LoggedInUserService implements UserService 
 
         User user = userRepository.getUserById(id);
         user.setIsDeleted(true);
+        user.setUsername(user.getUsername() + "-depreciatedUserName");
         userRepository.save(user);
 
     }
@@ -85,6 +86,17 @@ public class UserServiceImpl extends LoggedInUserService implements UserService 
 
         User user = userRepository.getUserById(id);
         userRepository.delete(user);
+
+    }
+
+    @Override
+    public boolean isEmailAlreadyExisting(UserDTO userDTO) {
+
+        User existingUser = userRepository.getUserById(userDTO.getId());
+
+        if (existingUser == null) {return false;}
+
+        return !existingUser.getUsername().equals(userDTO.getUsername());
 
     }
 

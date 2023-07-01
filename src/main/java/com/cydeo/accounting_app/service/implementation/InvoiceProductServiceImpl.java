@@ -10,6 +10,7 @@ import com.cydeo.accounting_app.service.InvoiceProductService;
 import com.cydeo.accounting_app.service.InvoiceService;
 import com.cydeo.accounting_app.service.LoggedInUserService;
 import com.cydeo.accounting_app.service.SecurityService;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,46 +21,49 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
 
     private final InvoiceProductRepository invoiceProductRepository;
     private final InvoiceService invoiceService;
+    private final ModelMapper modelMapper;
 
-    public InvoiceProductServiceImpl(SecurityService securityService, MapperUtil mapperUtil, InvoiceProductRepository invoiceProductRepository, InvoiceService invoiceService) {
+    public InvoiceProductServiceImpl(SecurityService securityService, MapperUtil mapperUtil, InvoiceProductRepository invoiceProductRepository, InvoiceService invoiceService,
+                                     ModelMapper modelMapper) {
         super(securityService, mapperUtil);
         this.invoiceProductRepository = invoiceProductRepository;
         this.invoiceService = invoiceService;
+        this.modelMapper = modelMapper;
     }
 
     @Override
     public InvoiceProductDTO findById(Long id) {
-        InvoiceProduct invoiceProduct= invoiceProductRepository.findById(id).orElseThrow(
+        InvoiceProduct invoiceProduct = invoiceProductRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("This InvoiceProduct does not exist")
         );
-        if(invoiceProduct.isDeleted){
+        if (invoiceProduct.isDeleted) {
             throw new RuntimeException("The InvoiceProduct has been deleted");
         }
-        return mapperUtil.convert(invoiceProduct,new InvoiceProductDTO());
+        return mapperUtil.convert(invoiceProduct, new InvoiceProductDTO());
     }
 
     @Override
     public List<InvoiceProductDTO> findAllInvoiceProducts() {
         return invoiceProductRepository.findAll().stream()
-                .map(invoiceProduct -> mapperUtil.convert(invoiceProduct,new InvoiceProductDTO()))
+                .map(invoiceProduct -> mapperUtil.convert(invoiceProduct, new InvoiceProductDTO()))
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<InvoiceProductDTO> findAllInvoiceProductsByInvoiceId(Long id) {
         InvoiceDTO invoiceDTO = invoiceService.findById(id);
-        Invoice invoice = mapperUtil.convert(invoiceDTO,new Invoice());
+        Invoice invoice = mapperUtil.convert(invoiceDTO, new Invoice());
         return invoiceProductRepository.findAllByInvoice(invoice)
                 .stream()
-                .map(invoiceProduct -> mapperUtil.convert(invoiceProduct,new InvoiceProductDTO()))
+                .map(invoiceProduct -> mapperUtil.convert(invoiceProduct, new InvoiceProductDTO()))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public void saveInvoiceProduct(InvoiceProductDTO invoiceProductDTO,Long invoiceId) {
-        InvoiceProduct invoiceProduct = mapperUtil.convert(invoiceProductDTO,new InvoiceProduct());
+    public void saveInvoiceProduct(InvoiceProductDTO invoiceProductDTO, Long invoiceId) {
+        InvoiceProduct invoiceProduct = mapperUtil.convert(invoiceProductDTO, new InvoiceProduct());
         InvoiceDTO invoiceDTO = invoiceService.findById(invoiceId);
-        Invoice invoice = mapperUtil.convert(invoiceDTO,new Invoice());
+        Invoice invoice = mapperUtil.convert(invoiceDTO, new Invoice());
         invoiceProduct.setInvoice(invoice);
         invoiceProductRepository.save(invoiceProduct);
     }
@@ -70,5 +74,13 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
                 () -> new RuntimeException("InvoiceProduct does not exist"));
         invoiceProduct.setIsDeleted(true);
         invoiceProductRepository.save(invoiceProduct);
+    }
+
+    @Override
+    public List<InvoiceProductDTO> findAllInvoiceProductsByProductId(Long id) {
+        return invoiceProductRepository.findByProductId(id)
+                .stream()
+                .map(invoiceProduct -> mapperUtil.convert(invoiceProduct, new InvoiceProductDTO()))
+                .collect(Collectors.toList());
     }
 }
