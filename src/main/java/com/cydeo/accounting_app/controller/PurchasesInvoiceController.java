@@ -74,7 +74,7 @@ public class PurchasesInvoiceController {
     }
 
     @PostMapping("/update/{invoiceId}")
-    public String insertInvoice(@ModelAttribute("newPurchaseInvoice") @Valid InvoiceDTO invoiceDTO,
+    public String insertUpdatedInvoice(@ModelAttribute("newPurchaseInvoice") @Valid InvoiceDTO invoiceDTO,
                                  BindingResult bindingResult, Model model, @PathVariable("invoiceId") Long invoiceId){
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult
@@ -129,9 +129,8 @@ public class PurchasesInvoiceController {
 
     @GetMapping("/print/{invoiceId}")
     public String removeInvoice(@PathVariable("invoiceId") Long invoiceId, Model model){
-        model.addAttribute("invoice",invoiceService.findById(invoiceId));
+        model.addAttribute("invoice",invoiceService.getInvoiceForPrint(invoiceId));
         model.addAttribute("invoiceProducts", invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId));
-        model.addAttribute("company", invoiceService.getCurrentCompany());
         return "invoice/invoice_print";
     }
 
@@ -142,6 +141,7 @@ public class PurchasesInvoiceController {
         model.addAttribute("vendors", clientVendorService.listAllClientVendorsByTypeAndCompany(ClientVendorType.VENDOR));
         model.addAttribute("invoices",invoiceService.listAllInvoicesByType(InvoiceType.PURCHASE));
         model.addAttribute("products", productService.findAllProductsByCompany());
+        model.addAttribute("company", invoiceService.getCurrentCompany());
     }
 
 }
