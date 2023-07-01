@@ -35,8 +35,8 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
     }
 
     @Override
-    public InvoiceDTO findById(Long id) {
-        Invoice invoice = invoiceRepository.findById(id).orElseThrow(
+    public InvoiceDTO findById(Long invoiceId) {
+        Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(
                 () -> new RuntimeException("This Invoice does not exist"));
         if(invoice.isDeleted){
             throw new RuntimeException("The invoice has been deleted");
@@ -46,13 +46,13 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
 
     @Override
     public List<InvoiceDTO> listAllInvoicesByType(InvoiceType type) {
-
         return invoiceRepository.findAllByInvoiceTypeAndCompany(type, getCompany().id).stream()
                 .sorted(Comparator.comparing(Invoice::getId).reversed())
                 .map(invoice -> mapperUtil.convert(invoice,new InvoiceDTO()))
                 .map(invoiceDTO -> calculateInvoice(invoiceDTO.getId()))
                 .collect(Collectors.toList());
     }
+
     @Override
     public void saveInvoiceByType(InvoiceDTO invoiceDTO,InvoiceType type) {
         Invoice invoice = mapperUtil.convert(invoiceDTO, new Invoice());
@@ -63,19 +63,22 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
     }
 
     @Override
-    public void deleteInvoiceById(Long id) {
-        Invoice invoice = invoiceRepository.findById(id).orElseThrow(
+    public void deleteInvoiceById(Long invoiceId) {
+        Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(
                 () -> new RuntimeException("Invoice does not exist"));
         invoice.setIsDeleted(true);
-        invoiceProductService.deleteInvoiceProductsByInvoiceId(id);
+        invoiceProductService.deleteInvoiceProductsByInvoiceId(invoiceId);
         invoiceRepository.save(invoice);
     }
-
 
     @Override
     public void approveInvoiceById(Long invoiceId) {
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(
                 () -> new RuntimeException("Invoice does not exist"));
+        /**
+         * If invoice approved it needs to increase or decrease quantity stock of product.
+         * Code below handles it.
+         */
         invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId).stream()
                 .map( invoiceProductDTO -> {
                     Long productId = invoiceProductDTO.getProduct().getId();
@@ -90,6 +93,9 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
                     return productDTO;
                 })
                 .forEach(productService::save);
+        /**
+         * When invoice approves , the date of invoice changes to approval date
+         */
         invoice.setDate(LocalDate.now());
         invoice.setInvoiceStatus(InvoiceStatus.APPROVED);
         invoiceRepository.save(invoice);
@@ -98,6 +104,9 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
     @Override
     public InvoiceDTO createInvoice(InvoiceType type) {
         InvoiceDTO invoiceDTO = new InvoiceDTO();
+        /**
+         * The code below handle invoiceNo for new invoice
+         */
         List<String> listInvoiceNoByType = invoiceRepository.findMaxInvoiceIdByType(type.getValue().toUpperCase(), getCompany().id);
         int value;
         if(listInvoiceNoByType.size()==0){
@@ -116,18 +125,26 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
 
     @Override
     public String findLastInvoiceId(InvoiceType type) {
+        /**
+         * This method needs int controller in update endpoint to update the last created invoice.
+         */
         return String.valueOf(invoiceRepository.findMaxNumberInvoiceIdByCompanyIdAndType(type, getCompany().id));
     }
 
     @Override
     public CompanyDTO getCurrentCompany() {
+        /**
+         * This method I use to send current company information to my controller
+         */
         Company company = getCompany();
         return mapperUtil.convert(company,new CompanyDTO());
     }
 
     @Override
     public InvoiceDTO calculateInvoice(Long invoiceId) {
-
+        /**
+         * This method makes calculation to fill Invoice DTO : tax,price,total
+         */
         InvoiceDTO invoiceDTO = findById(invoiceId);
         List<InvoiceProductDTO> invoiceProductDTOS = invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId);
         BigDecimal invoicePrice = BigDecimal.ZERO;;
@@ -146,9 +163,10 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
 
     @Override
     public InvoiceDTO getInvoiceForPrint(Long invoiceId) {
-        InvoiceDTO invoiceDTO = findById(invoiceId);
-        invoiceDTO = calculateInvoice(invoiceId);
-        return invoiceDTO;
+        /**
+         * Information for print page
+         */
+        return calculateInvoice(invoiceId);
     }
 
 
