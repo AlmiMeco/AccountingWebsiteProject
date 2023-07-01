@@ -22,7 +22,7 @@ public interface InvoiceService {
 
     InvoiceDTO createInvoice(InvoiceType type);
 
-    String findLastInvoiceId();
+    String findLastInvoiceId(InvoiceType type);
 
     CompanyDTO getCurrentCompany();
 
