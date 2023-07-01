@@ -28,7 +28,7 @@ public class InvoiceProductDTO {
     private BigDecimal profitLoss;
     private Integer remainingQty;
     private InvoiceDTO invoice;
-    @NotNull
+    @NotNull(message = "Product is a required field.")
     private ProductDTO product;
 
 }

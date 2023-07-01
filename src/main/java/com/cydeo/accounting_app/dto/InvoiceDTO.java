@@ -25,7 +25,7 @@ public class InvoiceDTO {
     private InvoiceType invoiceType;
     private LocalDate date;
     private CompanyDTO company;
-    @NotNull
+    @NotNull()
     private ClientVendorDTO clientVendor;
     private BigDecimal price;
     private Integer tax;

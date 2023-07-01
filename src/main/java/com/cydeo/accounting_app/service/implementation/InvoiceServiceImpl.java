@@ -71,10 +71,6 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
         invoiceRepository.save(invoice);
     }
 
-    @Override
-    public void addNewProductToInvoice(Long invoiceId, ProductDTO productDTO) {
-
-    }
 
     @Override
     public void approveInvoiceById(Long invoiceId) {
