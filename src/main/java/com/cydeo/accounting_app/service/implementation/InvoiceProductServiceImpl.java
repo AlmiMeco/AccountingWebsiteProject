@@ -12,6 +12,8 @@ import com.cydeo.accounting_app.service.LoggedInUserService;
 import com.cydeo.accounting_app.service.SecurityService;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,6 +54,14 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
         return invoiceProductRepository.findAllByInvoice(invoice)
                 .stream()
                 .map(invoiceProduct -> mapperUtil.convert(invoiceProduct,new InvoiceProductDTO()))
+                .peek(invoiceProductDTO -> {
+                    BigDecimal totalWithoutTax = invoiceProductDTO.getPrice().multiply(BigDecimal.valueOf(invoiceProductDTO.getQuantity()));;
+                    BigDecimal tax = BigDecimal.valueOf(invoiceProductDTO.getTax()).movePointLeft(2);
+                    BigDecimal totalTax = totalWithoutTax.multiply(tax);
+                    BigDecimal totalWithTax = totalWithoutTax.add(totalTax);
+                    totalWithTax = totalWithTax.setScale(2, RoundingMode.CEILING);
+                    invoiceProductDTO.setTotal(totalWithTax);
+                })
                 .collect(Collectors.toList());
     }
 
@@ -70,5 +80,12 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
                 () -> new RuntimeException("InvoiceProduct does not exist"));
         invoiceProduct.setIsDeleted(true);
         invoiceProductRepository.save(invoiceProduct);
+    }
+
+    @Override
+    public void deleteInvoiceProductsByInvoiceId(Long invoiceId) {
+        List<InvoiceProduct> invoiceProduct = invoiceProductRepository.findAllByInvoiceId(invoiceId);
+        for(int i = 0 ;i<invoiceProduct.size();i++)
+            deleteInvoiceProductById(invoiceId);
     }
 }
