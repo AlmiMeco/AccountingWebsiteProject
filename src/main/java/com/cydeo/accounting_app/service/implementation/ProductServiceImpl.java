@@ -7,7 +7,6 @@ import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.repository.ProductRepository;
 import com.cydeo.accounting_app.service.LoggedInUserService;
 import com.cydeo.accounting_app.service.InvoiceProductService;
-import com.cydeo.accounting_app.service.LoggedInUserService;
 import com.cydeo.accounting_app.service.ProductService;
 import com.cydeo.accounting_app.service.SecurityService;
 import org.springframework.stereotype.Service;

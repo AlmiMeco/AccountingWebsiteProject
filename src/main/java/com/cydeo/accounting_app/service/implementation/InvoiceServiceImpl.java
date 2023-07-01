@@ -9,9 +9,11 @@ import com.cydeo.accounting_app.enums.InvoiceStatus;
 import com.cydeo.accounting_app.enums.InvoiceType;
 import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.repository.InvoiceRepository;
+import com.cydeo.accounting_app.service.InvoiceProductService;
 import com.cydeo.accounting_app.service.InvoiceService;
 import com.cydeo.accounting_app.service.LoggedInUserService;
 import com.cydeo.accounting_app.service.SecurityService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -24,9 +26,12 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
 
     private final InvoiceRepository invoiceRepository;
 
-    public InvoiceServiceImpl(SecurityService securityService, MapperUtil mapperUtil, InvoiceRepository invoiceRepository) {
+    private final InvoiceProductService invoiceProductService;
+
+    public InvoiceServiceImpl(SecurityService securityService, MapperUtil mapperUtil, InvoiceRepository invoiceRepository,@Lazy InvoiceProductService invoiceProductService) {
         super(securityService, mapperUtil);
         this.invoiceRepository = invoiceRepository;
+        this.invoiceProductService = invoiceProductService;
     }
 
     @Override
@@ -61,6 +66,7 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
         Invoice invoice = invoiceRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("Invoice does not exist"));
         invoice.setIsDeleted(true);
+        invoiceProductService.deleteInvoiceProductsByInvoiceId(id);
         invoiceRepository.save(invoice);
     }
 
