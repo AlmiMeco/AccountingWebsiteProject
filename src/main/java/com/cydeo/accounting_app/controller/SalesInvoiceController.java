@@ -8,12 +8,14 @@ import com.cydeo.accounting_app.service.ClientVendorService;
 import com.cydeo.accounting_app.service.InvoiceProductService;
 import com.cydeo.accounting_app.service.InvoiceService;
 import com.cydeo.accounting_app.service.ProductService;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 @RequestMapping("/salesInvoices")
@@ -65,7 +67,13 @@ public class SalesInvoiceController {
     public String insertInvoice(@ModelAttribute("newSalesInvoice") @Valid InvoiceDTO invoiceDTO,BindingResult bindingResult,
                                  Model model, @PathVariable("invoiceId") Long invoiceId){
         if (bindingResult.hasErrors()) {
-            model.addAttribute("message", "Client is a required field");
+            List<String> errors = bindingResult
+                    .getFieldErrors()
+                    .stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .toList();
+
+            model.addAttribute("message",errors);
             return "error";
         }
         return "redirect:/salesInvoices/list";
@@ -96,7 +104,13 @@ public class SalesInvoiceController {
     public String insertInvoiceProduct(@ModelAttribute("newInvoiceProduct") @Valid InvoiceProductDTO invoiceProductDTO,
                                        BindingResult bindingResult, Model model, @PathVariable("invoiceId") Long invoiceId) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("message","Product name is a required field");
+            List<String> errors = bindingResult
+                    .getFieldErrors()
+                    .stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .toList();
+
+            model.addAttribute("message",errors);
             return "error";
         }
         invoiceProductService.saveInvoiceProduct(invoiceProductDTO,invoiceId);
