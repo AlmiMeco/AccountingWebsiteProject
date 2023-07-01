@@ -7,6 +7,8 @@ import java.util.List;
 public interface CompanyService {
 
     List<CompanyDTO> listAllCompanies();
+
+    List<CompanyDTO> listAllNonProviderCompanies();
     CompanyDTO findById(Long id);
 
     CompanyDTO updateCompany (Long id, CompanyDTO companyDTO);
