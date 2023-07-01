@@ -2,10 +2,7 @@ package com.cydeo.accounting_app.service;
 
 import com.cydeo.accounting_app.dto.CompanyDTO;
 import com.cydeo.accounting_app.dto.InvoiceDTO;
-import com.cydeo.accounting_app.dto.ProductDTO;
-import com.cydeo.accounting_app.entity.Company;
 import com.cydeo.accounting_app.enums.InvoiceType;
-
 import java.util.List;
 
 public interface InvoiceService {

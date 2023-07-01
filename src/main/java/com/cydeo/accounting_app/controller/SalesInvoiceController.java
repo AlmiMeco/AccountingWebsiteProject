@@ -13,7 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 import java.util.List;
 
@@ -55,23 +54,23 @@ public class SalesInvoiceController {
         return "invoice/sales-invoice-list";
     }
 
-    @GetMapping("/update/{id}")
-    public String updateInvoice(@PathVariable("id") Long id, Model model){
-        model.addAttribute("invoice",invoiceService.findById(id));
-        model.addAttribute("invoiceProducts", invoiceProductService.findAllInvoiceProductsByInvoiceId(id));
+    @GetMapping("/update/{invoiceId}")
+    public String updateInvoice(@PathVariable("invoiceId") Long invoiceId, Model model){
+        model.addAttribute("invoice",invoiceService.findById(invoiceId));
+        model.addAttribute("invoiceProducts", invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId));
         model.addAttribute("newInvoiceProduct", new InvoiceProductDTO());
         return "invoice/sales-invoice-update";
     }
 
     @PostMapping("/update/{invoiceId}")
-    public String insertInvoice(@ModelAttribute("newSalesInvoice") @Valid InvoiceDTO invoiceDTO,BindingResult bindingResult,
+    public String insertUpdatedInvoice(@ModelAttribute("newSalesInvoice") @Valid InvoiceDTO invoiceDTO,BindingResult bindingResult,
                                  Model model, @PathVariable("invoiceId") Long invoiceId){
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult
                     .getFieldErrors()
                     .stream()
                     .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                    .toList();
+                    .toList(); // List of errors
 
             model.addAttribute("message",errors);
             return "error";
@@ -79,26 +78,25 @@ public class SalesInvoiceController {
         return "redirect:/salesInvoices/list";
     }
 
-    @GetMapping("/delete/{id}")
-    public String deleteInvoice(@PathVariable("id") Long id) {
-        invoiceService.deleteInvoiceById(id);
+    @GetMapping("/delete/{invoiceId}")
+    public String deleteInvoice(@PathVariable("invoiceId") Long invoiceId) {
+        invoiceService.deleteInvoiceById(invoiceId);
         return "redirect:/salesInvoices/list";
     }
 
-    @GetMapping("/approve/{id}")
-    public String approveInvoice(@PathVariable("id") Long id) {
-        invoiceService.approveInvoiceById(id);
+    @GetMapping("/approve/{invoiceId}")
+    public String approveInvoice(@PathVariable("invoiceId") Long invoiceId) {
+        invoiceService.approveInvoiceById(invoiceId);
         return "redirect:/salesInvoices/list";
     }
 
 
     @GetMapping("/removeInvoiceProduct/{invoiceId}/{productId}")
-    public String removeInvoice(@PathVariable("invoiceId") Long invoiceId,
+    public String removeInvoiceProduct(@PathVariable("invoiceId") Long invoiceId,
                                 @PathVariable("productId") Long productId){
         invoiceProductService.deleteInvoiceProductById(productId);
         return "redirect:/salesInvoices/update/"+invoiceId;
     }
-
 
     @PostMapping("/addInvoiceProduct/{invoiceId}")
     public String insertInvoiceProduct(@ModelAttribute("newInvoiceProduct") @Valid InvoiceProductDTO invoiceProductDTO,
@@ -108,7 +106,7 @@ public class SalesInvoiceController {
                     .getFieldErrors()
                     .stream()
                     .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                    .toList();
+                    .toList(); //List of errors
 
             model.addAttribute("message",errors);
             return "error";
@@ -118,7 +116,7 @@ public class SalesInvoiceController {
     }
 
     @GetMapping("/print/{invoiceId}")
-    public String removeInvoice(@PathVariable("invoiceId") Long invoiceId, Model model){
+    public String printInvoice(@PathVariable("invoiceId") Long invoiceId, Model model){
         model.addAttribute("invoice",invoiceService.getInvoiceForPrint(invoiceId));
         model.addAttribute("invoiceProducts", invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId));
         return "invoice/invoice_print";
@@ -131,4 +129,5 @@ public class SalesInvoiceController {
         model.addAttribute("products", productService.findAllProductsByCompany());
         model.addAttribute("company", invoiceService.getCurrentCompany());
     }
+
 }

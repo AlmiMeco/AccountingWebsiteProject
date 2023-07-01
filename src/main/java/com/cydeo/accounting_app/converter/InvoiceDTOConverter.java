@@ -16,7 +16,7 @@ public class InvoiceDTOConverter implements Converter<String, InvoiceDTO> {
 
     @Override
     public InvoiceDTO convert(String source) {
-        if (source == null || source.equals("")) {
+        if (source.isEmpty() || source.isBlank()) {
             return null;
         }
         return invoiceService.findById(Long.parseLong(source));

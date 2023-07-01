@@ -13,17 +13,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 import java.util.List;
-
-
 
 @Controller
 @RequestMapping("/purchaseInvoices")
 public class PurchasesInvoiceController {
-
-
 
     private final InvoiceService invoiceService;
     private final ClientVendorService clientVendorService;
@@ -46,7 +41,7 @@ public class PurchasesInvoiceController {
     @PostMapping("/create")
     public String insertInvoice(@ModelAttribute("newPurchaseInvoice") @Valid InvoiceDTO invoiceDTO, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("message", "Vendor is a required field");
+            model.addAttribute("message", "Vendor is a required field.");
             return "error";
         }
         invoiceService.saveInvoiceByType(invoiceDTO,InvoiceType.PURCHASE);
@@ -75,7 +70,7 @@ public class PurchasesInvoiceController {
                     .getFieldErrors()
                     .stream()
                     .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                    .toList();
+                    .toList(); //List of errors
 
             model.addAttribute("message",errors);
             return "error";
@@ -83,26 +78,24 @@ public class PurchasesInvoiceController {
         return "redirect:/purchaseInvoices/list";
     }
 
-    @GetMapping("/delete/{id}")
-    public String deleteInvoice(@PathVariable("id") Long id) {
-        invoiceService.deleteInvoiceById(id);
+    @GetMapping("/delete/{invoiceId}")
+    public String deleteInvoice(@PathVariable("invoiceId") Long invoiceId) {
+        invoiceService.deleteInvoiceById(invoiceId);
         return "redirect:/purchaseInvoices/list";
     }
 
-    @GetMapping("/approve/{id}")
-    public String approveInvoice(@PathVariable("id") Long id) {
-        invoiceService.approveInvoiceById(id);
+    @GetMapping("/approve/{invoiceId}")
+    public String approveInvoice(@PathVariable("invoiceId") Long invoiceId) {
+        invoiceService.approveInvoiceById(invoiceId);
         return "redirect:/purchaseInvoices/list";
     }
-
 
     @GetMapping("/removeInvoiceProduct/{invoiceId}/{productId}")
-    public String removeInvoice(@PathVariable("invoiceId") Long invoiceId,
+    public String removeInvoiceProduct(@PathVariable("invoiceId") Long invoiceId,
                                 @PathVariable("productId") Long productId){
         invoiceProductService.deleteInvoiceProductById(productId);
         return "redirect:/purchaseInvoices/update/"+invoiceId;
     }
-
 
     @PostMapping("/addInvoiceProduct/{invoiceId}")
     public String insertInvoiceProduct(@ModelAttribute("newInvoiceProduct") @Valid InvoiceProductDTO invoiceProductDTO,
@@ -112,7 +105,7 @@ public class PurchasesInvoiceController {
                     .getFieldErrors()
                     .stream()
                     .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                    .toList();
+                    .toList(); //List of errors
 
             model.addAttribute("message",errors);
             return "error";
@@ -122,13 +115,11 @@ public class PurchasesInvoiceController {
     }
 
     @GetMapping("/print/{invoiceId}")
-    public String removeInvoice(@PathVariable("invoiceId") Long invoiceId, Model model){
+    public String printInvoice(@PathVariable("invoiceId") Long invoiceId, Model model){
         model.addAttribute("invoice",invoiceService.getInvoiceForPrint(invoiceId));
         model.addAttribute("invoiceProducts", invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId));
         return "invoice/invoice_print";
     }
-
-
 
     @ModelAttribute
     public void commonModel(Model model){
