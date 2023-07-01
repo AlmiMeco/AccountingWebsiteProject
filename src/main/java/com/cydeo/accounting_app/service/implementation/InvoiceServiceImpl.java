@@ -137,8 +137,7 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
             invoicePrice = invoicePrice.add(invoiceProductDTO.getPrice().multiply(quantity));
             invoiceTotal = invoiceTotal.add(invoiceProductDTO.getTotal());
         }
-        int totalTax = invoiceTotal.subtract(invoicePrice).intValue();
-        invoiceDTO.setTax(totalTax); // total tax
+        invoiceDTO.setTax(invoiceTotal.subtract(invoicePrice)); // total tax
         invoiceDTO.setPrice(invoicePrice); // total without tax
         invoiceDTO.setTotal(invoiceTotal); // total with tax
 

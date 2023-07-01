@@ -18,7 +18,7 @@ public class InvoiceProductDTO {
     @Range(min=1, max=100, message = "Quantity cannot be greater than 100 or less than 1")
     @NotNull
     private Integer quantity;
-    @DecimalMin(value = "1", inclusive = false, message = "Price should be at least $1")
+    @DecimalMin(value = "0.9", inclusive = false, message = "Price should be at least $1")
     @NotNull
     private BigDecimal price;
     @Range(min=0, max=20, message = "Tax should be between 0% and 20%")
