@@ -17,5 +17,7 @@ public interface InvoiceProductRepository extends JpaRepository<InvoiceProduct,L
             "FROM InvoiceProduct ip " +
             "WHERE ip.invoice.id = ?1")
     List<InvoiceProduct> findAllByInvoiceId(Long id);
+
+    List<InvoiceProduct> findByProductId(Long id);
 }
 

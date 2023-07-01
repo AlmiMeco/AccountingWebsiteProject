@@ -88,4 +88,12 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
         for(int i = 0 ;i<invoiceProduct.size();i++)
             deleteInvoiceProductById(invoiceId);
     }
+
+    @Override
+    public List<InvoiceProductDTO> findAllInvoiceProductsByProductId(Long id) {
+        return invoiceProductRepository.findByProductId(id)
+                .stream()
+                .map(invoiceProduct -> mapperUtil.convert(invoiceProduct, new InvoiceProductDTO()))
+                .collect(Collectors.toList());
+    }
 }
