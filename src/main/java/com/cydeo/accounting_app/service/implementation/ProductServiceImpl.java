@@ -5,6 +5,7 @@ import com.cydeo.accounting_app.dto.ProductDTO;
 import com.cydeo.accounting_app.entity.Product;
 import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.repository.ProductRepository;
+import com.cydeo.accounting_app.service.LoggedInUserService;
 import com.cydeo.accounting_app.service.InvoiceProductService;
 import com.cydeo.accounting_app.service.LoggedInUserService;
 import com.cydeo.accounting_app.service.ProductService;
@@ -19,10 +20,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl extends LoggedInUserService implements ProductService {
+
     private final ProductRepository productRepository;
     private final InvoiceProductService invoiceProductService;
 
-    public ProductServiceImpl(SecurityService securityService, MapperUtil mapperUtil, ProductRepository productRepository, InvoiceProductService invoiceProductService) {
+    public ProductServiceImpl(InvoiceProductService invoiceProductService,SecurityService securityService, MapperUtil mapperUtil, ProductRepository productRepository) {
         super(securityService, mapperUtil);
         this.productRepository = productRepository;
         this.invoiceProductService = invoiceProductService;
@@ -50,6 +52,14 @@ public class ProductServiceImpl extends LoggedInUserService implements ProductSe
         return productRepository.findAllByCategoryId(categoryId)
                 .stream()
                 .map(product -> mapperUtil.convert(product, new ProductDTO()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductDTO> findAllProductsByCompany() {
+        return productRepository.findAllByCompanyId(getCompany().getId()).stream()
+                .filter(product -> product.getQuantityInStock()>0)
+                .map(product -> mapperUtil.convert(product,new ProductDTO()))
                 .collect(Collectors.toList());
     }
 

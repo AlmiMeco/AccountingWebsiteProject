@@ -13,6 +13,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @Controller
 @RequestMapping("/salesInvoices")
 public class SalesInvoiceController {
@@ -36,10 +38,10 @@ public class SalesInvoiceController {
     }
 
     @PostMapping("/create")
-    public String insertInvoice(@ModelAttribute("newSalesInvoice") InvoiceDTO invoiceDTO, BindingResult bindingResult, Model model) {
+    public String insertInvoice(@ModelAttribute("newSalesInvoice") @Valid InvoiceDTO invoiceDTO, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("newSalesInvoice", invoiceService.createInvoice(InvoiceType.SALES));
-            return "invoice/sales-invoice-create";
+            model.addAttribute("message", "Client is a required field");
+            return "error";
         }
         invoiceService.saveInvoiceByType(invoiceDTO,InvoiceType.SALES);
         String id = invoiceService.findLastInvoiceId();
@@ -59,12 +61,12 @@ public class SalesInvoiceController {
         return "invoice/sales-invoice-update";
     }
 
-    @PostMapping("/update/{id}")
-    public String insertInvoice(@ModelAttribute("newSalesInvoice")InvoiceDTO invoiceDTO,BindingResult bindingResult,
-                                @PathVariable("id") Long id, Model model){
+    @PostMapping("/update/{invoiceId}")
+    public String insertInvoice(@ModelAttribute("newSalesInvoice") @Valid InvoiceDTO invoiceDTO,BindingResult bindingResult,
+                                 Model model, @PathVariable("invoiceId") Long invoiceId){
         if (bindingResult.hasErrors()) {
-            model.addAttribute("newSalesInvoice", invoiceService.createInvoice(InvoiceType.SALES));
-            return "invoice/sales-invoice-create";
+            model.addAttribute("message", "Client is a required field");
+            return "error";
         }
         return "redirect:/salesInvoices/list";
     }
@@ -91,12 +93,11 @@ public class SalesInvoiceController {
 
 
     @PostMapping("/addInvoiceProduct/{invoiceId}")
-    public String insertInvoiceProduct(@ModelAttribute("newInvoiceProduct") InvoiceProductDTO invoiceProductDTO,
-                                       BindingResult bindingResult, @PathVariable("invoiceId") Long invoiceId, Model model) {
+    public String insertInvoiceProduct(@ModelAttribute("newInvoiceProduct") @Valid InvoiceProductDTO invoiceProductDTO,
+                                       BindingResult bindingResult, Model model, @PathVariable("invoiceId") Long invoiceId) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("invoice",invoiceService.findById(invoiceId));
-            model.addAttribute("newInvoiceProduct", new InvoiceProductDTO());
-            return "invoice/sales-invoice-update"+invoiceId;
+            model.addAttribute("message","Product name is a required field");
+            return "error";
         }
         invoiceProductService.saveInvoiceProduct(invoiceProductDTO,invoiceId);
         return "redirect:/salesInvoices/update/"+invoiceId;
@@ -114,6 +115,6 @@ public class SalesInvoiceController {
     public void commonModel(Model model){
         model.addAttribute("clients", clientVendorService.listAllClientVendorsByTypeAndCompany(ClientVendorType.CLIENT));
         model.addAttribute("invoices",invoiceService.listAllInvoicesByType(InvoiceType.SALES));
-        model.addAttribute("products", productService.getProductList());
+        model.addAttribute("products", productService.findAllProductsByCompany());
     }
 }

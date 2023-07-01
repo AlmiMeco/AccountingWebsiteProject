@@ -13,6 +13,8 @@ public interface ProductService {
 
     List<ProductDTO>findAllProductsWithCategoryId(Long categoryId);
 
+    List<ProductDTO> findAllProductsByCompany();
+
     boolean isProductNameExist(ProductDTO productDTO);
 
     ProductDTO save(ProductDTO productDTO);
