@@ -46,17 +46,11 @@ public class PurchasesInvoiceController {
     @PostMapping("/create")
     public String insertInvoice(@ModelAttribute("newPurchaseInvoice") @Valid InvoiceDTO invoiceDTO, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            List<String> errors = bindingResult
-                    .getFieldErrors()
-                    .stream()
-                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                    .toList();
-
-            model.addAttribute("message",errors);
+            model.addAttribute("message", "Vendor is a required field");
             return "error";
         }
         invoiceService.saveInvoiceByType(invoiceDTO,InvoiceType.PURCHASE);
-        String id = invoiceService.findLastInvoiceId();
+        String id = invoiceService.findLastInvoiceId(InvoiceType.PURCHASE);
         return "redirect:/purchaseInvoices/update/"+id;
     }
 

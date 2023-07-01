@@ -44,7 +44,7 @@ public class SalesInvoiceController {
             return "error";
         }
         invoiceService.saveInvoiceByType(invoiceDTO,InvoiceType.SALES);
-        String id = invoiceService.findLastInvoiceId();
+        String id = invoiceService.findLastInvoiceId(InvoiceType.SALES);
         return "redirect:/salesInvoices/update/"+id;
     }
 
