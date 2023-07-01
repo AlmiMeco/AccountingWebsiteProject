@@ -5,14 +5,12 @@ import com.cydeo.accounting_app.dto.InvoiceDTO;
 import com.cydeo.accounting_app.dto.ProductDTO;
 import com.cydeo.accounting_app.entity.Company;
 import com.cydeo.accounting_app.entity.Invoice;
+import com.cydeo.accounting_app.entity.Product;
 import com.cydeo.accounting_app.enums.InvoiceStatus;
 import com.cydeo.accounting_app.enums.InvoiceType;
 import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.repository.InvoiceRepository;
-import com.cydeo.accounting_app.service.InvoiceProductService;
-import com.cydeo.accounting_app.service.InvoiceService;
-import com.cydeo.accounting_app.service.LoggedInUserService;
-import com.cydeo.accounting_app.service.SecurityService;
+import com.cydeo.accounting_app.service.*;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -27,11 +25,13 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
     private final InvoiceRepository invoiceRepository;
 
     private final InvoiceProductService invoiceProductService;
+    private final ProductService productService;
 
-    public InvoiceServiceImpl(SecurityService securityService, MapperUtil mapperUtil, InvoiceRepository invoiceRepository,@Lazy InvoiceProductService invoiceProductService) {
+    public InvoiceServiceImpl(SecurityService securityService, MapperUtil mapperUtil, InvoiceRepository invoiceRepository, @Lazy InvoiceProductService invoiceProductService,@Lazy ProductService productService) {
         super(securityService, mapperUtil);
         this.invoiceRepository = invoiceRepository;
         this.invoiceProductService = invoiceProductService;
+        this.productService = productService;
     }
 
     @Override
@@ -76,9 +76,24 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
     }
 
     @Override
-    public void approveInvoiceById(Long id) {
-        Invoice invoice = invoiceRepository.findById(id).orElseThrow(
+    public void approveInvoiceById(Long invoiceId) {
+        Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(
                 () -> new RuntimeException("Invoice does not exist"));
+        invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId).stream()
+                .map( invoiceProductDTO -> {
+                    Long productId = invoiceProductDTO.getProduct().getId();
+                    Integer IPproductQuantity = invoiceProductDTO.getQuantity();
+                    ProductDTO productDTO = productService.findById(productId);
+                    Integer productCurrentQuantity = productDTO.getQuantityInStock();
+                    if(invoice.getInvoiceType().equals(InvoiceType.PURCHASE)){
+                        productDTO.setQuantityInStock(productCurrentQuantity+IPproductQuantity);
+                    }else {
+                        productDTO.setQuantityInStock(productCurrentQuantity-IPproductQuantity);
+                    }
+                    return productDTO;
+                })
+                .forEach(productService::save);
+        invoice.setDate(LocalDate.now());
         invoice.setInvoiceStatus(InvoiceStatus.APPROVED);
         invoiceRepository.save(invoice);
     }
