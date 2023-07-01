@@ -98,7 +98,7 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
     @Override
     public InvoiceDTO createInvoice(InvoiceType type) {
         InvoiceDTO invoiceDTO = new InvoiceDTO();
-        List<String> listInvoiceNoByType = invoiceRepository.findMaxInvoiceIdByType(type, getCompany().id);
+        List<String> listInvoiceNoByType = invoiceRepository.findMaxInvoiceIdByType(type.getValue().toUpperCase(), getCompany().id);
         int value;
         if(listInvoiceNoByType.size()==0){
             value=0;
