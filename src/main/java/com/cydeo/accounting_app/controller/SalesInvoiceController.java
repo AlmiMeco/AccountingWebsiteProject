@@ -105,9 +105,8 @@ public class SalesInvoiceController {
 
     @GetMapping("/print/{invoiceId}")
     public String removeInvoice(@PathVariable("invoiceId") Long invoiceId, Model model){
-        model.addAttribute("invoice",invoiceService.findById(invoiceId));
+        model.addAttribute("invoice",invoiceService.getInvoiceForPrint(invoiceId));
         model.addAttribute("invoiceProducts", invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId));
-        model.addAttribute("company", invoiceService.getCurrentCompany());
         return "invoice/invoice_print";
     }
 
@@ -116,5 +115,6 @@ public class SalesInvoiceController {
         model.addAttribute("clients", clientVendorService.listAllClientVendorsByTypeAndCompany(ClientVendorType.CLIENT));
         model.addAttribute("invoices",invoiceService.listAllInvoicesByType(InvoiceType.SALES));
         model.addAttribute("products", productService.findAllProductsByCompany());
+        model.addAttribute("company", invoiceService.getCurrentCompany());
     }
 }

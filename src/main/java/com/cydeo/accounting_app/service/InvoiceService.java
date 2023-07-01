@@ -27,4 +27,7 @@ public interface InvoiceService {
     String findLastInvoiceId();
 
     CompanyDTO getCurrentCompany();
+
+    InvoiceDTO calculateInvoice(Long invoiceId);
+    InvoiceDTO getInvoiceForPrint(Long invoiceId);
 }
