@@ -11,5 +11,16 @@ public interface ProductService {
 
     List<ProductDTO> getProductList();
 
+    List<ProductDTO>findAllProductsWithCategoryId(Long categoryId);
+
+    List<ProductDTO> findAllProductsByCompany();
+
+    boolean isProductNameExist(ProductDTO productDTO);
+
+    ProductDTO save(ProductDTO productDTO);
+    ProductDTO update(Long id, ProductDTO productDTO);
+    void delete(Long id);
+    boolean checkProductQuantity(Long id);
+
 
 }

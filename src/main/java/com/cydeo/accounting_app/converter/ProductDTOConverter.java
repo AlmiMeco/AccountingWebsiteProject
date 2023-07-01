@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProductDTOConverter implements Converter<String, ProductDTO> {
 
-    ProductService productService;
+    private final ProductService productService;
 
     public ProductDTOConverter(ProductService productService) {
         this.productService = productService;
@@ -16,6 +16,9 @@ public class ProductDTOConverter implements Converter<String, ProductDTO> {
 
     @Override
     public ProductDTO convert(String source) {
+        if (source == null || source.isBlank()) {
+            return null;
+        }
         return productService.findById(Long.valueOf(source));
     }
 }

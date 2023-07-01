@@ -8,6 +8,7 @@ import com.cydeo.accounting_app.repository.UserRepository;
 import com.cydeo.accounting_app.service.LoggedInUserService;
 import com.cydeo.accounting_app.service.SecurityService;
 import com.cydeo.accounting_app.service.UserService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,7 +21,7 @@ public class SecurityServiceImpl implements SecurityService {
     private final UserRepository userRepository;
     private final UserService userService;
 
-    public SecurityServiceImpl(UserRepository userRepository, UserService userService) {
+    public SecurityServiceImpl(UserRepository userRepository, @Lazy UserService userService) {
         this.userRepository = userRepository;
         this.userService = userService;
     }
