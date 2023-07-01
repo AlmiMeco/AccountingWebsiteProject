@@ -76,6 +76,7 @@ public class UserServiceImpl extends LoggedInUserService implements UserService 
 
         User user = userRepository.getUserById(id);
         user.setIsDeleted(true);
+        user.setUsername(user.getUsername() + "-depreciatedUserName");
         userRepository.save(user);
 
     }
