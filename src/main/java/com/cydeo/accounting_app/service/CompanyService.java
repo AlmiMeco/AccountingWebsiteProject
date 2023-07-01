@@ -7,9 +7,11 @@ import java.util.List;
 public interface CompanyService {
 
     List<CompanyDTO> listAllCompanies();
+
+    List<CompanyDTO> listAllNonProviderCompanies();
     CompanyDTO findById(Long id);
 
-    void updateCompany (Long id, CompanyDTO companyDTO);
+    CompanyDTO updateCompany (Long id, CompanyDTO companyDTO);
 
     void activateCompany(Long id);
 

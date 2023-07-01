@@ -9,6 +9,7 @@ import com.cydeo.accounting_app.repository.CompanyRepository;
 import com.cydeo.accounting_app.service.CompanyService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -34,6 +35,12 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    public List<CompanyDTO> listAllNonProviderCompanies() {
+        List<CompanyDTO> list = mapper.convert(companyRepository.findCompaniesByIdGreaterThanOrderByCompanyStatus(1L), new ArrayList<>());
+        return list;
+    }
+
+    @Override
     public CompanyDTO findById(Long id) {
         Company company = companyRepository.findCompanyById(id).
                 orElseThrow(() -> new NoSuchElementException
@@ -42,7 +49,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public void updateCompany(Long id, CompanyDTO companyDTO) {
+    public CompanyDTO updateCompany(Long id, CompanyDTO companyDTO) {
 
         Company company = mapper.convert(companyDTO, new Company());
         companyRepository.findCompanyById(id).ifPresent(company1 -> {
@@ -57,33 +64,29 @@ public class CompanyServiceImpl implements CompanyService {
 
         });
 
-
+        return mapper.convert(companyRepository.findCompanyById(id), new CompanyDTO());
     }
 
     @Override
     public void activateCompany(Long id) {
 
-        Optional<Company> foundCompany = companyRepository.findById(id);
+        Company foundCompany = companyRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No company found"));
+            foundCompany.setCompanyStatus(CompanyStatus.ACTIVE);
+          companyRepository.save(foundCompany);
 
-        if (foundCompany.isPresent()) {
-            foundCompany.get().setIsDeleted(false);
-            foundCompany.get().setCompanyStatus(CompanyStatus.ACTIVE);
-            companyRepository.save(foundCompany.get());
+
         }
-    }
+
 
         @Override
         public void deactivateCompany(Long id) {
+            Company foundCompany = companyRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No company found"));
+            foundCompany.setCompanyStatus(CompanyStatus.PASSIVE);
+           companyRepository.save(foundCompany);
 
-            Optional<Company> foundCompany = companyRepository.findById(id);
 
-            if(foundCompany.isPresent()) {
-                foundCompany.get().setIsDeleted(true);
-                foundCompany.get().setCompanyStatus(CompanyStatus.PASSIVE);
-                companyRepository.save(foundCompany.get());
+
             }
-
-    }
 
     @Override
     public CompanyDTO createCompany(CompanyDTO companyDTO) {

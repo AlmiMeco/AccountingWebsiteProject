@@ -32,12 +32,12 @@ public class CompanyController {
     @PostMapping("/create")
     public String companyInsert(@ModelAttribute("newCompany") CompanyDTO companyDTO) {
         companyService.saveCompany(companyDTO);
-        return "redirect:/company/company-create";
+        return "redirect:/companies/list";
     }
 
     @GetMapping("/list")
     public String companyList(Model model) {
-        model.addAttribute("companies", companyService.listAllCompanies());
+        model.addAttribute("companies", companyService.listAllNonProviderCompanies());
         return "/company/company-list";
     }
 
@@ -54,6 +54,19 @@ public class CompanyController {
     CompanyDTO companyDTO) {
        companyService.updateCompany(id,companyDTO);
 
-        return "redirect:/companies-update";
+        return "redirect:/companies/list";
     }
+
+    @GetMapping("/activate/{id}")
+    public String activateCompany(@PathVariable("id") Long id) {
+        companyService.activateCompany(id);
+        return "redirect:/companies/list";
+    }
+
+    @GetMapping ("/deactivate/{id}")
+    public String deactivateCompany(@PathVariable("id") Long id) {
+        companyService.deactivateCompany(id);
+        return "redirect:/companies/list";
+}
+
 }
