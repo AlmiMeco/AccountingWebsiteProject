@@ -2,8 +2,6 @@ package com.cydeo.accounting_app.dto;
 
 import lombok.*;
 import org.hibernate.validator.constraints.Range;
-
-import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import javax.validation.constraints.NotNull;
 
@@ -30,5 +28,4 @@ public class InvoiceProductDTO {
     private InvoiceDTO invoice;
     @NotNull(message = "Product is a required field.")
     private ProductDTO product;
-
 }
