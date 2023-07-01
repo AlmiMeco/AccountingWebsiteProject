@@ -4,6 +4,7 @@ import com.cydeo.accounting_app.dto.InvoiceDTO;
 import com.cydeo.accounting_app.dto.InvoiceProductDTO;
 import com.cydeo.accounting_app.entity.Invoice;
 import com.cydeo.accounting_app.entity.InvoiceProduct;
+import com.cydeo.accounting_app.enums.InvoiceType;
 import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.repository.InvoiceProductRepository;
 import com.cydeo.accounting_app.service.InvoiceProductService;
@@ -61,8 +62,11 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
 
     @Override
     public void saveInvoiceProduct(InvoiceProductDTO invoiceProductDTO,Long invoiceId) {
-        InvoiceProduct invoiceProduct = mapperUtil.convert(invoiceProductDTO,new InvoiceProduct());
         InvoiceDTO invoiceDTO = invoiceService.findById(invoiceId);
+        if (invoiceDTO.getInvoiceType().equals(InvoiceType.SALES)&&
+                invoiceProductDTO.getQuantity()>invoiceProductDTO.getProduct().getQuantityInStock())
+            throw new RuntimeException("Not enough products");
+        InvoiceProduct invoiceProduct = mapperUtil.convert(invoiceProductDTO,new InvoiceProduct());
         Invoice invoice = mapperUtil.convert(invoiceDTO,new Invoice());
         invoiceProduct.setInvoice(invoice);
         invoiceProductRepository.save(invoiceProduct);
