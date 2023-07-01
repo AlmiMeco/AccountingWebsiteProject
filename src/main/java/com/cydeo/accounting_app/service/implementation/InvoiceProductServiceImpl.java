@@ -12,7 +12,6 @@ import com.cydeo.accounting_app.service.InvoiceService;
 import com.cydeo.accounting_app.service.LoggedInUserService;
 import com.cydeo.accounting_app.service.SecurityService;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -31,8 +30,8 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
     }
 
     @Override
-    public InvoiceProductDTO findById(Long id) {
-        InvoiceProduct invoiceProduct= invoiceProductRepository.findById(id).orElseThrow(
+    public InvoiceProductDTO findById(Long invoiceProductId) {
+        InvoiceProduct invoiceProduct= invoiceProductRepository.findById(invoiceProductId).orElseThrow(
                 () -> new RuntimeException("This InvoiceProduct does not exist")
         );
         if(invoiceProduct.isDeleted){
@@ -41,11 +40,14 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
         return mapperUtil.convert(invoiceProduct,new InvoiceProductDTO());
     }
 
-
     @Override
-    public List<InvoiceProductDTO> findAllInvoiceProductsByInvoiceId(Long id) {
-        InvoiceDTO invoiceDTO = invoiceService.findById(id);
+    public List<InvoiceProductDTO> findAllInvoiceProductsByInvoiceId(Long invoiceId) {
+        InvoiceDTO invoiceDTO = invoiceService.findById(invoiceId);
         Invoice invoice = mapperUtil.convert(invoiceDTO,new Invoice());
+        /**
+         * The code below makes calculation for InvoiceProductDTOs which belongs to Invoice.
+         * Set total field.
+         */
         return invoiceProductRepository.findAllByInvoice(invoice)
                 .stream()
                 .map(invoiceProduct -> mapperUtil.convert(invoiceProduct,new InvoiceProductDTO()))
@@ -63,9 +65,14 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
     @Override
     public void saveInvoiceProduct(InvoiceProductDTO invoiceProductDTO,Long invoiceId) {
         InvoiceDTO invoiceDTO = invoiceService.findById(invoiceId);
+        /**
+         * Check if we want sell more products than we have.
+         */
         if (invoiceDTO.getInvoiceType().equals(InvoiceType.SALES)&&
-                invoiceProductDTO.getQuantity()>invoiceProductDTO.getProduct().getQuantityInStock())
-            throw new RuntimeException("Not enough products");
+                invoiceProductDTO.getQuantity()>invoiceProductDTO.getProduct().getQuantityInStock()) {
+            String productName = invoiceProductDTO.getProduct().getName();
+            throw new RuntimeException("Not enough " + productName + " quantity to sell.");
+        }
         InvoiceProduct invoiceProduct = mapperUtil.convert(invoiceProductDTO,new InvoiceProduct());
         Invoice invoice = mapperUtil.convert(invoiceDTO,new Invoice());
         invoiceProduct.setInvoice(invoice);
@@ -73,8 +80,8 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
     }
 
     @Override
-    public void deleteInvoiceProductById(Long id) {
-        InvoiceProduct invoiceProduct = invoiceProductRepository.findById(id).orElseThrow(
+    public void deleteInvoiceProductById(Long invoiceProductId) {
+        InvoiceProduct invoiceProduct = invoiceProductRepository.findById(invoiceProductId).orElseThrow(
                 () -> new RuntimeException("InvoiceProduct does not exist"));
         invoiceProduct.setIsDeleted(true);
         invoiceProductRepository.save(invoiceProduct);
@@ -88,8 +95,8 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
     }
 
     @Override
-    public List<InvoiceProductDTO> findAllInvoiceProductsByProductId(Long id) {
-        return invoiceProductRepository.findByProductId(id)
+    public List<InvoiceProductDTO> findAllInvoiceProductsByProductId(Long productId) {
+        return invoiceProductRepository.findByProductId(productId)
                 .stream()
                 .map(invoiceProduct -> mapperUtil.convert(invoiceProduct, new InvoiceProductDTO()))
                 .collect(Collectors.toList());
