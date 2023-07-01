@@ -32,7 +32,7 @@ public class ProductServiceImpl extends LoggedInUserService implements ProductSe
     @Override
     public ProductDTO findById(Long id) {
         Optional<Product> byId = productRepository.findById(id);
-        Product product = byId.orElseThrow( ()-> new NoSuchElementException("Product not found"));
+        Product product = byId.orElseThrow(() -> new NoSuchElementException("Product not found"));
         return mapperUtil.convert(product, new ProductDTO());
     }
 
