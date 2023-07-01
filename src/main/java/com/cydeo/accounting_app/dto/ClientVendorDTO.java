@@ -4,6 +4,7 @@ import com.cydeo.accounting_app.enums.ClientVendorType;
 
 import lombok.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -28,8 +29,8 @@ public class ClientVendorDTO {
         private String website;
         @NotNull(message = "Please select type")
         private ClientVendorType clientVendorType;
-        @NotNull
+        @Valid
         private AddressDTO address;
-        @NotNull
+        @Valid
         private CompanyDTO company;
 }
