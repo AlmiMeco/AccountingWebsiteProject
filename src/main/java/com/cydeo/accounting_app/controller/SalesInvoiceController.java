@@ -115,6 +115,6 @@ public class SalesInvoiceController {
     public void commonModel(Model model){
         model.addAttribute("clients", clientVendorService.listAllClientVendorsByTypeAndCompany(ClientVendorType.CLIENT));
         model.addAttribute("invoices",invoiceService.listAllInvoicesByType(InvoiceType.SALES));
-        model.addAttribute("products", productService.getProductList());
+        model.addAttribute("products", productService.findAllProductsByCompany());
     }
 }
