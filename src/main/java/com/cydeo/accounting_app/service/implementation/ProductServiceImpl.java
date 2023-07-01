@@ -74,7 +74,7 @@ public class ProductServiceImpl extends LoggedInUserService implements ProductSe
     @Override
     public ProductDTO save(ProductDTO productDTO) {
         Product product = mapperUtil.convert(productDTO, new Product());
-        product.setQuantityInStock(0);
+//        product.setQuantityInStock(0);
         return mapperUtil.convert(productRepository.save(product), new ProductDTO());
     }
 
