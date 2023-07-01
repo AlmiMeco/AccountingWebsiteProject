@@ -20,8 +20,6 @@ public interface InvoiceService {
 
     void approveInvoiceById(Long Id);
 
-    void addNewProductToInvoice(Long invoiceId, ProductDTO productDTO);
-
     InvoiceDTO createInvoice(InvoiceType type);
 
     String findLastInvoiceId();

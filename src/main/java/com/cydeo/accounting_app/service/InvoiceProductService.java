@@ -8,7 +8,6 @@ public interface InvoiceProductService {
 
     InvoiceProductDTO findById(Long id);
 
-    List<InvoiceProductDTO> findAllInvoiceProducts();
 
     List<InvoiceProductDTO> findAllInvoiceProductsByInvoiceId(Long id);
 

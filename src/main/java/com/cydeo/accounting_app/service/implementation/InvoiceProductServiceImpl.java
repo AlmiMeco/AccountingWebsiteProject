@@ -40,12 +40,6 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
         return mapperUtil.convert(invoiceProduct,new InvoiceProductDTO());
     }
 
-    @Override
-    public List<InvoiceProductDTO> findAllInvoiceProducts() {
-        return invoiceProductRepository.findAll().stream()
-                .map(invoiceProduct -> mapperUtil.convert(invoiceProduct,new InvoiceProductDTO()))
-                .collect(Collectors.toList());
-    }
 
     @Override
     public List<InvoiceProductDTO> findAllInvoiceProductsByInvoiceId(Long id) {
