@@ -13,5 +13,7 @@ public interface ProductService {
 
     List<ProductDTO>findAllProductsWithCategoryId(Long categoryId);
 
+    List<ProductDTO> findAllProductsByCompany();
+
 
 }

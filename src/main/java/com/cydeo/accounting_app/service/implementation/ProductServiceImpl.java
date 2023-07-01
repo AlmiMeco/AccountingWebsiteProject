@@ -4,7 +4,9 @@ import com.cydeo.accounting_app.dto.ProductDTO;
 import com.cydeo.accounting_app.entity.Product;
 import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.repository.ProductRepository;
+import com.cydeo.accounting_app.service.LoggedInUserService;
 import com.cydeo.accounting_app.service.ProductService;
+import com.cydeo.accounting_app.service.SecurityService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,13 +15,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class ProductServiceImpl implements ProductService {
+public class ProductServiceImpl extends LoggedInUserService implements ProductService {
 
-    private final MapperUtil mapperUtil;
     private final ProductRepository productRepository;
 
-    public ProductServiceImpl(MapperUtil mapperUtil, ProductRepository productRepository) {
-        this.mapperUtil = mapperUtil;
+    public ProductServiceImpl(SecurityService securityService, MapperUtil mapperUtil, ProductRepository productRepository) {
+        super(securityService, mapperUtil);
         this.productRepository = productRepository;
     }
 
@@ -43,6 +44,13 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findAllByCategoryId(categoryId)
                 .stream()
                 .map(product -> mapperUtil.convert(product, new ProductDTO()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductDTO> findAllProductsByCompany() {
+        return productRepository.findAllByCompanyId(getCompany().getId()).stream()
+                .map(product -> mapperUtil.convert(product,new ProductDTO()))
                 .collect(Collectors.toList());
     }
 }
