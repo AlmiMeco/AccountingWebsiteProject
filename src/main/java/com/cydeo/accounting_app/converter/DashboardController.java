@@ -1,4 +1,4 @@
-package com.cydeo.accounting_app.controller;
+package com.cydeo.accounting_app.converter;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,9 +1,6 @@
 package com.cydeo.accounting_app.service.implementation;
 
-import com.cydeo.accounting_app.dto.CompanyDTO;
-import com.cydeo.accounting_app.dto.InvoiceDTO;
-import com.cydeo.accounting_app.dto.InvoiceProductDTO;
-import com.cydeo.accounting_app.dto.ProductDTO;
+import com.cydeo.accounting_app.dto.*;
 import com.cydeo.accounting_app.entity.Company;
 import com.cydeo.accounting_app.entity.Invoice;
 import com.cydeo.accounting_app.enums.InvoiceStatus;
@@ -167,6 +164,11 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
          * Information for print page
          */
         return calculateInvoice(invoiceId);
+    }
+
+    @Override
+    public boolean existsByClientVendorId(Long id) {
+        return invoiceRepository.existsByCompanyAndClientVendorId(getCompany(),id);
     }
 
 
