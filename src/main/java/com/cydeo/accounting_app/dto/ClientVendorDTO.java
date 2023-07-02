@@ -33,4 +33,5 @@ public class ClientVendorDTO {
         private AddressDTO address;
         @Valid
         private CompanyDTO company;
+        public boolean isHasInvoice;
 }

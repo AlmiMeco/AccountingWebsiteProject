@@ -166,7 +166,10 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
         return calculateInvoice(invoiceId);
     }
 
-
+    @Override
+    public boolean existsByClientVendorId(Long clientVendorDTO) {
+        return invoiceRepository.existsByClientVendorId(clientVendorDTO);
+    }
 
 
 }

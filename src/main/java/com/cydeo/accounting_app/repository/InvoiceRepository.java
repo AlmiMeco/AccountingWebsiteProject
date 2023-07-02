@@ -28,4 +28,5 @@ public interface InvoiceRepository extends JpaRepository<Invoice,Long> {
             "WHERE i.invoice_type = ?1 " +
             "AND i.company_id = ?2",nativeQuery = true) // I use native because I want to include deleted invoices to list
     List<String> findMaxInvoiceIdByType(@Param("invoice_type")String invoiceType ,@Param("company_id")Long companyId);
+    boolean existsByClientVendorId(Long clientVendorDTO);
 }

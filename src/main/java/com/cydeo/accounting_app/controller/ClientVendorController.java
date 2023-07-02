@@ -1,5 +1,6 @@
 package com.cydeo.accounting_app.controller;
 import com.cydeo.accounting_app.dto.ClientVendorDTO;
+import com.cydeo.accounting_app.service.AddressService;
 import com.cydeo.accounting_app.service.ClientVendorService;
 import com.cydeo.accounting_app.service.InvoiceService;
 import org.springframework.stereotype.Controller;
@@ -13,10 +14,12 @@ import javax.validation.Valid;
 @RequestMapping("/clientVendors")
 public class ClientVendorController {
     private final ClientVendorService clientVendorService;
+    private final AddressService addressService;
     private final InvoiceService invoiceService;
 
-    public ClientVendorController(ClientVendorService clientVendorService, InvoiceService invoiceService) {
+    public ClientVendorController(ClientVendorService clientVendorService, AddressService addressService, InvoiceService invoiceService) {
         this.clientVendorService = clientVendorService;
+        this.addressService = addressService;
         this.invoiceService = invoiceService;
     }
 
@@ -34,7 +37,7 @@ public class ClientVendorController {
 
     @PostMapping("/create")
     public String createClientVendor(@Valid @ModelAttribute("newClientVendor") ClientVendorDTO clientVendorDTO,
-                                      BindingResult bindingResult, Model model) {
+                                     BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()){
             model.addAttribute("clientVendorName",bindingResult);
             return "clientVendor/clientVendor-create";
@@ -51,11 +54,11 @@ public class ClientVendorController {
 
     @PostMapping("/update/{id}")
     public String updateClientVendor(@Valid @PathVariable("id") Long id,
-                                     @ModelAttribute("clientVendor") ClientVendorDTO clientVendorDTO,
-                                     BindingResult bindingResult, Model model) {
+                                     @ModelAttribute("clientVendor") ClientVendorDTO clientVendorDTO
+                                     ,Model model ,BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()){
-            model.addAttribute("clientVendorName",bindingResult);
+            model.addAttribute("bindingResult", bindingResult);
             return "/clientVendor/clientVendor-update";
         }
 
@@ -66,7 +69,7 @@ public class ClientVendorController {
 
     @GetMapping("/delete/{id}")
     public String deleteClientVendor(@Valid @PathVariable("id") Long id,BindingResult bindingResult) {
-        boolean hasInvoice = invoiceService.isHasInvoice(id);
+        boolean hasInvoice = invoiceService.existsByClientVendorId(id);
         if (hasInvoice) {
             bindingResult.rejectValue("description", " ", "This clientVendor description already exists");
         }
@@ -75,6 +78,7 @@ public class ClientVendorController {
     }
     @ModelAttribute()
     public void commonModelAttribute(Model model){
+        model.addAttribute("countries", addressService.listOfCountries());
         model.addAttribute("clientVendorTypes", clientVendorService.clientVendorType());
         model.addAttribute("countries", clientVendorService.listOfCountry());
         model.addAttribute("title",clientVendorService.getAllClientVendors());

@@ -1,6 +1,6 @@
 package com.cydeo.accounting_app.service.implementation;
 
-import com.cydeo.accounting_app.entity.Address;
+
 import com.cydeo.accounting_app.repository.AddressRepository;
 import com.cydeo.accounting_app.service.AddressService;
 import org.springframework.stereotype.Service;
