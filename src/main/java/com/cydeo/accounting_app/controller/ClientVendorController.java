@@ -1,6 +1,7 @@
 package com.cydeo.accounting_app.controller;
 import com.cydeo.accounting_app.dto.ClientVendorDTO;
 import com.cydeo.accounting_app.service.ClientVendorService;
+import com.cydeo.accounting_app.service.InvoiceService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,9 +13,11 @@ import javax.validation.Valid;
 @RequestMapping("/clientVendors")
 public class ClientVendorController {
     private final ClientVendorService clientVendorService;
+    private final InvoiceService invoiceService;
 
-    public ClientVendorController(ClientVendorService clientVendorService) {
+    public ClientVendorController(ClientVendorService clientVendorService, InvoiceService invoiceService) {
         this.clientVendorService = clientVendorService;
+        this.invoiceService = invoiceService;
     }
 
     @GetMapping("/list")
@@ -50,6 +53,7 @@ public class ClientVendorController {
     public String updateClientVendor(@Valid @PathVariable("id") Long id,
                                      @ModelAttribute("clientVendor") ClientVendorDTO clientVendorDTO,
                                      BindingResult bindingResult, Model model) {
+
         if (bindingResult.hasErrors()){
             model.addAttribute("clientVendorName",bindingResult);
             return "/clientVendor/clientVendor-update";
@@ -61,7 +65,11 @@ public class ClientVendorController {
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteClientVendor(@PathVariable("id") Long id) {
+    public String deleteClientVendor(@Valid @PathVariable("id") Long id,BindingResult bindingResult) {
+        boolean hasInvoice = invoiceService.isHasInvoice(id);
+        if (hasInvoice) {
+            bindingResult.rejectValue("description", " ", "This clientVendor description already exists");
+        }
         clientVendorService.deleteClientVendorById(id);
         return "redirect:/clientVendors/list";
     }
