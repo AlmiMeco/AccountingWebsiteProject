@@ -16,4 +16,6 @@ public interface InvoiceProductService {
     void deleteInvoiceProductsByInvoiceId(Long invoiceId);
 
     List<InvoiceProductDTO> findAllInvoiceProductsByProductId(Long id);
+
+    boolean isStockNotEnough(InvoiceProductDTO invoiceProductDTO);
 }

@@ -37,10 +37,7 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
     @Override
     public InvoiceDTO findById(Long invoiceId) {
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(
-                () -> new RuntimeException("This Invoice does not exist"));
-        if(invoice.isDeleted){
-            throw new RuntimeException("The invoice has been deleted");
-        }
+                () -> new RuntimeException("This Invoice with id " + invoiceId +" does not exist"));
         return mapperUtil.convert(invoice,new InvoiceDTO());
     }
 
