@@ -41,8 +41,7 @@ public class SalesInvoiceController {
     @PostMapping("/create")
     public String insertInvoice(@ModelAttribute("newSalesInvoice") @Valid InvoiceDTO invoiceDTO, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("message", "Client is a required field");
-            return "error";
+            return "invoice/sales-invoice-create";
         }
         invoiceService.saveInvoiceByType(invoiceDTO,InvoiceType.SALES);
         String id = invoiceService.findLastInvoiceId(InvoiceType.SALES);
@@ -101,15 +100,12 @@ public class SalesInvoiceController {
     @PostMapping("/addInvoiceProduct/{invoiceId}")
     public String insertInvoiceProduct(@ModelAttribute("newInvoiceProduct") @Valid InvoiceProductDTO invoiceProductDTO,
                                        BindingResult bindingResult, Model model, @PathVariable("invoiceId") Long invoiceId) {
-        if (bindingResult.hasErrors()) {
-            List<String> errors = bindingResult
-                    .getFieldErrors()
-                    .stream()
-                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                    .toList(); //List of errors
-
-            model.addAttribute("message",errors);
-            return "error";
+        boolean stockNotEnough = invoiceProductService.isStockNotEnough(invoiceProductDTO);
+        if (bindingResult.hasErrors()||stockNotEnough){
+            model.addAttribute("invoice",invoiceService.findById(invoiceId));
+            model.addAttribute("invoiceProducts", invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId));
+            if(stockNotEnough) throw new RuntimeException("Not enough " + invoiceProductDTO.getProduct().getName() + " quantity to sell.");
+            return "invoice/sales-invoice-update";
         }
         invoiceProductService.saveInvoiceProduct(invoiceProductDTO,invoiceId);
         return "redirect:/salesInvoices/update/"+invoiceId;
