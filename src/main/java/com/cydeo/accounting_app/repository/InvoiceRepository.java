@@ -1,5 +1,6 @@
 package com.cydeo.accounting_app.repository;
 
+import com.cydeo.accounting_app.entity.Company;
 import com.cydeo.accounting_app.entity.Invoice;
 import com.cydeo.accounting_app.enums.InvoiceType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,5 +29,5 @@ public interface InvoiceRepository extends JpaRepository<Invoice,Long> {
             "WHERE i.invoice_type = ?1 " +
             "AND i.company_id = ?2",nativeQuery = true) // I use native because I want to include deleted invoices to list
     List<String> findMaxInvoiceIdByType(@Param("invoice_type")String invoiceType ,@Param("company_id")Long companyId);
-    boolean existsByClientVendorId(Long clientVendorDTO);
+    boolean existsByCompanyAndClientVendorId(Company company, Long clientVendor_id);
 }

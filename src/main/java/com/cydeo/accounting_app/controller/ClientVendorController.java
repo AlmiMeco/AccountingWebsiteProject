@@ -1,4 +1,5 @@
 package com.cydeo.accounting_app.controller;
+
 import com.cydeo.accounting_app.dto.ClientVendorDTO;
 import com.cydeo.accounting_app.service.AddressService;
 import com.cydeo.accounting_app.service.ClientVendorService;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 
@@ -37,11 +39,14 @@ public class ClientVendorController {
 
     @PostMapping("/create")
     public String createClientVendor(@Valid @ModelAttribute("newClientVendor") ClientVendorDTO clientVendorDTO,
-                                     BindingResult bindingResult, Model model) {
-        if (bindingResult.hasErrors()){
-            model.addAttribute("clientVendorName",bindingResult);
+                                     BindingResult bindingResult) {
+        if (clientVendorService.companyNameIsExist(clientVendorDTO)) {
+            bindingResult.rejectValue("clientVendorName", " ", "This Client/Vendor Name already exists.");
+        }
+        if (bindingResult.hasErrors()) {
             return "clientVendor/clientVendor-create";
         }
+
         clientVendorService.createClientVendor(clientVendorDTO);
         return "redirect:/clientVendors/list";
     }
@@ -53,34 +58,37 @@ public class ClientVendorController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateClientVendor(@Valid @PathVariable("id") Long id,
-                                     @ModelAttribute("clientVendor") ClientVendorDTO clientVendorDTO
-                                     ,Model model ,BindingResult bindingResult) {
+    public String updateClientVendor(@Valid @ModelAttribute("clientVendor") ClientVendorDTO clientVendorDTO
+            , BindingResult bindingResult, @PathVariable Long id, Model model) {
+        clientVendorDTO.setId(id);
+        boolean companyNameIsExist = clientVendorService.companyNameIsExist(clientVendorDTO);
 
-        if (bindingResult.hasErrors()){
-            model.addAttribute("bindingResult", bindingResult);
+        if (bindingResult.hasErrors() || companyNameIsExist) {
+            if (companyNameIsExist){
+                bindingResult.rejectValue("clientVendorName", " ", "This Client/Vendor Name already exists.");
+            }
             return "/clientVendor/clientVendor-update";
         }
 
-        model.addAttribute("clientVendor",
-                clientVendorService.updateClientVendor(id, clientVendorDTO));
+        clientVendorService.updateClientVendor(id, clientVendorDTO);
         return "redirect:/clientVendors/list";
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteClientVendor(@Valid @PathVariable("id") Long id,BindingResult bindingResult) {
+    public String deleteClientVendor(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         boolean hasInvoice = invoiceService.existsByClientVendorId(id);
-        if (hasInvoice) {
-            bindingResult.rejectValue("description", " ", "This clientVendor description already exists");
+        if (hasInvoice){
+            redirectAttributes.addFlashAttribute("error","Can not be deleted you have invoices with this Client/Vendor");
+            return "redirect:/clientVendors/list";
         }
         clientVendorService.deleteClientVendorById(id);
         return "redirect:/clientVendors/list";
     }
+
     @ModelAttribute()
-    public void commonModelAttribute(Model model){
+    public void commonModelAttribute(Model model) {
         model.addAttribute("countries", addressService.listOfCountries());
         model.addAttribute("clientVendorTypes", clientVendorService.clientVendorType());
-        model.addAttribute("countries", clientVendorService.listOfCountry());
-        model.addAttribute("title",clientVendorService.getAllClientVendors());
+        model.addAttribute("title", "Accounting Cydeo-Client/Vendor");
     }
 }

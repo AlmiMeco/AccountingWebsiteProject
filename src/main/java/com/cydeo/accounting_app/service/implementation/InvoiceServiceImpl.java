@@ -167,8 +167,8 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
     }
 
     @Override
-    public boolean existsByClientVendorId(Long clientVendorDTO) {
-        return invoiceRepository.existsByClientVendorId(clientVendorDTO);
+    public boolean existsByClientVendorId(Long id) {
+        return invoiceRepository.existsByCompanyAndClientVendorId(getCompany(),id);
     }
 
 
