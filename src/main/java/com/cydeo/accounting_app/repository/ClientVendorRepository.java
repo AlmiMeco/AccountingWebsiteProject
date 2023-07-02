@@ -11,11 +11,8 @@ import java.util.List;
 
 @Repository
 public interface ClientVendorRepository extends JpaRepository<ClientVendor,Long> {
-    @Query("SELECT cv " +
-            "FROM ClientVendor cv " +
-            "WHERE cv.company.id = ?1")
-    List<ClientVendor> findAllByCompany(Long currentCompanyId);
 
+    List<ClientVendor> findByCompany(Company company);
 
     @Query("SELECT cv " +
             "FROM ClientVendor cv " +
@@ -23,4 +20,5 @@ public interface ClientVendorRepository extends JpaRepository<ClientVendor,Long>
             "AND cv.company.id = ?2")
     List<ClientVendor> findClientVendorsByClientVendorTypeAndCompanyId(ClientVendorType type, Long companyId);
 
+    ClientVendor findByClientVendorNameAndCompany(String clientVendorName, Company company);
 }
