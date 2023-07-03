@@ -16,9 +16,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "FROM Product p " +
             "JOIN Category c " +
             "ON c.id = p.category.id " +
-            "JOIN Company co " +
-            "ON c.company.id = co.id " +
-            "WHERE co.id = ?1")
+            "WHERE c.company.id = ?1")
     List<Product> findAllByCompanyId(Long companyId);
 
     List<Product> findByCategoryCompany(Company company);

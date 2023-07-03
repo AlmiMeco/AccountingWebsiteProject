@@ -8,13 +8,11 @@ import com.cydeo.accounting_app.service.ClientVendorService;
 import com.cydeo.accounting_app.service.InvoiceProductService;
 import com.cydeo.accounting_app.service.InvoiceService;
 import com.cydeo.accounting_app.service.ProductService;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
-import java.util.List;
 
 @Controller
 @RequestMapping("/purchaseInvoices")
@@ -41,8 +39,7 @@ public class PurchasesInvoiceController {
     @PostMapping("/create")
     public String insertInvoice(@ModelAttribute("newPurchaseInvoice") @Valid InvoiceDTO invoiceDTO, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("message", "Vendor is a required field.");
-            return "error";
+            return "invoice/purchase-invoice-create";
         }
         invoiceService.saveInvoiceByType(invoiceDTO,InvoiceType.PURCHASE);
         String id = invoiceService.findLastInvoiceId(InvoiceType.PURCHASE);
@@ -66,14 +63,7 @@ public class PurchasesInvoiceController {
     public String insertUpdatedInvoice(@ModelAttribute("newPurchaseInvoice") @Valid InvoiceDTO invoiceDTO,
                                  BindingResult bindingResult, Model model, @PathVariable("invoiceId") Long invoiceId){
         if (bindingResult.hasErrors()) {
-            List<String> errors = bindingResult
-                    .getFieldErrors()
-                    .stream()
-                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                    .toList(); //List of errors
-
-            model.addAttribute("message",errors);
-            return "error";
+            return "invoice/purchase-invoice-update";
         }
         return "redirect:/purchaseInvoices/list";
     }
@@ -101,14 +91,9 @@ public class PurchasesInvoiceController {
     public String insertInvoiceProduct(@ModelAttribute("newInvoiceProduct") @Valid InvoiceProductDTO invoiceProductDTO,
                                        BindingResult bindingResult, Model model, @PathVariable("invoiceId") Long invoiceId) {
         if (bindingResult.hasErrors()) {
-            List<String> errors = bindingResult
-                    .getFieldErrors()
-                    .stream()
-                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                    .toList(); //List of errors
-
-            model.addAttribute("message",errors);
-            return "error";
+            model.addAttribute("invoice",invoiceService.findById(invoiceId));
+            model.addAttribute("invoiceProducts", invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId));
+            return "invoice/purchase-invoice-update";
         }
         invoiceProductService.saveInvoiceProduct(invoiceProductDTO,invoiceId);
         return "redirect:/purchaseInvoices/update/"+invoiceId;

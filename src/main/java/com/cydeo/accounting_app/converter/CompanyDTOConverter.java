@@ -7,9 +7,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-
-
-
 @Component
 @ConfigurationPropertiesBinding
 public class CompanyDTOConverter implements Converter<String, CompanyDTO> {
@@ -22,10 +19,7 @@ public class CompanyDTOConverter implements Converter<String, CompanyDTO> {
 
     @Override
     public CompanyDTO convert(String source) {
-
-        if (source == null || source.equals("")) {
-            return null;
-        }
+        if (source == null || source.equals("")) {return null;}
         return companyService.findById(Long.parseLong(source));
     }
 }

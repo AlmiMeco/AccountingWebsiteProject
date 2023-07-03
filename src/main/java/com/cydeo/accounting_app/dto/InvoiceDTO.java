@@ -5,6 +5,8 @@ import com.cydeo.accounting_app.enums.InvoiceType;
 import java.time.LocalDate;
 import java.math.BigDecimal;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -18,6 +20,7 @@ public class InvoiceDTO {
     private String invoiceNo;
     private InvoiceStatus invoiceStatus;
     private InvoiceType invoiceType;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
     private CompanyDTO company;
     @NotNull()
