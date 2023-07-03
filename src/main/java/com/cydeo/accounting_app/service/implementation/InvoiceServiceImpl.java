@@ -171,5 +171,12 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
         return invoiceRepository.existsByCompanyAndClientVendorId(getCompany(),id);
     }
 
-
+    @Override
+    public List<InvoiceDTO> listAllInvoices() {
+        return invoiceRepository.findAllByCompany(getCompany()).stream()
+                .sorted(Comparator.comparing(Invoice::getId).reversed())
+                .map(invoice->mapperUtil.convert(invoice,new InvoiceDTO()))
+                .map(invoiceDTO -> calculateInvoice(invoiceDTO.getId()))
+                .collect(Collectors.toList());
+    }
 }

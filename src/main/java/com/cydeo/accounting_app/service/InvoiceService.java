@@ -25,7 +25,6 @@ public interface InvoiceService {
 
     InvoiceDTO calculateInvoice(Long invoiceId);
     InvoiceDTO getInvoiceForPrint(Long invoiceId);
-
-
     boolean existsByClientVendorId(Long id);
+    List<InvoiceDTO> listAllInvoices();
 }
