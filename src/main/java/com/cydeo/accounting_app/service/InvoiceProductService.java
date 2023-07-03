@@ -1,6 +1,8 @@
 package com.cydeo.accounting_app.service;
 
 import com.cydeo.accounting_app.dto.InvoiceProductDTO;
+import com.cydeo.accounting_app.enums.InvoiceStatus;
+
 import java.util.List;
 
 public interface InvoiceProductService {
@@ -18,4 +20,6 @@ public interface InvoiceProductService {
     List<InvoiceProductDTO> findAllInvoiceProductsByProductId(Long id);
 
     boolean isStockNotEnough(InvoiceProductDTO invoiceProductDTO);
+
+    List<InvoiceProductDTO> findAllInvoiceProductsByInvoiceStatusApproved(InvoiceStatus invoiceStatus);
 }
