@@ -55,6 +55,7 @@ public class UserServiceImpl extends LoggedInUserService implements UserService 
 
              return adminUsers.stream()
                      .map(i -> mapperUtil.convert(i, new UserDTO()))
+                     .peek(userDTO -> userDTO.setOnlyAdmin(checkIfOnlyAdminForCompany(userDTO)))
                      .collect(Collectors.toList());
 
         }
@@ -119,6 +120,12 @@ public class UserServiceImpl extends LoggedInUserService implements UserService 
         userRepository.save(user);
 
         return mapperUtil.convert(user, new UserDTO());
+    }
+
+    private Boolean checkIfOnlyAdminForCompany(UserDTO userDTO){
+
+        return userRepository.countAllByCompanyAndRoleDescription(mapperUtil.convert(userDTO, new User()).getCompany(), "Admin") == 1;
+
     }
 
 }
