@@ -10,20 +10,24 @@ import com.cydeo.accounting_app.service.LoggedInUserService;
 import com.cydeo.accounting_app.service.SecurityService;
 import com.cydeo.accounting_app.service.UserService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl extends LoggedInUserService implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(SecurityService securityService, MapperUtil mapperUtil, UserRepository userRepository) {
+    public UserServiceImpl(SecurityService securityService, MapperUtil mapperUtil, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         super(securityService, mapperUtil);
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -51,6 +55,7 @@ public class UserServiceImpl extends LoggedInUserService implements UserService 
 
              return adminUsers.stream()
                      .map(i -> mapperUtil.convert(i, new UserDTO()))
+                     .peek(userDTO -> userDTO.setOnlyAdmin(checkIfOnlyAdminForCompany(userDTO)))
                      .collect(Collectors.toList());
 
         }
@@ -68,7 +73,12 @@ public class UserServiceImpl extends LoggedInUserService implements UserService 
 
     @Override
     public void save(UserDTO userDTO) {
-        userRepository.save(mapperUtil.convert(userDTO, new User()));
+
+        User user = mapperUtil.convert(userDTO, new User());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setEnabled(true);
+        userRepository.save(user);
+
     }
 
     @Override
@@ -76,7 +86,7 @@ public class UserServiceImpl extends LoggedInUserService implements UserService 
 
         User user = userRepository.getUserById(id);
         user.setIsDeleted(true);
-        user.setUsername(user.getUsername() + "-depreciatedUserName");
+        user.setUsername(user.getUsername() + "-depreciatedUserName-" + user.getId());
         userRepository.save(user);
 
     }
@@ -92,11 +102,29 @@ public class UserServiceImpl extends LoggedInUserService implements UserService 
     @Override
     public boolean isEmailAlreadyExisting(UserDTO userDTO) {
 
-        User existingUser = userRepository.getUserById(userDTO.getId());
+        Optional<User> existingUser = userRepository.findByUsername(userDTO.getUsername());
 
-        if (existingUser == null) {return false;}
+        if (existingUser.isEmpty()) {return false;}
 
-        return !existingUser.getUsername().equals(userDTO.getUsername());
+        return !existingUser.get().getId().equals(userDTO.getId());
+
+
+    }
+
+    @Override
+    public UserDTO update(UserDTO dto) {
+
+        User user = mapperUtil.convert(dto, new User());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setEnabled(userRepository.findById(user.getId()).get().isEnabled());
+        userRepository.save(user);
+
+        return mapperUtil.convert(user, new UserDTO());
+    }
+
+    private Boolean checkIfOnlyAdminForCompany(UserDTO userDTO){
+
+        return userRepository.countAllByCompanyAndRoleDescription(mapperUtil.convert(userDTO, new User()).getCompany(), "Admin") == 1;
 
     }
 

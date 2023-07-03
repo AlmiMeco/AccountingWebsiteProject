@@ -1,5 +1,6 @@
 package com.cydeo.accounting_app.repository;
 
+import com.cydeo.accounting_app.entity.Company;
 import com.cydeo.accounting_app.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -17,4 +18,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
     List<User> findAllByCompanyId(Long companyIdOfLoggedUser);
 
     List<User> findAllByRoleId(long id);
+
+    Integer countAllByCompanyAndRoleDescription(Company company, String role_description);
+
 }
