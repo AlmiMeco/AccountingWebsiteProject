@@ -69,7 +69,7 @@ public class CompanyController {
 
         if (bindingResult.hasErrors() || companyNameIsExist) {
             if (companyNameIsExist){
-                bindingResult.rejectValue("title", " ", "This Company Name already exists.");
+                bindingResult.rejectValue("title", " ", "This Title already exists.");
             }
             return "/company/company-update";
         }
