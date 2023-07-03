@@ -104,4 +104,13 @@ public class CompanyServiceImpl implements CompanyService {
 
 
     }
+
+    @Override
+    public boolean companyNameIsExist(CompanyDTO companyDTO) {
+        Company existingCompany = companyRepository.findCompanyByTitle(companyDTO.getTitle());
+        if (existingCompany == null) {
+            return false;
+        }
+        return !existingCompany.getId().equals(companyDTO.getId());
+    }
 }

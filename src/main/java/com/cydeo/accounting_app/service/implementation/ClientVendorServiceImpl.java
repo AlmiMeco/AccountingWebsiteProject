@@ -75,7 +75,8 @@ public class ClientVendorServiceImpl extends LoggedInUserService implements Clie
 
     @Override
     public boolean companyNameIsExist(ClientVendorDTO clientVendorDTO) {
-        ClientVendor existingClientVendor = clientVendorRepository.findByClientVendorNameAndCompany(clientVendorDTO.getClientVendorName(), getCompany());
+        ClientVendor existingClientVendor = clientVendorRepository.findByClientVendorNameAndCompany
+                (clientVendorDTO.getClientVendorName(), getCompany());
         if (existingClientVendor == null) {
             return false;
         }

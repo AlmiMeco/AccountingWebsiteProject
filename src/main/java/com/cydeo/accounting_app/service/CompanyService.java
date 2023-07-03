@@ -21,4 +21,5 @@ public interface CompanyService {
 
     void saveCompany(CompanyDTO companyDTO);
 
+    boolean companyNameIsExist(CompanyDTO companyDTO);
 }

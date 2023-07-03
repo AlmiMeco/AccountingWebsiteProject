@@ -5,8 +5,10 @@ import com.cydeo.accounting_app.service.AddressService;
 import com.cydeo.accounting_app.service.CompanyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -30,7 +32,17 @@ public class CompanyController {
     }
 
     @PostMapping("/create")
-    public String companyInsert(@ModelAttribute("newCompany") CompanyDTO companyDTO) {
+    public String companyInsert(@Valid @ModelAttribute("newCompany") CompanyDTO companyDTO,
+                                BindingResult bindingResult) {
+
+        if (companyService.companyNameIsExist(companyDTO)) {
+            bindingResult.rejectValue("title", " ", "This Company Name already exists.");
+        }
+
+        if (bindingResult.hasErrors()) {
+            //model.addAttribute("title", "Company title is a required field");
+            return "/company/company-create";
+        }
         companyService.saveCompany(companyDTO);
         return "redirect:/companies/list";
     }
@@ -51,8 +63,18 @@ public class CompanyController {
 
     @PostMapping("/update/{id}")
     public String updateCompany(@PathVariable("id") Long id, @ModelAttribute("company")
-    CompanyDTO companyDTO) {
-       companyService.updateCompany(id,companyDTO);
+    CompanyDTO companyDTO, BindingResult bindingResult) {
+        companyDTO.setId(id);
+        boolean companyNameIsExist = companyService.companyNameIsExist(companyDTO);
+
+        if (bindingResult.hasErrors() || companyNameIsExist) {
+            if (companyNameIsExist){
+                bindingResult.rejectValue("title", " ", "This Company Name already exists.");
+            }
+            return "/company/company-update";
+        }
+        companyService.updateCompany(id,companyDTO);
+
 
         return "redirect:/companies/list";
     }
@@ -68,5 +90,10 @@ public class CompanyController {
         companyService.deactivateCompany(id);
         return "redirect:/companies/list";
 }
+  //  @ModelAttribute()
+   // public void commonModelAttribute(Model model) {
+      // model.addAttribute("countries", addressService.listOfCountries());
+     //   model.addAttribute("company", companyService.listAllCompanies());
+  //  }
 
 }
