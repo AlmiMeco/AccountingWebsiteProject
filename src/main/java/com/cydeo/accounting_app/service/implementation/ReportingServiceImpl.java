@@ -36,6 +36,7 @@ public class ReportingServiceImpl implements ReportingService {
 
         var profitLoss = totalSales.subtract(totalCost);
 
+//        Hard-Coded for now
         map.put(LocalDate.now().getMonth().toString(), profitLoss);
         return map;
     }
