@@ -4,6 +4,7 @@ import com.cydeo.accounting_app.dto.InvoiceDTO;
 import com.cydeo.accounting_app.dto.InvoiceProductDTO;
 import com.cydeo.accounting_app.entity.Invoice;
 import com.cydeo.accounting_app.entity.InvoiceProduct;
+import com.cydeo.accounting_app.enums.InvoiceStatus;
 import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.repository.InvoiceProductRepository;
 import com.cydeo.accounting_app.service.InvoiceProductService;
@@ -13,6 +14,8 @@ import com.cydeo.accounting_app.service.SecurityService;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -100,4 +103,15 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
             return false;
         return invoiceProductDTO.getQuantity()>invoiceProductDTO.getProduct().getQuantityInStock();
     }
+
+    @Override
+    public List<InvoiceProductDTO> findAllInvoiceProductsByInvoiceStatusApproved(InvoiceStatus invoiceStatus) {
+        return invoiceProductRepository.findAllInvoiceProductsByInvoiceStatus
+                (InvoiceStatus.APPROVED).stream().sorted(Comparator.comparing(invoiceProduct ->
+                invoiceProduct.getInvoice().getDate())).map(invoiceProduct -> mapperUtil.convert(invoiceProduct,
+                new InvoiceProductDTO())).collect(Collectors.toList());
+    }
+
+
 }
+
