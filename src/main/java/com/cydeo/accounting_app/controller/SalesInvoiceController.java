@@ -37,7 +37,7 @@ public class SalesInvoiceController {
     }
 
     @PostMapping("/create")
-    public String insertInvoice(@ModelAttribute("newSalesInvoice") @Valid InvoiceDTO invoiceDTO, BindingResult bindingResult, Model model) {
+    public String insertInvoice(@ModelAttribute("newSalesInvoice") @Valid InvoiceDTO invoiceDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "invoice/sales-invoice-create";
         }
@@ -61,7 +61,7 @@ public class SalesInvoiceController {
 
     @PostMapping("/update/{invoiceId}")
     public String insertUpdatedInvoice(@ModelAttribute("newSalesInvoice") @Valid InvoiceDTO invoiceDTO,BindingResult bindingResult,
-                                 Model model, @PathVariable("invoiceId") Long invoiceId){
+                                 @PathVariable("invoiceId") Long invoiceId){
 
         if (bindingResult.hasErrors()) {
             return "invoice/sales-invoice-update";
@@ -96,8 +96,10 @@ public class SalesInvoiceController {
         if (bindingResult.hasErrors()||stockNotEnough){
             model.addAttribute("invoice",invoiceService.findById(invoiceId));
             model.addAttribute("invoiceProducts", invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId));
-            model.addAttribute("error","Not enough " + invoiceProductDTO.getProduct().getName() + " quantity to sell.");
-            model.addAttribute("newInvoiceProduct", new InvoiceProductDTO());
+            if(stockNotEnough){
+                model.addAttribute("newInvoiceProduct", new InvoiceProductDTO());
+                model.addAttribute("error", "Not enough " + invoiceProductDTO.getProduct().getName() + " quantity to sell.");
+            }
             return "invoice/sales-invoice-update";
         }
         invoiceProductService.saveInvoiceProduct(invoiceProductDTO,invoiceId);

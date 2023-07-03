@@ -180,13 +180,21 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
 
     @Override
     public List<InvoiceDTO> listAllInvoicesForDashboardChart(InvoiceType invoiceType) {
+        /**
+         * This list used in dashboard service to calculate charts
+         */
         return invoiceRepository.findAllByCompanyAndInvoiceStatusAndInvoiceType(getCompany(),InvoiceStatus.APPROVED,invoiceType).stream()
                 .map(invoice -> mapperUtil.convert(invoice,new InvoiceDTO()))
                 .map(invoiceDTO -> calculateInvoice(invoiceDTO.getId()))
                 .collect(Collectors.toList());
     }
 
+
     public List<InvoiceDTO> list3LastApprovalInvoicesForDashboard(){
+        /**
+         * This method returns information for dashboard list, only 3 last invoices.
+         * It filtered by Company.
+         */
         List<InvoiceDTO> threeLastInvoices = new ArrayList<>();
         int sizeApprovalInvoicesList = listAllApprovedInvoices().size();
         for (int i = 0 ; i < (Math.min(sizeApprovalInvoicesList,3)) ;i++)

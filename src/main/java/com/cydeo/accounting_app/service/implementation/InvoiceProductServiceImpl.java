@@ -14,7 +14,6 @@ import com.cydeo.accounting_app.service.SecurityService;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,11 +33,8 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
     @Override
     public InvoiceProductDTO findById(Long invoiceProductId) {
         InvoiceProduct invoiceProduct= invoiceProductRepository.findById(invoiceProductId).orElseThrow(
-                () -> new RuntimeException("This InvoiceProduct does not exist")
+                () -> new RuntimeException("This InvoiceProduct with id " + invoiceProductId +" does not exist")
         );
-        if(invoiceProduct.isDeleted){
-            throw new RuntimeException("The InvoiceProduct has been deleted");
-        }
         return mapperUtil.convert(invoiceProduct,new InvoiceProductDTO());
     }
 
@@ -98,6 +94,9 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
 
     @Override
     public boolean isStockNotEnough(InvoiceProductDTO invoiceProductDTO) {
+        /**
+         * Check if we have enough products to sell
+         */
         if(invoiceProductDTO.getQuantity()==null||
            invoiceProductDTO.getProduct().getQuantityInStock()==null)
             return false;
@@ -111,7 +110,6 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
                 invoiceProduct.getInvoice().getDate())).map(invoiceProduct -> mapperUtil.convert(invoiceProduct,
                 new InvoiceProductDTO())).collect(Collectors.toList());
     }
-
 
 }
 
