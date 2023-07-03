@@ -1,5 +1,7 @@
 package com.cydeo.accounting_app.service.implementation;
 
+import com.cydeo.accounting_app.client.CurrencyClient;
+import com.cydeo.accounting_app.dto.CurrencyDTO;
 import com.cydeo.accounting_app.dto.InvoiceDTO;
 import com.cydeo.accounting_app.enums.InvoiceType;
 import com.cydeo.accounting_app.service.DashboardService;
@@ -14,16 +16,16 @@ import java.util.Map;
 public class DashboardServiceImpl implements DashboardService {
 
     private final InvoiceService invoiceService;
+    private final CurrencyClient currencyClient;
 
-    public DashboardServiceImpl(InvoiceService invoiceService) {
+    public DashboardServiceImpl(InvoiceService invoiceService, CurrencyClient currencyClient) {
         this.invoiceService = invoiceService;
+        this.currencyClient = currencyClient;
     }
 
     @Override
     public Map<String, BigDecimal> summaryNumbers() {
         Map<String,BigDecimal> map = new HashMap<>();
-        System.out.println(invoiceService.listAllInvoicesForDashboardChart(InvoiceType.PURCHASE));
-        System.out.println(invoiceService.listAllInvoicesForDashboardChart(InvoiceType.SALES));
         BigDecimal totalCost = invoiceService.listAllInvoicesForDashboardChart(InvoiceType.PURCHASE).stream()
                 .map(InvoiceDTO::getPrice)
                 .reduce(BigDecimal::add).orElseGet(
@@ -36,7 +38,11 @@ public class DashboardServiceImpl implements DashboardService {
         map.put("totalCost",totalCost);
         map.put("totalSales",totalSales);
         map.put("profitLoss",profitLoss);
-        System.out.println(map);
         return map;
+    }
+
+    @Override
+    public CurrencyDTO getExchangeRates() {
+        return currencyClient.getCurrency();
     }
 }
