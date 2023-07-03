@@ -168,5 +168,20 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
         return invoiceRepository.existsByCompanyAndClientVendorId(getCompany(),id);
     }
 
+    @Override
+    public List<InvoiceDTO> listAllApprovedInvoices() {
+        return invoiceRepository.findAllByCompanyAndInvoiceStatus(getCompany(),InvoiceStatus.APPROVED).stream()
+                .sorted(Comparator.comparing(Invoice::getId).reversed())
+                .map(invoice->mapperUtil.convert(invoice,new InvoiceDTO()))
+                .map(invoiceDTO -> calculateInvoice(invoiceDTO.getId()))
+                .collect(Collectors.toList());
+    }
 
+    @Override
+    public List<InvoiceDTO> listAllInvoicesForDashboardChart(InvoiceType invoiceType) {
+        return invoiceRepository.findAllByCompanyAndInvoiceStatusAndInvoiceType(getCompany(),InvoiceStatus.APPROVED,invoiceType).stream()
+                .map(invoice -> mapperUtil.convert(invoice,new InvoiceDTO()))
+                .map(invoiceDTO -> calculateInvoice(invoiceDTO.getId()))
+                .collect(Collectors.toList());
+    }
 }
