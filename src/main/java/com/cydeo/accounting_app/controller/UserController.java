@@ -41,9 +41,10 @@ public class UserController {
 
         boolean emailAlreadyExists = userService.isEmailAlreadyExisting(newlyCreatedUser);
 
-        if (emailAlreadyExists) {bindingResult.rejectValue("username"," ","A user with this email already exists");}
-
-        if (bindingResult.hasErrors()) {return "user/user-create";}
+        if (emailAlreadyExists || bindingResult.hasErrors()) {
+            if (emailAlreadyExists) {bindingResult.rejectValue("username"," ","A user with this email already exists");}
+            return "user/user-create";
+        }
 
         userService.save(newlyCreatedUser);
 
@@ -83,11 +84,14 @@ public class UserController {
     @PostMapping("/update/{id}")
     public String editUserPost(@PathVariable("id") Long id,@Valid @ModelAttribute("user") UserDTO updatedUser, BindingResult bindingResult){
 
+        updatedUser.setId(id);
+
         boolean emailAlreadyExists = userService.isEmailAlreadyExisting(updatedUser);
 
-        if (emailAlreadyExists) {bindingResult.rejectValue("username"," ","A user with this email already exists");}
-
-        if (bindingResult.hasErrors()) {return "user/user-update";}
+        if (emailAlreadyExists || bindingResult.hasErrors()) {
+            if (emailAlreadyExists) {bindingResult.rejectValue("username"," ","A user with this email already exists");}
+            return "user/user-update";
+        }
 
         userService.save(updatedUser);
 

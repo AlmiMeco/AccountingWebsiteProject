@@ -20,4 +20,6 @@ public interface UserService {
 
     boolean isEmailAlreadyExisting(UserDTO userDTO);
 
+    UserDTO update(UserDTO dto);
+
 }
