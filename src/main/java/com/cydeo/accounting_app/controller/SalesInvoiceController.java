@@ -55,24 +55,18 @@ public class SalesInvoiceController {
 
     @GetMapping("/update/{invoiceId}")
     public String updateInvoice(@PathVariable("invoiceId") Long invoiceId, Model model){
+        model.addAttribute("newInvoiceProduct", new InvoiceProductDTO());
         model.addAttribute("invoice",invoiceService.findById(invoiceId));
         model.addAttribute("invoiceProducts", invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId));
-        model.addAttribute("newInvoiceProduct", new InvoiceProductDTO());
         return "invoice/sales-invoice-update";
     }
 
     @PostMapping("/update/{invoiceId}")
     public String insertUpdatedInvoice(@ModelAttribute("newSalesInvoice") @Valid InvoiceDTO invoiceDTO,BindingResult bindingResult,
                                  Model model, @PathVariable("invoiceId") Long invoiceId){
-        if (bindingResult.hasErrors()) {
-            List<String> errors = bindingResult
-                    .getFieldErrors()
-                    .stream()
-                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                    .toList(); // List of errors
 
-            model.addAttribute("message",errors);
-            return "error";
+        if (bindingResult.hasErrors()) {
+            return "invoice/sales-invoice-update";
         }
         return "redirect:/salesInvoices/list";
     }
@@ -104,7 +98,8 @@ public class SalesInvoiceController {
         if (bindingResult.hasErrors()||stockNotEnough){
             model.addAttribute("invoice",invoiceService.findById(invoiceId));
             model.addAttribute("invoiceProducts", invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId));
-            if(stockNotEnough) throw new RuntimeException("Not enough " + invoiceProductDTO.getProduct().getName() + " quantity to sell.");
+            model.addAttribute("error","Not enough " + invoiceProductDTO.getProduct().getName() + " quantity to sell.");
+            model.addAttribute("newInvoiceProduct", new InvoiceProductDTO());
             return "invoice/sales-invoice-update";
         }
         invoiceProductService.saveInvoiceProduct(invoiceProductDTO,invoiceId);
