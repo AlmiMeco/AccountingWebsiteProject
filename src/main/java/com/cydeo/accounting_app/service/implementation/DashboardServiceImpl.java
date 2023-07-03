@@ -25,6 +25,9 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public Map<String, BigDecimal> summaryNumbers() {
+        /**
+         * Calculating charts numbers
+         */
         Map<String,BigDecimal> map = new HashMap<>();
         BigDecimal totalCost = invoiceService.listAllInvoicesForDashboardChart(InvoiceType.PURCHASE).stream()
                 .map(InvoiceDTO::getPrice)
@@ -43,6 +46,9 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public CurrencyDTO getExchangeRates() {
+        /**
+         * Return consumed information.
+         */
         return currencyClient.getCurrency();
     }
 }
