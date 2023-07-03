@@ -37,7 +37,7 @@ public class PurchasesInvoiceController {
     }
 
     @PostMapping("/create")
-    public String insertInvoice(@ModelAttribute("newPurchaseInvoice") @Valid InvoiceDTO invoiceDTO, BindingResult bindingResult, Model model) {
+    public String insertInvoice(@ModelAttribute("newPurchaseInvoice") @Valid InvoiceDTO invoiceDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "invoice/purchase-invoice-create";
         }
@@ -61,7 +61,7 @@ public class PurchasesInvoiceController {
 
     @PostMapping("/update/{invoiceId}")
     public String insertUpdatedInvoice(@ModelAttribute("newPurchaseInvoice") @Valid InvoiceDTO invoiceDTO,
-                                 BindingResult bindingResult, Model model, @PathVariable("invoiceId") Long invoiceId){
+                                 BindingResult bindingResult, @PathVariable("invoiceId") Long invoiceId){
         if (bindingResult.hasErrors()) {
             return "invoice/purchase-invoice-update";
         }

@@ -29,4 +29,6 @@ public interface InvoiceService {
     List<InvoiceDTO> listAllApprovedInvoices();
 
     List<InvoiceDTO> listAllInvoicesForDashboardChart(InvoiceType invoiceType);
+
+    List<InvoiceDTO> list3LastApprovalInvoicesForDashboard();
 }

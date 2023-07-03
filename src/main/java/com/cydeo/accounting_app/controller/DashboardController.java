@@ -21,7 +21,7 @@ public class DashboardController {
     @GetMapping
     public String getDashboard(Model model) {
         model.addAttribute("summaryNumbers",dashboardService.summaryNumbers());
-        model.addAttribute("invoices",invoiceService.listAllApprovedInvoices());
+        model.addAttribute("invoices",invoiceService.list3LastApprovalInvoicesForDashboard());
         model.addAttribute("exchangeRates",dashboardService.getExchangeRates());
         return "/dashboard";
     }
