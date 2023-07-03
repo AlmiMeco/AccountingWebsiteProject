@@ -8,13 +8,11 @@ import com.cydeo.accounting_app.service.ClientVendorService;
 import com.cydeo.accounting_app.service.InvoiceProductService;
 import com.cydeo.accounting_app.service.InvoiceService;
 import com.cydeo.accounting_app.service.ProductService;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
-import java.util.List;
 
 @Controller
 @RequestMapping("/salesInvoices")
