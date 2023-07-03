@@ -2,13 +2,14 @@ package com.cydeo.accounting_app.converter;
 
 import com.cydeo.accounting_app.dto.RoleDTO;
 import com.cydeo.accounting_app.service.RoleService;
+import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConfigurationPropertiesBinding
 public class RoleDTOConverter implements Converter<String, RoleDTO> {
-
 
     private final RoleService roleService;
 
@@ -16,12 +17,9 @@ public class RoleDTOConverter implements Converter<String, RoleDTO> {
         this.roleService = roleService;
     }
 
-
     @Override
     public RoleDTO convert(String source) {
-
         if (source == null || source.equals("")) {return null;}
-
         return roleService.findById(Long.parseLong(source));
     }
 

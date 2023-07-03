@@ -4,7 +4,6 @@ import com.cydeo.accounting_app.dto.InvoiceDTO;
 import com.cydeo.accounting_app.dto.InvoiceProductDTO;
 import com.cydeo.accounting_app.entity.Invoice;
 import com.cydeo.accounting_app.entity.InvoiceProduct;
-import com.cydeo.accounting_app.enums.InvoiceType;
 import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.repository.InvoiceProductRepository;
 import com.cydeo.accounting_app.service.InvoiceProductService;
@@ -65,14 +64,6 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
     @Override
     public void saveInvoiceProduct(InvoiceProductDTO invoiceProductDTO,Long invoiceId) {
         InvoiceDTO invoiceDTO = invoiceService.findById(invoiceId);
-        /**
-         * Check if we want sell more products than we have.
-         */
-        if (invoiceDTO.getInvoiceType().equals(InvoiceType.SALES)&&
-                invoiceProductDTO.getQuantity()>invoiceProductDTO.getProduct().getQuantityInStock()) {
-            String productName = invoiceProductDTO.getProduct().getName();
-            throw new RuntimeException("Not enough " + productName + " quantity to sell.");
-        }
         InvoiceProduct invoiceProduct = mapperUtil.convert(invoiceProductDTO,new InvoiceProduct());
         Invoice invoice = mapperUtil.convert(invoiceDTO,new Invoice());
         invoiceProduct.setInvoice(invoice);
@@ -100,5 +91,13 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
                 .stream()
                 .map(invoiceProduct -> mapperUtil.convert(invoiceProduct, new InvoiceProductDTO()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean isStockNotEnough(InvoiceProductDTO invoiceProductDTO) {
+        if(invoiceProductDTO.getQuantity()==null||
+           invoiceProductDTO.getProduct().getQuantityInStock()==null)
+            return false;
+        return invoiceProductDTO.getQuantity()>invoiceProductDTO.getProduct().getQuantityInStock();
     }
 }

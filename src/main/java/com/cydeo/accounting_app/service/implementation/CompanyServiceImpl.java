@@ -1,12 +1,16 @@
 package com.cydeo.accounting_app.service.implementation;
 
 import com.cydeo.accounting_app.dto.CompanyDTO;
-import com.cydeo.accounting_app.entity.Address;
+import com.cydeo.accounting_app.dto.RoleDTO;
 import com.cydeo.accounting_app.entity.Company;
+import com.cydeo.accounting_app.entity.User;
 import com.cydeo.accounting_app.enums.CompanyStatus;
 import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.repository.CompanyRepository;
+import com.cydeo.accounting_app.repository.UserRepository;
 import com.cydeo.accounting_app.service.CompanyService;
+import com.cydeo.accounting_app.service.LoggedInUserService;
+import com.cydeo.accounting_app.service.SecurityService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,27 +20,43 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class CompanyServiceImpl implements CompanyService {
+public class CompanyServiceImpl extends LoggedInUserService implements CompanyService {
 
     private final CompanyRepository companyRepository;
-    private final MapperUtil mapper;
+    private final UserRepository userRepository;
 
-    public CompanyServiceImpl(CompanyRepository companyRepository, MapperUtil mapper) {
+    public CompanyServiceImpl(SecurityService securityService, MapperUtil mapperUtil, CompanyRepository companyRepository, UserRepository userRepository) {
+        super(securityService, mapperUtil);
         this.companyRepository = companyRepository;
-        this.mapper = mapper;
+        this.userRepository = userRepository;
     }
+
 
     @Override
     public List<CompanyDTO> listAllCompanies() {
-         return companyRepository.findAll().stream().
-                 map(company -> mapper.convert(company, new CompanyDTO())).
-                 collect(Collectors.toList());
+
+        User currentLoggedInUser = userRepository.getUserById(getCurrentUser().id);
+        Long currentLoggedInUserCompany = currentLoggedInUser.getCompany().id;
+
+        if (currentLoggedInUser.getId() == 1L) {
+
+            return companyRepository.findAll()
+                    .stream()
+                    .filter(i -> i.getId() >= 2L)
+                    .map(i -> mapperUtil.convert(i, new CompanyDTO()))
+                    .collect(Collectors.toList());
+
+        }else return companyRepository.findCompanyById(currentLoggedInUserCompany)
+                .stream()
+                .map(i -> mapperUtil.convert(i, new CompanyDTO()))
+                .collect(Collectors.toList());
+
 
     }
 
     @Override
     public List<CompanyDTO> listAllNonProviderCompanies() {
-        List<CompanyDTO> list = mapper.convert(companyRepository.findCompaniesByIdGreaterThanOrderByCompanyStatus(1L), new ArrayList<>());
+        List<CompanyDTO> list = mapperUtil.convert(companyRepository.findCompaniesByIdGreaterThanOrderByCompanyStatus(1L), new ArrayList<>());
         return list;
     }
 
@@ -45,13 +65,13 @@ public class CompanyServiceImpl implements CompanyService {
         Company company = companyRepository.findCompanyById(id).
                 orElseThrow(() -> new NoSuchElementException
                         ("Company with id# "+id+" is not found"));
-        return mapper.convert(company, new CompanyDTO());
+        return mapperUtil.convert(company, new CompanyDTO());
     }
 
     @Override
     public CompanyDTO updateCompany(Long id, CompanyDTO companyDTO) {
 
-        Company company = mapper.convert(companyDTO, new Company());
+        Company company = mapperUtil.convert(companyDTO, new Company());
         companyRepository.findCompanyById(id).ifPresent(company1 -> {
             company1.setId(company.getId());
             company1.setIsDeleted(company.getIsDeleted());
@@ -64,7 +84,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         });
 
-        return mapper.convert(companyRepository.findCompanyById(id), new CompanyDTO());
+        return mapperUtil.convert(companyRepository.findCompanyById(id), new CompanyDTO());
     }
 
     @Override
@@ -90,18 +110,27 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public CompanyDTO createCompany(CompanyDTO companyDTO) {
-        Company newCompany = mapper.convert(companyDTO, new Company());
+        Company newCompany = mapperUtil.convert(companyDTO, new Company());
         newCompany.setCompanyStatus(CompanyStatus.PASSIVE);
-        return mapper.convert(companyRepository.save(newCompany), new CompanyDTO());
+        return mapperUtil.convert(companyRepository.save(newCompany), new CompanyDTO());
     }
 
     @Override
     public void saveCompany(CompanyDTO companyDTO) {
         if (companyDTO.getCompanyStatus()==null)
             companyDTO.setCompanyStatus(CompanyStatus.PASSIVE);
-       companyRepository.save(mapper.convert(companyDTO, new Company()));
+       companyRepository.save(mapperUtil.convert(companyDTO, new Company()));
 
 
 
+    }
+
+    @Override
+    public boolean companyNameIsExist(CompanyDTO companyDTO) {
+        Company existingCompany = companyRepository.findCompanyByTitle(companyDTO.getTitle());
+        if (existingCompany == null) {
+            return false;
+        }
+        return !existingCompany.getId().equals(companyDTO.getId());
     }
 }

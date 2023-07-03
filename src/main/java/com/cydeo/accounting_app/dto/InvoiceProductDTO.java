@@ -3,6 +3,7 @@ package com.cydeo.accounting_app.dto;
 import lombok.*;
 import org.hibernate.validator.constraints.Range;
 import java.math.BigDecimal;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -13,19 +14,19 @@ import javax.validation.constraints.NotNull;
 public class InvoiceProductDTO {
 
     private Long id;
-    @Range(min=1, max=100, message = "Quantity cannot be greater than 100 or less than 1")
+    @Range(min=1, max=100)
     @NotNull
     private Integer quantity;
-    @Range(min = 1, message = "Price should be at least $1")
+    @Min(value = 1)
     @NotNull
     private BigDecimal price;
-    @Range(min=0, max=20, message = "Tax should be between 0% and 20%")
+    @Range(min=0, max=20)
     @NotNull
     private Integer tax;
     private BigDecimal total;
     private BigDecimal profitLoss;
     private Integer remainingQty;
     private InvoiceDTO invoice;
-    @NotNull(message = "Product is a required field.")
+    @NotNull()
     private ProductDTO product;
 }
