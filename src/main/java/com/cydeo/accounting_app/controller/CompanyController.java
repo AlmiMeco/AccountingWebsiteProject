@@ -27,7 +27,7 @@ public class CompanyController {
     @GetMapping("/create")
     public String companyCreate(Model model) {
         model.addAttribute("newCompany", new CompanyDTO());
-        model.addAttribute("countries", List.of(addressService.listOfCountries()));
+       // model.addAttribute("countries", List.of(addressService.listOfCountries()));
         return "/company/company-create";
     }
 
@@ -56,7 +56,7 @@ public class CompanyController {
     @GetMapping("/update/{id}")
     public String editCompany(@PathVariable("id") Long id, Model model) {
         model.addAttribute("company", companyService.findById(id));
-        model.addAttribute("countries", List.of(addressService.listOfCountries()).get(0));
+        //model.addAttribute("countries", List.of(addressService.listOfCountries()).get(0));
 
         return "/company/company-update";
     }
@@ -90,10 +90,10 @@ public class CompanyController {
         companyService.deactivateCompany(id);
         return "redirect:/companies/list";
 }
-  //  @ModelAttribute()
-   // public void commonModelAttribute(Model model) {
-      // model.addAttribute("countries", addressService.listOfCountries());
+@ModelAttribute()
+   public void commonModelAttribute(Model model) {
+    model.addAttribute("countries", List.of(addressService.listOfCountries().get(0)));
      //   model.addAttribute("company", companyService.listAllCompanies());
-  //  }
+   }
 
 }
