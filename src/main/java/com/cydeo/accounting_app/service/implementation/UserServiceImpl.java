@@ -68,7 +68,11 @@ public class UserServiceImpl extends LoggedInUserService implements UserService 
 
     @Override
     public void save(UserDTO userDTO) {
-        userRepository.save(mapperUtil.convert(userDTO, new User()));
+
+        User user = mapperUtil.convert(userDTO, new User());
+        user.setEnabled(true);
+        userRepository.save(user);
+
     }
 
     @Override
