@@ -1,28 +1,26 @@
 package com.cydeo.accounting_app.controller;
 
+import com.cydeo.accounting_app.service.ReportingService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/reports")
 public class ReportingController {
 
 
+    private final ReportingService reportingService;
+
+    public ReportingController(ReportingService reportingService) {
+        this.reportingService = reportingService;
+    }
+
     @GetMapping("/profitLossData")
     public String getProfitLoss(Model model){
 
-        Map<Integer, String> map = new HashMap<>();
-        map.put(1,"P/L for month 1");
-        map.put(2,"P/L for month 2");
-        map.put(3,"P/L for month 3");
-
-
-        model.addAttribute("monthlyProfitLossDataMap", map);
+        model.addAttribute("monthlyProfitLossDataMap", reportingService.profitLossByMonthMap());
 
         return "report/profit-loss-report";
     }
