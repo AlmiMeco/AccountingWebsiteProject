@@ -22,6 +22,7 @@ public class DashboardController {
     public String getDashboard(Model model) {
         model.addAttribute("summaryNumbers",dashboardService.summaryNumbers());
         model.addAttribute("invoices",invoiceService.listAllApprovedInvoices());
+        model.addAttribute("exchangeRates",dashboardService.getExchangeRates());
         return "/dashboard";
     }
 }
