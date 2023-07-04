@@ -26,11 +26,11 @@ public class ReportingServiceImpl implements ReportingService {
 
         Map<String, BigDecimal> map = new HashMap<>();
 
-        BigDecimal totalSales = invoiceService.listAllInvoicesForDashboardChart(InvoiceType.SALES).stream()
+        BigDecimal totalSales = invoiceService.listAllInvoicesByType(InvoiceType.SALES).stream()
                 .map(InvoiceDTO::getPrice)
                 .reduce(BigDecimal::add).orElseGet(() -> new BigDecimal(0));
 
-        BigDecimal totalCost = invoiceService.listAllInvoicesForDashboardChart(InvoiceType.PURCHASE).stream()
+        BigDecimal totalCost = invoiceService.listAllInvoicesByType(InvoiceType.PURCHASE).stream()
                 .map(InvoiceDTO::getPrice)
                 .reduce(BigDecimal::add).orElseGet(() -> new BigDecimal(0));
 
