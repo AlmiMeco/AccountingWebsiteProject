@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,7 +26,7 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
     private final InvoiceProductService invoiceProductService;
     private final ProductService productService;
 
-    public InvoiceServiceImpl(SecurityService securityService, MapperUtil mapperUtil, InvoiceRepository invoiceRepository, @Lazy InvoiceProductService invoiceProductService,@Lazy ProductService productService) {
+    public InvoiceServiceImpl(SecurityService securityService, MapperUtil mapperUtil, InvoiceRepository invoiceRepository, @Lazy InvoiceProductService invoiceProductService, @Lazy ProductService productService) {
         super(securityService, mapperUtil);
         this.invoiceRepository = invoiceRepository;
         this.invoiceProductService = invoiceProductService;
@@ -35,21 +36,21 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
     @Override
     public InvoiceDTO findById(Long invoiceId) {
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(
-                () -> new RuntimeException("This Invoice with id " + invoiceId +" does not exist"));
-        return mapperUtil.convert(invoice,new InvoiceDTO());
+                () -> new RuntimeException("This Invoice with id " + invoiceId + " does not exist"));
+        return mapperUtil.convert(invoice, new InvoiceDTO());
     }
 
     @Override
     public List<InvoiceDTO> listAllInvoicesByType(InvoiceType type) {
         return invoiceRepository.findAllByInvoiceTypeAndCompany(type, getCompany().id).stream()
                 .sorted(Comparator.comparing(Invoice::getId).reversed())
-                .map(invoice -> mapperUtil.convert(invoice,new InvoiceDTO()))
+                .map(invoice -> mapperUtil.convert(invoice, new InvoiceDTO()))
                 .map(invoiceDTO -> calculateInvoice(invoiceDTO.getId()))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public void saveInvoiceByType(InvoiceDTO invoiceDTO,InvoiceType type) {
+    public void saveInvoiceByType(InvoiceDTO invoiceDTO, InvoiceType type) {
         Invoice invoice = mapperUtil.convert(invoiceDTO, new Invoice());
         invoice.setInvoiceType(type);
         invoice.setInvoiceStatus(InvoiceStatus.AWAITING_APPROVAL);
@@ -75,15 +76,15 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
          * Code below handles it.
          */
         invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId).stream()
-                .map( invoiceProductDTO -> {
+                .map(invoiceProductDTO -> {
                     Long productId = invoiceProductDTO.getProduct().getId();
                     Integer IPproductQuantity = invoiceProductDTO.getQuantity();
                     ProductDTO productDTO = productService.findById(productId);
                     Integer productCurrentQuantity = productDTO.getQuantityInStock();
-                    if(invoice.getInvoiceType().equals(InvoiceType.PURCHASE)){
-                        productDTO.setQuantityInStock(productCurrentQuantity+IPproductQuantity);
-                    }else {
-                        productDTO.setQuantityInStock(productCurrentQuantity-IPproductQuantity);
+                    if (invoice.getInvoiceType().equals(InvoiceType.PURCHASE)) {
+                        productDTO.setQuantityInStock(productCurrentQuantity + IPproductQuantity);
+                    } else {
+                        productDTO.setQuantityInStock(productCurrentQuantity - IPproductQuantity);
                     }
                     return productDTO;
                 })
@@ -102,17 +103,14 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
         /**
          * The code below handle invoiceNo for new invoice
          */
-        List<String> listInvoiceNoByType = invoiceRepository.findMaxInvoiceIdByType(type.getValue().toUpperCase(), getCompany().id);
-        int value;
-        if(listInvoiceNoByType.size()==0){
-            value=0;
-        }else {
-            String lastInvoiceNo = listInvoiceNoByType.get(listInvoiceNoByType.size()-1);
-            value =Integer.parseInt(lastInvoiceNo.substring(2));
-        }
+        List<String> listInvoiceNoByType = invoiceRepository.findMaxInvoiceIdByType(type.getValue()
+                .toUpperCase(), getCompany().id);
+        int value = listInvoiceNoByType.stream().map(s -> Integer.parseInt(s.substring(2)))
+                .sorted((a, b) -> a > b ? -1 : a == b ? 0 : 1)
+                .findFirst().orElse(0);
         value++;
-        String InvoiceNo = type.getValue().charAt(0)+
-                "-"+((value<100)?"0":"") +((value<10)?"0":"")+value;
+        String InvoiceNo = type.getValue().charAt(0) +
+                "-" + ((value < 100) ? "0" : "") + ((value < 10) ? "0" : "") + value;
         invoiceDTO.setInvoiceNo(InvoiceNo);
         invoiceDTO.setDate(LocalDate.now());
         return invoiceDTO;
@@ -132,7 +130,7 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
          * This method I use to send current company information to my controller
          */
         Company company = getCompany();
-        return mapperUtil.convert(company,new CompanyDTO());
+        return mapperUtil.convert(company, new CompanyDTO());
     }
 
     @Override
@@ -142,7 +140,8 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
          */
         InvoiceDTO invoiceDTO = findById(invoiceId);
         List<InvoiceProductDTO> invoiceProductDTOS = invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId);
-        BigDecimal invoicePrice = BigDecimal.ZERO;;
+        BigDecimal invoicePrice = BigDecimal.ZERO;
+        ;
         BigDecimal invoiceTotal = BigDecimal.ZERO;
         for (InvoiceProductDTO invoiceProductDTO : invoiceProductDTOS) {
             BigDecimal quantity = BigDecimal.valueOf(invoiceProductDTO.getQuantity());
@@ -166,14 +165,14 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
 
     @Override
     public boolean existsByClientVendorId(Long id) {
-        return invoiceRepository.existsByCompanyAndClientVendorId(getCompany(),id);
+        return invoiceRepository.existsByCompanyAndClientVendorId(getCompany(), id);
     }
 
     @Override
     public List<InvoiceDTO> listAllApprovedInvoices() {
-        return invoiceRepository.findAllByCompanyAndInvoiceStatus(getCompany(),InvoiceStatus.APPROVED).stream()
+        return invoiceRepository.findAllByCompanyAndInvoiceStatus(getCompany(), InvoiceStatus.APPROVED).stream()
                 .sorted(Comparator.comparing(Invoice::getId).reversed())
-                .map(invoice->mapperUtil.convert(invoice,new InvoiceDTO()))
+                .map(invoice -> mapperUtil.convert(invoice, new InvoiceDTO()))
                 .map(invoiceDTO -> calculateInvoice(invoiceDTO.getId()))
                 .collect(Collectors.toList());
     }
@@ -183,22 +182,33 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
         /**
          * This list used in dashboard service to calculate charts
          */
-        return invoiceRepository.findAllByCompanyAndInvoiceStatusAndInvoiceType(getCompany(),InvoiceStatus.APPROVED,invoiceType).stream()
-                .map(invoice -> mapperUtil.convert(invoice,new InvoiceDTO()))
+        return invoiceRepository.findAllByCompanyAndInvoiceStatusAndInvoiceType(getCompany(), InvoiceStatus.APPROVED, invoiceType).stream()
+                .map(invoice -> mapperUtil.convert(invoice, new InvoiceDTO()))
                 .map(invoiceDTO -> calculateInvoice(invoiceDTO.getId()))
                 .collect(Collectors.toList());
     }
 
 
-    public List<InvoiceDTO> list3LastApprovalInvoicesForDashboard(){
+    public List<InvoiceDTO> list3LastApprovalInvoicesForDashboard() {
         /**
          * This method returns information for dashboard list, only 3 last invoices.
          * It filtered by Company.
          */
         List<InvoiceDTO> threeLastInvoices = new ArrayList<>();
         int sizeApprovalInvoicesList = listAllApprovedInvoices().size();
-        for (int i = 0 ; i < (Math.min(sizeApprovalInvoicesList,3)) ;i++)
+        for (int i = 0; i < (Math.min(sizeApprovalInvoicesList, 3)); i++)
             threeLastInvoices.add(listAllApprovedInvoices().get(i));
         return threeLastInvoices;
+    }
+    @Override
+    public void updateInvoiceByType(Long invoiceId, InvoiceDTO invoiceDTO, InvoiceType type) {
+        invoiceDTO.setId(invoiceId);
+        Invoice invoice =invoiceRepository.findById(invoiceId)
+                .orElseThrow(()->new NoSuchElementException("Invoice " + invoiceDTO.getInvoiceNo()+" not found"));
+
+        invoiceDTO.setCompany(mapperUtil.convert(getCompany()));
+        invoiceDTO.setInvoiceStatus(InvoiceStatus.AWAITING_APPROVAL);
+        invoiceDTO.setInvoiceType(type);
+        invoiceRepository.save(invoice);
     }
 }

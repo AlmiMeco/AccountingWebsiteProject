@@ -65,6 +65,8 @@ public class PurchasesInvoiceController {
         if (bindingResult.hasErrors()) {
             return "invoice/purchase-invoice-update";
         }
+        System.out.println(invoiceDTO);
+        invoiceService.updateInvoiceByType(invoiceId,invoiceDTO,InvoiceType.PURCHASE);
         return "redirect:/purchaseInvoices/list";
     }
 
