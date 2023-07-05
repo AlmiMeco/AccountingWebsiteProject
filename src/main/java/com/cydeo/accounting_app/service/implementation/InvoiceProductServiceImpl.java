@@ -58,6 +58,8 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
                     invoiceProductDTO.setTotal(totalWithTax);
                 })
                 .collect(Collectors.toList());
+
+        //price*quantity*(tax/100)
     }
 
     @Override
@@ -104,7 +106,7 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
     }
 
     @Override
-    public List<InvoiceProductDTO> findAllInvoiceProductsByInvoiceStatusApproved(InvoiceStatus invoiceStatus) {
+    public List<InvoiceProductDTO> findAllInvoiceProductsByInvoiceStatus(InvoiceStatus invoiceStatus) {
         return invoiceProductRepository.findAllInvoiceProductsByInvoiceStatus
                 (InvoiceStatus.APPROVED).stream().sorted(Comparator.comparing(invoiceProduct ->
                 invoiceProduct.getInvoice().getDate())).map(invoiceProduct -> mapperUtil.convert(invoiceProduct,

@@ -1,6 +1,7 @@
 package com.cydeo.accounting_app.service.implementation;
 
 import com.cydeo.accounting_app.dto.*;
+import com.cydeo.accounting_app.entity.ClientVendor;
 import com.cydeo.accounting_app.entity.Company;
 import com.cydeo.accounting_app.entity.Invoice;
 import com.cydeo.accounting_app.enums.InvoiceStatus;
@@ -12,11 +13,13 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,7 +46,7 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
     @Override
     public List<InvoiceDTO> listAllInvoicesByType(InvoiceType type) {
         return invoiceRepository.findAllByInvoiceTypeAndCompany(type, getCompany().id).stream()
-                .sorted(Comparator.comparing(Invoice::getId).reversed())
+                .sorted(Comparator.comparing(Invoice::getId))
                 .map(invoice -> mapperUtil.convert(invoice, new InvoiceDTO()))
                 .map(invoiceDTO -> calculateInvoice(invoiceDTO.getId()))
                 .collect(Collectors.toList());
@@ -93,6 +96,28 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
          * When invoice approves , the date of invoice changes to approval date
          */
         invoice.setDate(LocalDate.now());
+
+        /**
+         * Set RemainingQty  = Quantity for new Purchase Invoice
+         * Set ProfitLoss = 0
+         */
+        if(invoice.getInvoiceType().equals(InvoiceType.PURCHASE)) {
+            invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId)
+                    .stream()
+                    .peek(invoiceProductDTO -> {
+                        invoiceProductDTO.setRemainingQty(invoiceProductDTO.getQuantity());
+                        invoiceProductDTO.setProfitLoss(new BigDecimal(BigInteger.ZERO));
+                    })
+                    .forEach(invoiceProductDTO -> invoiceProductService.saveInvoiceProduct(invoiceProductDTO, invoiceId));
+        }
+        else {
+            /**
+             * When we have approved sales invoice we should:
+             * Calculate profitLoss for invoice
+             * Reduce RemainingQty of products in Purchase invoices
+             */
+            invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId);
+        }
         invoice.setInvoiceStatus(InvoiceStatus.APPROVED);
         invoiceRepository.save(invoice);
     }
@@ -140,14 +165,16 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
          */
         InvoiceDTO invoiceDTO = findById(invoiceId);
         List<InvoiceProductDTO> invoiceProductDTOS = invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId);
+
         BigDecimal invoicePrice = BigDecimal.ZERO;
-        ;
         BigDecimal invoiceTotal = BigDecimal.ZERO;
+
         for (InvoiceProductDTO invoiceProductDTO : invoiceProductDTOS) {
             BigDecimal quantity = BigDecimal.valueOf(invoiceProductDTO.getQuantity());
             invoicePrice = invoicePrice.add(invoiceProductDTO.getPrice().multiply(quantity));
             invoiceTotal = invoiceTotal.add(invoiceProductDTO.getTotal());
         }
+
         invoiceDTO.setTax(invoiceTotal.subtract(invoicePrice));
         invoiceDTO.setPrice(invoicePrice);
         invoiceDTO.setTotal(invoiceTotal);
@@ -201,14 +228,12 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
         return threeLastInvoices;
     }
     @Override
-    public void updateInvoiceByType(Long invoiceId, InvoiceDTO invoiceDTO, InvoiceType type) {
-        invoiceDTO.setId(invoiceId);
-        Invoice invoice =invoiceRepository.findById(invoiceId)
-                .orElseThrow(()->new NoSuchElementException("Invoice " + invoiceDTO.getInvoiceNo()+" not found"));
-
-        invoiceDTO.setCompany(mapperUtil.convert(getCompany()));
-        invoiceDTO.setInvoiceStatus(InvoiceStatus.AWAITING_APPROVAL);
-        invoiceDTO.setInvoiceType(type);
+    public void updateInvoice(Long invoiceId, InvoiceDTO invoiceDTO) {
+        Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(
+                () -> new NoSuchElementException("Invoice does not exist")
+        );
+        invoice.setClientVendor(
+                mapperUtil.convert(invoiceDTO.getClientVendor(), new ClientVendor()));
         invoiceRepository.save(invoice);
     }
 }

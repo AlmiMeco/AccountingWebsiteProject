@@ -24,7 +24,7 @@ public class StockReportController {
     @GetMapping("/stockData")
     public String getStockReport(Model model) {
         model.addAttribute("invoiceProducts", invoiceProductService.
-                findAllInvoiceProductsByInvoiceStatusApproved(InvoiceStatus.APPROVED));
+                findAllInvoiceProductsByInvoiceStatus(InvoiceStatus.APPROVED));
         return "/report/stock-report";
     }
 

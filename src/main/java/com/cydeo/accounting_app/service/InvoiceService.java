@@ -32,5 +32,5 @@ public interface InvoiceService {
 
     List<InvoiceDTO> list3LastApprovalInvoicesForDashboard();
 
-    void updateInvoiceByType(Long invoiceId, InvoiceDTO invoiceDTO, InvoiceType type);
+    void updateInvoice(Long invoiceId, InvoiceDTO invoiceDTO);
 }
