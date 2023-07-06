@@ -66,6 +66,7 @@ public class SalesInvoiceController {
         if (bindingResult.hasErrors()) {
             return "invoice/sales-invoice-update";
         }
+        invoiceService.updateInvoice(invoiceId,invoiceDTO);
         return "redirect:/salesInvoices/list";
     }
 

@@ -20,7 +20,7 @@ public class InvoiceDTO {
     private String invoiceNo;
     private InvoiceStatus invoiceStatus;
     private InvoiceType invoiceType;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "MMMM dd, yyyy")
     private LocalDate date;
     private CompanyDTO company;
     @NotNull()

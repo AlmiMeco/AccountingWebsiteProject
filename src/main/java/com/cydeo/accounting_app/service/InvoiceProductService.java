@@ -21,5 +21,5 @@ public interface InvoiceProductService {
 
     boolean isStockNotEnough(InvoiceProductDTO invoiceProductDTO);
 
-    List<InvoiceProductDTO> findAllInvoiceProductsByInvoiceStatusApproved(InvoiceStatus invoiceStatus);
+    List<InvoiceProductDTO> findAllInvoiceProductsByInvoiceStatus(InvoiceStatus invoiceStatus);
 }

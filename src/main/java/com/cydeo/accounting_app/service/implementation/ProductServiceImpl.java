@@ -57,7 +57,6 @@ public class ProductServiceImpl extends LoggedInUserService implements ProductSe
     @Override
     public List<ProductDTO> findAllProductsByCompany() {
         return productRepository.findAllByCompanyId(getCompany().getId()).stream()
-                .filter(product -> product.getQuantityInStock()>0)
                 .map(product -> mapperUtil.convert(product,new ProductDTO()))
                 .collect(Collectors.toList());
     }
