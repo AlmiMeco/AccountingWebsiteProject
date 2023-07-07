@@ -6,6 +6,7 @@ import com.cydeo.accounting_app.entity.Company;
 import com.cydeo.accounting_app.entity.Invoice;
 import com.cydeo.accounting_app.enums.InvoiceStatus;
 import com.cydeo.accounting_app.enums.InvoiceType;
+import com.cydeo.accounting_app.exception.InvoiceNotFoundException;
 import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.repository.InvoiceRepository;
 import com.cydeo.accounting_app.service.*;
@@ -39,7 +40,7 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
     @Override
     public InvoiceDTO findById(Long invoiceId) {
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(
-                () -> new RuntimeException("This Invoice with id " + invoiceId + " does not exist"));
+                () -> new InvoiceNotFoundException("This Invoice with id " + invoiceId + " does not exist"));
         return mapperUtil.convert(invoice, new InvoiceDTO());
     }
 
@@ -64,7 +65,7 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
     @Override
     public void deleteInvoiceById(Long invoiceId) {
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(
-                () -> new RuntimeException("Invoice does not exist"));
+                () -> new InvoiceNotFoundException("This Invoice with id " + invoiceId + " does not exist"));
         invoice.setIsDeleted(true);
         invoiceProductService.deleteInvoiceProductsByInvoiceId(invoiceId);
         invoiceRepository.save(invoice);
@@ -73,7 +74,7 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
     @Override
     public void approveInvoiceById(Long invoiceId) {
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(
-                () -> new RuntimeException("Invoice does not exist"));
+                () -> new InvoiceNotFoundException("This Invoice with id " + invoiceId + " does not exist"));
         /**
          * If invoice approved it needs to increase or decrease quantity stock of product.
          * Code below handles it.
@@ -230,7 +231,7 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
     @Override
     public void updateInvoice(Long invoiceId, InvoiceDTO invoiceDTO) {
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(
-                () -> new NoSuchElementException("Invoice does not exist")
+                () -> new InvoiceNotFoundException("This Invoice with id " + invoiceId + " does not exist")
         );
         invoice.setClientVendor(
                 mapperUtil.convert(invoiceDTO.getClientVendor(), new ClientVendor()));
