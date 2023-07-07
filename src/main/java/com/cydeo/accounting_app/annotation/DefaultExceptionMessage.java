@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DefaultExceptionMessage {
 
-    String defaultMessage() default "Something went wrong!";
+    String defaultMessage() default "";
 
 }
