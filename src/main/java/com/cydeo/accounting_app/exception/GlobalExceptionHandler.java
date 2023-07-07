@@ -15,15 +15,19 @@ import java.util.Optional;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({Exception    .class, RuntimeException.class, Throwable.class, BadCredentialsException.class})
-    public String genericException(Throwable e, HandlerMethod handlerMethod, Model model) {
 
+    @ExceptionHandler({Exception    .class, RuntimeException.class, Throwable.class})
+    public String genericException(Throwable exception, HandlerMethod handlerMethod, Model model) {
+        exception.printStackTrace();
+        String message = "Something went wrong!";
         Optional<DefaultExceptionMessageDTO> defaultMessage = getMessageFromAnnotation(handlerMethod.getMethod());
-        if (defaultMessage.isPresent() && !ObjectUtils.isEmpty(defaultMessage.get().getMessage())) {
-            model.addAttribute("message", defaultMessage.get().getMessage());
-            return "error";
+        if (defaultMessage.isPresent()) {
+            message = defaultMessage.get().getMessage();
         }
-        model.addAttribute("message","Something went wrong!");
+        else if (!exception.getMessage().isEmpty()) {
+            message = exception.getMessage();
+        }
+        model.addAttribute("message",message);
         return "error";
     }
 
