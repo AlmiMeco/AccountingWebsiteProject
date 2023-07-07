@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface InvoiceProductRepository extends JpaRepository<InvoiceProduct,Long> {
@@ -30,10 +31,21 @@ public interface InvoiceProductRepository extends JpaRepository<InvoiceProduct,L
             "WHERE i.invoiceStatus = ?1")
     List<InvoiceProduct> findAllInvoiceProductsByInvoiceStatus(InvoiceStatus invoiceStatus);
 
+    @Query("SELECT invPr " +
+            "FROM InvoiceProduct invPr JOIN Invoice i on i.id = invPr.id " +
+            "WHERE i.invoiceStatus = ?1 AND i.company.id = ?2")
+    List<InvoiceProduct> findAllInvoiceProductsByInvoiceStatusAndId(InvoiceStatus invoiceStatus, Long id);
+
     @Query("SELECT invPr.profitLoss " +
             "FROM InvoiceProduct invPr JOIN Invoice i on i.id = invPr.id " +
-            "WHERE i.company.id = ?1 AND i.invoiceStatus = ?2 AND invPr.invoice.invoiceType = ?3 AND i.isDeleted = ?4")
-    BigDecimal findInvoiceProductProfitLossByCompanyIdByInvoiceStatusByInvoiceTypeAndIsDeleted(Long companyId, InvoiceStatus invoiceStatus, InvoiceType invoiceType, boolean isDeleted);
+            "WHERE i.company.id = ?1 AND i.invoiceStatus = ?2 AND invPr.invoice.invoiceType = ?3 AND i.isDeleted = ?4 " +
+            "AND i.date BETWEEN ?5 AND ?6 ")
+    BigDecimal findInvoiceProductProfitLossByCompanyIdByInvoiceStatusByInvoiceTypeAndIsDeleted
+            (Long companyId, InvoiceStatus invoiceStatus, InvoiceType invoiceType, boolean isDeleted,
+             LocalDate startDate, LocalDate endDate);
+
+
+
 
 
 }

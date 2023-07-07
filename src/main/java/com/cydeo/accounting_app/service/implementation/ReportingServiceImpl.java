@@ -1,58 +1,55 @@
 package com.cydeo.accounting_app.service.implementation;
 
-import com.cydeo.accounting_app.dto.InvoiceDTO;
 import com.cydeo.accounting_app.enums.InvoiceStatus;
 import com.cydeo.accounting_app.enums.InvoiceType;
+import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.repository.InvoiceProductRepository;
-import com.cydeo.accounting_app.service.CompanyService;
-import com.cydeo.accounting_app.service.InvoiceService;
-import com.cydeo.accounting_app.service.ReportingService;
-import com.cydeo.accounting_app.service.SecurityService;
+import com.cydeo.accounting_app.service.*;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
+
+import java.util.*;
 
 @Service
-public class ReportingServiceImpl implements ReportingService {
+public class ReportingServiceImpl extends LoggedInUserService implements ReportingService {
 
-
-    private final InvoiceService invoiceService;
     private final InvoiceProductRepository invoiceProductRepository;
-    private final CompanyService companyService;
-    private final SecurityService securityService;
 
-    public ReportingServiceImpl(InvoiceService invoiceService, InvoiceProductRepository invoiceProductRepository, CompanyService companyService, SecurityService securityService) {
-        this.invoiceService = invoiceService;
+
+    public ReportingServiceImpl(SecurityService securityService, MapperUtil mapperUtil, InvoiceProductRepository invoiceProductRepository) {
+        super(securityService, mapperUtil);
         this.invoiceProductRepository = invoiceProductRepository;
-        this.companyService = companyService;
-        this.securityService = securityService;
+
     }
+
 
     @Override
     public Map<String, BigDecimal> profitLossByMonthMap() {
-
-        Map<String, BigDecimal> map = new HashMap<>();
+        Map<String, BigDecimal> map = new LinkedHashMap<>();
 
         //BigDecimal totalSales = invoiceService.listAllInvoicesByType(InvoiceType.SALES).stream()
          //       .map(InvoiceDTO::getPrice)
           //      .reduce(BigDecimal::add).orElseGet(() -> new BigDecimal(0));
-        var profitLoss =  invoiceProductRepository.findInvoiceProductProfitLossByCompanyIdByInvoiceStatusByInvoiceTypeAndIsDeleted
-                (securityService.getLoggedInUser().getCompany().getId(), InvoiceStatus.APPROVED, InvoiceType.SALES, false);
+
+
+        var profitLoss1 =  invoiceProductRepository.findInvoiceProductProfitLossByCompanyIdByInvoiceStatusByInvoiceTypeAndIsDeleted
+                (getCompany().getId(), InvoiceStatus.APPROVED, InvoiceType.SALES, false,
+                        LocalDate.of(2023,4, 1),LocalDate.of(2023, 4, 30) );
+        var profitLoss2 =  invoiceProductRepository.findInvoiceProductProfitLossByCompanyIdByInvoiceStatusByInvoiceTypeAndIsDeleted
+                (getCompany().getId(), InvoiceStatus.APPROVED, InvoiceType.SALES, false,
+                        LocalDate.of(2023,5, 1),LocalDate.of(2023, 5, 31) );
 
         //BigDecimal totalCost = invoiceService.listAllInvoicesByType(InvoiceType.PURCHASE).stream()
         //        .map(InvoiceDTO::getPrice)
         //        .reduce(BigDecimal::add).orElseGet(() -> new BigDecimal(0));
 
-
-
-
         //var profitLoss = totalSales.subtract(totalCost);
 
 //        Hard-Coded for now
-        map.put(LocalDate.now().getYear()+" "+LocalDate.now().minusMonths(3).getMonth().toString(), profitLoss);
+        map.put(LocalDate.now().getYear()+" "+LocalDate.now().minusMonths(3).getMonth().toString(), profitLoss1);
+        map.put(LocalDate.now().getYear()+" "+LocalDate.now().minusMonths(2).getMonth().toString(), profitLoss2);
 
         return map;
     }
