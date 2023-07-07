@@ -3,6 +3,7 @@ package com.cydeo.accounting_app.service.implementation;
 import com.cydeo.accounting_app.dto.UserDTO;
 import com.cydeo.accounting_app.entity.Company;
 import com.cydeo.accounting_app.entity.User;
+import com.cydeo.accounting_app.exception.UserNotFoundException;
 import com.cydeo.accounting_app.mapper.MapperUtil;
 
 import com.cydeo.accounting_app.repository.UserRepository;
@@ -34,13 +35,15 @@ public class UserServiceImpl extends LoggedInUserService implements UserService 
     @Override
     public UserDTO findByUsername(String Username) {
         User user = userRepository.findByUsername(Username).orElseThrow(
-                () -> new UsernameNotFoundException("This user does not exist"));
+                () -> new UserNotFoundException("This user does not exist"));
         return mapperUtil.convert(user,new UserDTO());
     }
 
     @Override
     public UserDTO findById(Long id) {
-        var user = userRepository.getUserById(id);
+//        var user = userRepository.getUserById(id);
+        var user = userRepository.findById(id).orElseThrow(
+                () -> new UserNotFoundException("This user does not exist"));
         return mapperUtil.convert(user, new UserDTO());
     }
 
