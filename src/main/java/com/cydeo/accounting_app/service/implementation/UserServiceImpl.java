@@ -43,7 +43,7 @@ public class UserServiceImpl extends LoggedInUserService implements UserService 
     public UserDTO findById(Long id) {
 //        var user = userRepository.getUserById(id);
         var user = userRepository.findById(id).orElseThrow(
-                () -> new UserNotFoundException("This user does not exist"));
+                () -> new UserNotFoundException("There is no user with given id"));
         return mapperUtil.convert(user, new UserDTO());
     }
 
