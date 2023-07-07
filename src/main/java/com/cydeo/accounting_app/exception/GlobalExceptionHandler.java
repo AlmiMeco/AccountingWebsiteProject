@@ -2,9 +2,7 @@ package com.cydeo.accounting_app.exception;
 
 import com.cydeo.accounting_app.annotation.DefaultExceptionMessage;
 import com.cydeo.accounting_app.dto.DefaultExceptionMessageDTO;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.ui.Model;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.HandlerMethod;
