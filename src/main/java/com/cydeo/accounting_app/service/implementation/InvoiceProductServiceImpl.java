@@ -107,9 +107,18 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
 
     @Override
     public List<InvoiceProductDTO> findAllInvoiceProductsByInvoiceStatus(InvoiceStatus invoiceStatus) {
-        return invoiceProductRepository.findAllInvoiceProductsByInvoiceStatus
-                (InvoiceStatus.APPROVED).stream().sorted(Comparator.comparing(invoiceProduct ->
+        return invoiceProductRepository.findAllInvoiceProductsByInvoiceStatus(
+                InvoiceStatus.APPROVED).stream().sorted(Comparator.comparing(invoiceProduct ->
                 invoiceProduct.getInvoice().getDate())).map(invoiceProduct -> mapperUtil.convert(invoiceProduct,
+                new InvoiceProductDTO())).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<InvoiceProductDTO> findAllInvoiceProductsByInvoiceStatusAndId() {
+        return invoiceProductRepository.findAllInvoiceProductsByInvoiceStatusAndId(
+                InvoiceStatus.APPROVED, getCompany().id).stream().sorted(Comparator.comparing
+                (invoiceProduct -> invoiceProduct.getInvoice().getDate())).map(invoiceProduct ->
+                mapperUtil.convert(invoiceProduct,
                 new InvoiceProductDTO())).collect(Collectors.toList());
     }
 
