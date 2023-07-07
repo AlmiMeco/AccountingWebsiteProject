@@ -15,6 +15,13 @@ import java.util.Optional;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(InvoiceNotFoundException.class)
+    public String invoiceNotFoundException(InvoiceProductNotFoundException exception, Model model){
+        String message = exception.getMessage();
+        model.addAttribute("message",message);
+        return "error";
+    }
+
 
     @ExceptionHandler(InvoiceProductNotFoundException.class)
     public String invoiceProductNotFoundException(InvoiceProductNotFoundException exception, Model model){
