@@ -5,6 +5,7 @@ import com.cydeo.accounting_app.dto.InvoiceProductDTO;
 import com.cydeo.accounting_app.entity.Invoice;
 import com.cydeo.accounting_app.entity.InvoiceProduct;
 import com.cydeo.accounting_app.enums.InvoiceStatus;
+import com.cydeo.accounting_app.exception.InvoiceProductNotFoundException;
 import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.repository.InvoiceProductRepository;
 import com.cydeo.accounting_app.service.InvoiceProductService;
@@ -33,7 +34,7 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
     @Override
     public InvoiceProductDTO findById(Long invoiceProductId) {
         InvoiceProduct invoiceProduct= invoiceProductRepository.findById(invoiceProductId).orElseThrow(
-                () -> new RuntimeException("This InvoiceProduct with id " + invoiceProductId +" does not exist")
+                () -> new InvoiceProductNotFoundException("This InvoiceProduct with id " + invoiceProductId +" does not exist")
         );
         return mapperUtil.convert(invoiceProduct,new InvoiceProductDTO());
     }
@@ -74,7 +75,7 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
     @Override
     public void deleteInvoiceProductById(Long invoiceProductId) {
         InvoiceProduct invoiceProduct = invoiceProductRepository.findById(invoiceProductId).orElseThrow(
-                () -> new RuntimeException("InvoiceProduct does not exist"));
+                () -> new InvoiceProductNotFoundException("This InvoiceProduct with id " + invoiceProductId +" does not exist"));
         invoiceProduct.setIsDeleted(true);
         invoiceProductRepository.save(invoiceProduct);
     }
