@@ -2,8 +2,6 @@ package com.cydeo.accounting_app.exception;
 
 import com.cydeo.accounting_app.annotation.DefaultExceptionMessage;
 import com.cydeo.accounting_app.dto.DefaultExceptionMessageDTO;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,12 +14,11 @@ import java.util.Optional;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvoiceNotFoundException.class)
-    public String invoiceNotFoundException(InvoiceProductNotFoundException exception, Model model){
+    public String invoiceNotFoundException(InvoiceNotFoundException exception, Model model){
         String message = exception.getMessage();
         model.addAttribute("message",message);
         return "error";
     }
-
 
     @ExceptionHandler(InvoiceProductNotFoundException.class)
     public String invoiceProductNotFoundException(InvoiceProductNotFoundException exception, Model model){
@@ -30,7 +27,7 @@ public class GlobalExceptionHandler {
         return "error";
     }
 
-    @ExceptionHandler({Exception    .class, RuntimeException.class, Throwable.class})
+    @ExceptionHandler({Throwable.class})
     public String genericException(Throwable exception, HandlerMethod handlerMethod, Model model) {
         exception.printStackTrace();
         String message = "Something went wrong!";
@@ -44,7 +41,6 @@ public class GlobalExceptionHandler {
         model.addAttribute("message",message);
         return "error";
     }
-
 
     private Optional<DefaultExceptionMessageDTO> getMessageFromAnnotation(Method method) {
         DefaultExceptionMessage defaultExceptionMessage = method.getAnnotation(DefaultExceptionMessage.class);
