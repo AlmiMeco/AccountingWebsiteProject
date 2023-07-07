@@ -2,6 +2,8 @@ package com.cydeo.accounting_app.exception;
 
 import com.cydeo.accounting_app.annotation.DefaultExceptionMessage;
 import com.cydeo.accounting_app.dto.DefaultExceptionMessageDTO;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,6 +15,13 @@ import java.util.Optional;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+
+    @ExceptionHandler(InvoiceProductNotFoundException.class)
+    public String invoiceProductNotFoundException(InvoiceProductNotFoundException exception, Model model){
+        String message = exception.getMessage();
+        model.addAttribute("message",message);
+        return "error";
+    }
 
     @ExceptionHandler({Exception    .class, RuntimeException.class, Throwable.class})
     public String genericException(Throwable exception, HandlerMethod handlerMethod, Model model) {
