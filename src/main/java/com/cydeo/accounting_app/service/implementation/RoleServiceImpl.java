@@ -4,6 +4,7 @@ import com.cydeo.accounting_app.dto.RoleDTO;
 import com.cydeo.accounting_app.dto.UserDTO;
 import com.cydeo.accounting_app.entity.Role;
 import com.cydeo.accounting_app.entity.User;
+import com.cydeo.accounting_app.exception.RoleNotFoundException;
 import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.repository.RoleRepository;
 import com.cydeo.accounting_app.repository.UserRepository;
@@ -36,7 +37,7 @@ public class RoleServiceImpl extends LoggedInUserService implements RoleService 
     public RoleDTO findById(Long id) {
 
         Role role = roleRepository.findById(id).orElseThrow(
-                () -> new UsernameNotFoundException("Role with given ID does not exist")
+                () -> new RoleNotFoundException("Role with given ID does not exist")
         );
 
         return mapperUtil.convert(role, new RoleDTO());
