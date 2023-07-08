@@ -74,7 +74,7 @@ public class ClientVendorController {
         clientVendorService.updateClientVendor(id, clientVendorDTO);
         return "redirect:/clientVendors/list";
     }
-
+    @ExecutionTime
     @GetMapping("/delete/{id}")
     public String deleteClientVendor(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         boolean hasInvoice = invoiceService.existsByClientVendorId(id);
