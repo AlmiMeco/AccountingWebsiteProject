@@ -6,6 +6,6 @@ public class ClientVendorNotFoundException extends RuntimeException{
     }
 
     public ClientVendorNotFoundException(String message, Throwable err) {
-        super(message);
+        super(message, err);
     }
 }
