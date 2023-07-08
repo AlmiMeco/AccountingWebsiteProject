@@ -55,7 +55,7 @@ public class DashboardServiceImpl implements DashboardService {
         return map;
     }
 
-    @ExecutionTime
+    @LoggingAnnotation
     @Override
     public CurrencyDTO getExchangeRates() {
         /**
