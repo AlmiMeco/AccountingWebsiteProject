@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -11,20 +12,28 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class PerformanceAspect {
-    @Around("@annotation(com.cydeo.accounting_app.annotation.ExecutionTime)")
-    public Object calculateExecutionTime(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        Object object = null;
-        String methodName = proceedingJoinPoint.getSignature().getName();
+    @Pointcut("@annotation(com.cydeo.accounting_app.annotation.ExecutionTime)")
+    public void executionTimePC() {}
+
+    @Around("executionTimePC()")
+    public Object aroundAnyExecutionTimeAdvice(ProceedingJoinPoint proceedingJoinPoint) {
+
+        long beforeTime = System.currentTimeMillis();
+        Object result = null;
         log.info("Execution starts:");
-        long startTime = System.currentTimeMillis();
+
         try {
-            return proceedingJoinPoint.proceed();
-        } catch (Throwable throwable){
-           throwable.getStackTrace();
+            result = proceedingJoinPoint.proceed();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
         }
-        long endTime = System.currentTimeMillis();
-        long executionTime = endTime - startTime;
-        log.info("Time taken to execute: {} ms - Method: {}", executionTime, methodName);
-        return object;
+
+        long afterTime = System.currentTimeMillis();
+
+        log.info("Time taken to execute: {} ms - Method: {}"
+                , (afterTime - beforeTime), proceedingJoinPoint.getSignature().toShortString());
+
+        return result;
+
     }
 }
