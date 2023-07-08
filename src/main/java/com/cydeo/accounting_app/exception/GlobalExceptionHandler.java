@@ -13,17 +13,31 @@ import java.util.Optional;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(InvoiceNotFoundException.class)
-    public String invoiceNotFoundException(InvoiceNotFoundException exception, Model model){
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public String categoryNotFoundException(CategoryNotFoundException exception, Model model) {
         String message = exception.getMessage();
-        model.addAttribute("message",message);
+        model.addAttribute("message", message);
+        return "error";
+    }
+
+    @ExceptionHandler(ClientVendorNotFoundException.class)
+    public String clientVendorNotFoundException(ClientVendorNotFoundException exception, Model model) {
+        String message = exception.getMessage();
+        model.addAttribute("message", message);
+        return "error";
+    }
+
+    @ExceptionHandler(InvoiceNotFoundException.class)
+    public String invoiceNotFoundException(InvoiceNotFoundException exception, Model model) {
+        String message = exception.getMessage();
+        model.addAttribute("message", message);
         return "error";
     }
 
     @ExceptionHandler(InvoiceProductNotFoundException.class)
-    public String invoiceProductNotFoundException(InvoiceProductNotFoundException exception, Model model){
+    public String invoiceProductNotFoundException(InvoiceProductNotFoundException exception, Model model) {
         String message = exception.getMessage();
-        model.addAttribute("message",message);
+        model.addAttribute("message", message);
         return "error";
     }
 
@@ -34,11 +48,10 @@ public class GlobalExceptionHandler {
         Optional<DefaultExceptionMessageDTO> defaultMessage = getMessageFromAnnotation(handlerMethod.getMethod());
         if (defaultMessage.isPresent()) {
             message = defaultMessage.get().getMessage();
-        }
-        else if (!exception.getMessage().isEmpty()) {
+        } else if (!exception.getMessage().isEmpty()) {
             message = exception.getMessage();
         }
-        model.addAttribute("message",message);
+        model.addAttribute("message", message);
         return "error";
     }
 
