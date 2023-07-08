@@ -13,6 +13,13 @@ import java.util.Optional;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(ClientVendorNotFoundException.class)
+    public String ClientVendorNotFoundException(ClientVendorNotFoundException exception, Model model){
+        String message = exception.getMessage();
+        model.addAttribute("message",message);
+        return "error";
+    }
+
     @ExceptionHandler(InvoiceNotFoundException.class)
     public String invoiceNotFoundException(InvoiceNotFoundException exception, Model model){
         String message = exception.getMessage();
