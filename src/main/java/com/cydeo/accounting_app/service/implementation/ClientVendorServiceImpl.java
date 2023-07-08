@@ -3,6 +3,7 @@ package com.cydeo.accounting_app.service.implementation;
 import com.cydeo.accounting_app.entity.Company;
 import com.cydeo.accounting_app.entity.User;
 import com.cydeo.accounting_app.enums.ClientVendorType;
+import com.cydeo.accounting_app.exception.ClientVendorNotFoundException;
 import com.cydeo.accounting_app.repository.AddressRepository;
 import com.cydeo.accounting_app.repository.ClientVendorRepository;
 import com.cydeo.accounting_app.dto.ClientVendorDTO;
@@ -24,7 +25,10 @@ public class ClientVendorServiceImpl extends LoggedInUserService implements Clie
     private final ClientVendorRepository clientVendorRepository;
     private final AddressRepository addressRepository;
 
-    public ClientVendorServiceImpl(SecurityService securityService, MapperUtil mapperUtil, ClientVendorRepository clientVendorRepository, AddressRepository addressRepository) {
+    public ClientVendorServiceImpl(SecurityService securityService,
+                                   MapperUtil mapperUtil,
+                                   ClientVendorRepository clientVendorRepository,
+                                   AddressRepository addressRepository) {
         super(securityService, mapperUtil);
         this.clientVendorRepository = clientVendorRepository;
         this.addressRepository = addressRepository;
@@ -43,7 +47,7 @@ public class ClientVendorServiceImpl extends LoggedInUserService implements Clie
     @Override
     public ClientVendorDTO findById(Long id) {
         ClientVendor clientVendor = clientVendorRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Client vendor not found " + id));
+                .orElseThrow(() -> new ClientVendorNotFoundException("Client vendor not found " + id));
         return mapperUtil.convert(clientVendor, new ClientVendorDTO());
     }
 
@@ -90,7 +94,8 @@ public class ClientVendorServiceImpl extends LoggedInUserService implements Clie
 
     @Override
     public void deleteClientVendorById(Long id) {
-        ClientVendor clientVendor = clientVendorRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Client vendor not found " + id));
+        ClientVendor clientVendor = clientVendorRepository.findById(id).orElseThrow(() ->
+                new ClientVendorNotFoundException("Client vendor not found " + id));
         clientVendor.setIsDeleted(true);
         clientVendor.setClientVendorName(clientVendor.getClientVendorName() + "-" + clientVendor.getId());
         clientVendorRepository.save(clientVendor);
@@ -98,7 +103,8 @@ public class ClientVendorServiceImpl extends LoggedInUserService implements Clie
 
     @Override
     public ClientVendorDTO updateClientVendor(Long id, ClientVendorDTO clientVendorDTO) {
-        ClientVendor clientVendor = clientVendorRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Client vendor not found " + id));
+        ClientVendor clientVendor = clientVendorRepository.findById(id).orElseThrow(() ->
+                new ClientVendorNotFoundException("Client vendor not found " + id));
         clientVendorDTO.getAddress().setId(clientVendor.getAddress().getId());
         clientVendorDTO.setCompany(securityService.getLoggedInUser().getCompany());
         ClientVendor updatedClientVendor = mapperUtil.convert(clientVendorDTO, new ClientVendor());
