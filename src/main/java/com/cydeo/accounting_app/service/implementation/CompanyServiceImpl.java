@@ -1,7 +1,8 @@
 package com.cydeo.accounting_app.service.implementation;
 
+import com.cydeo.accounting_app.client.CountryClient;
 import com.cydeo.accounting_app.dto.CompanyDTO;
-import com.cydeo.accounting_app.dto.RoleDTO;
+import com.cydeo.accounting_app.dto.CountryResponseDTO;
 import com.cydeo.accounting_app.entity.Company;
 import com.cydeo.accounting_app.entity.User;
 import com.cydeo.accounting_app.enums.CompanyStatus;
@@ -11,6 +12,7 @@ import com.cydeo.accounting_app.repository.UserRepository;
 import com.cydeo.accounting_app.service.CompanyService;
 import com.cydeo.accounting_app.service.LoggedInUserService;
 import com.cydeo.accounting_app.service.SecurityService;
+import lombok.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,11 +26,13 @@ public class CompanyServiceImpl extends LoggedInUserService implements CompanySe
 
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
+    private final CountryClient countryClient;
 
-    public CompanyServiceImpl(SecurityService securityService, MapperUtil mapperUtil, CompanyRepository companyRepository, UserRepository userRepository) {
+    public CompanyServiceImpl(SecurityService securityService, MapperUtil mapperUtil, CompanyRepository companyRepository, UserRepository userRepository, CountryClient countryClient) {
         super(securityService, mapperUtil);
         this.companyRepository = companyRepository;
         this.userRepository = userRepository;
+        this.countryClient = countryClient;
     }
 
 
@@ -132,5 +136,12 @@ public class CompanyServiceImpl extends LoggedInUserService implements CompanySe
             return false;
         }
         return !existingCompany.getId().equals(companyDTO.getId());
+    }
+
+    @Override
+
+    public List<CountryResponseDTO> getListOfCountries() {
+        return countryClient.getCountries("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfZW1haWwiOiJib2JyaWtoMTk5MkBnbWFpbC5jb20iLCJhcGlfdG9rZW4iOiI2UDU5UTc3SnFFaGNvZTZsczU1cUZudW9tRkVGdnpTVEdGQk9BOFJzWGJsczhPc240U3FtckZ1NUI3eW1LVWdYeG5vIn0sImV4cCI6MTY4OTAxMTgwNH0.lmUr8dUdcmQdGBUSvAMkakdS4kH66BuuOksROUO_GDA");
+
     }
 }
