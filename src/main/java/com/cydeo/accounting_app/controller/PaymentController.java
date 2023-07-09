@@ -2,8 +2,12 @@ package com.cydeo.accounting_app.controller;
 
 import com.cydeo.accounting_app.service.PaymentService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.time.LocalDate;
 
 @Controller
 @RequestMapping("/payments")
@@ -15,18 +19,13 @@ public class PaymentController {
         this.paymentService = paymentService;
     }
 
-    @GetMapping("/list")
-    public String paymentsList(){
+    @GetMapping({"/list","/list/{year}"})
+    public String paymentListWithYearQuery(@RequestParam(value = "year", required = false) String queryYear,  Model model){
 
+        int yearAsInt = (queryYear == null) ? LocalDate.now().getYear() : Integer.parseInt(queryYear);
 
-
-        return "payment/payment-list";
-    }
-
-    @GetMapping("/list/{year}")
-    public String paymentListWithYearQuery(){
-
-
+        model.addAttribute("year", yearAsInt);
+        model.addAttribute("payments" ,paymentService.listAllPaymentsByYear(yearAsInt));
 
         return "payment/payment-list";
     }
