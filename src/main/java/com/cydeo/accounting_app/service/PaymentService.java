@@ -8,4 +8,6 @@ public interface PaymentService {
 
     List<PaymentDTO> listAllPaymentsByYear(int year);
 
+    void createPaymentsIfYearIsEmpty(int year);
+
 }
