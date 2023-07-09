@@ -67,4 +67,10 @@ public class PaymentServiceImpl extends LoggedInUserService implements PaymentSe
 
     }
 
+    @Override
+    public PaymentDTO findById(Long id) {
+        return mapperUtil.convert(paymentRepository.findById(id), new PaymentDTO());
+
+    }
+
 }

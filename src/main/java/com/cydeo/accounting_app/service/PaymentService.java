@@ -10,4 +10,6 @@ public interface PaymentService {
 
     void createPaymentsIfYearIsEmpty(int year);
 
+    PaymentDTO findById(Long id);
+
 }
