@@ -24,6 +24,8 @@ public class PaymentController {
 
         int yearAsInt = (queryYear == null) ? LocalDate.now().getYear() : Integer.parseInt(queryYear);
 
+        paymentService.createPaymentsIfYearIsEmpty(yearAsInt);
+
         model.addAttribute("year", yearAsInt);
         model.addAttribute("payments" ,paymentService.listAllPaymentsByYear(yearAsInt));
 
