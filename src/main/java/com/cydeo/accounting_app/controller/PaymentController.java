@@ -1,14 +1,14 @@
 package com.cydeo.accounting_app.controller;
 
+import com.cydeo.accounting_app.entity.ChargeRequest;
 import com.cydeo.accounting_app.enums.Currency;
 import com.cydeo.accounting_app.service.PaymentService;
-import org.springframework.security.core.parameters.P;
+import com.cydeo.accounting_app.service.StripeService;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Charge;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,10 +18,13 @@ import java.time.LocalDate;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final StripeService stripeService;
+
     private final String stripePublicKey = "pk_test_51NSOnCGGEydpGaBd6DpP6VecR763l5Gdmrx3k8sonXMB2A4zf4TPjlzPDEpFfzATTEjVtzIxsUdOp2kRcki1K5zq00PEk7tSN9";
 
-    public PaymentController(PaymentService paymentService) {
+    public PaymentController(PaymentService paymentService, StripeService stripeService) {
         this.paymentService = paymentService;
+        this.stripeService = stripeService;
     }
 
     @GetMapping({"/list","/list/{year}"})
@@ -46,6 +49,22 @@ public class PaymentController {
         model.addAttribute("currency", Currency.USD);
 
         return "payment/payment-method";
+    }
+
+    @PostMapping("/charge")
+    public String chargeResponse(ChargeRequest chargeRequest, Model model) throws StripeException {
+
+        chargeRequest.setDescription("Example");
+        chargeRequest.setCurrency(Currency.USD);
+
+        Charge processedCharge = stripeService.charge(chargeRequest);
+
+        model.addAttribute("id", processedCharge.getId());
+        model.addAttribute("status", processedCharge.getStatus());
+        model.addAttribute("chargeId", processedCharge.getId());
+        model.addAttribute("balance_transaction", processedCharge.getBalanceTransaction());
+
+        return "payment/payment-result";
     }
 
 //    @GetMapping("/toInvoice/{id}")
