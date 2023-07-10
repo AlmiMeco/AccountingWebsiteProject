@@ -1,5 +1,6 @@
 package com.cydeo.accounting_app.controller;
 
+import com.cydeo.accounting_app.enums.Currency;
 import com.cydeo.accounting_app.service.PaymentService;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Controller
@@ -16,6 +18,7 @@ import java.time.LocalDate;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final String stripePublicKey = "pk_test_51NSOnCGGEydpGaBd6DpP6VecR763l5Gdmrx3k8sonXMB2A4zf4TPjlzPDEpFfzATTEjVtzIxsUdOp2kRcki1K5zq00PEk7tSN9";
 
     public PaymentController(PaymentService paymentService) {
         this.paymentService = paymentService;
@@ -37,15 +40,23 @@ public class PaymentController {
     @GetMapping("/newpayment/{id}")
     public String paymentsPayButtn(@PathVariable("id") Long id, Model model){
 
-        var a = paymentService.findById(id);
-        model.addAttribute("payment", a);
+//        Hard Coded 'amount' for now
+        model.addAttribute("amount", BigDecimal.valueOf(250*100));
+        model.addAttribute("stripePublicKey", stripePublicKey);
+        model.addAttribute("currency", Currency.USD);
 
-        return "payment/payment-result";
+        return "payment/payment-method";
     }
 
-    @GetMapping("/toInvoice/{id}")
-    public String paymentsInvoiceButtn(@PathVariable("id") Long id){
-
-        return "payment/payment-result";
-    }
+//    @GetMapping("/toInvoice/{id}")
+//    public String paymentsInvoiceButtn(@PathVariable("id") Long id, Model model){
+//
+//        var processedPayment= paymentService.findById(id);
+//
+//        model.addAttribute("id", processedPayment.getId());
+//        model.addAttribute("status", processedPayment.getIsPaid());
+//        model.addAttribute("chargeId", processedPayment.getCompanyStripeId());
+//
+//        return "payment/payment-result";
+//    }
 }
