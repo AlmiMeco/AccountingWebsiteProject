@@ -41,6 +41,13 @@ public class GlobalExceptionHandler {
         return "error";
     }
 
+    @ExceptionHandler(CompanyNotFoundException.class)
+    public String companyNotFoundException(CompanyNotFoundException exception, Model model) {
+        String message = exception.getMessage();
+        model.addAttribute("message", message);
+        return "error";
+    }
+
     @ExceptionHandler({Throwable.class})
     public String genericException(Throwable exception, HandlerMethod handlerMethod, Model model) {
         exception.printStackTrace();
