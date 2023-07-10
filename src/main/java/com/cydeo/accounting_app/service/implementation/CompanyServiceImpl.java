@@ -1,6 +1,11 @@
 package com.cydeo.accounting_app.service.implementation;
 
+import com.cydeo.accounting_app.client.CountryClient;
 import com.cydeo.accounting_app.dto.CompanyDTO;
+
+
+import com.cydeo.accounting_app.dto.CountryResponseDTO;
+
 import com.cydeo.accounting_app.entity.Company;
 import com.cydeo.accounting_app.entity.User;
 import com.cydeo.accounting_app.enums.CompanyStatus;
@@ -11,6 +16,7 @@ import com.cydeo.accounting_app.repository.UserRepository;
 import com.cydeo.accounting_app.service.CompanyService;
 import com.cydeo.accounting_app.service.LoggedInUserService;
 import com.cydeo.accounting_app.service.SecurityService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,13 +27,18 @@ import java.util.stream.Collectors;
 @Service
 public class CompanyServiceImpl extends LoggedInUserService implements CompanyService {
 
+    @Value("${country.client.token}")
+    private String authorization;
+
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
+    private final CountryClient countryClient;
 
-    public CompanyServiceImpl(SecurityService securityService, MapperUtil mapperUtil, CompanyRepository companyRepository, UserRepository userRepository) {
+    public CompanyServiceImpl(SecurityService securityService, MapperUtil mapperUtil, CompanyRepository companyRepository, UserRepository userRepository, CountryClient countryClient) {
         super(securityService, mapperUtil);
         this.companyRepository = companyRepository;
         this.userRepository = userRepository;
+        this.countryClient = countryClient;
     }
 
 
@@ -131,5 +142,11 @@ public class CompanyServiceImpl extends LoggedInUserService implements CompanySe
             return false;
         }
         return !existingCompany.getId().equals(companyDTO.getId());
+    }
+
+    @Override
+
+    public List<CountryResponseDTO> getListOfCountries() {
+           return countryClient.getCountries(authorization);
     }
 }
