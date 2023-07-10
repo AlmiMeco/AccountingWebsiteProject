@@ -10,6 +10,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Builder
 public class CategoryDTO {
 
         private Long id;
