@@ -20,6 +20,14 @@ public class GlobalExceptionHandler {
         return "error";
     }
 
+    @ExceptionHandler(ProductNotFoundException.class)
+    public String productNotFoundException(ProductNotFoundException exception, Model model) {
+        String message = exception.getMessage();
+        model.addAttribute("message", message);
+        return "error";
+    }
+    
+
     @ExceptionHandler(ClientVendorNotFoundException.class)
     public String clientVendorNotFoundException(ClientVendorNotFoundException exception, Model model) {
         String message = exception.getMessage();

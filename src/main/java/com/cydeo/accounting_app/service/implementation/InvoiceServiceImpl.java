@@ -7,6 +7,7 @@ import com.cydeo.accounting_app.entity.Invoice;
 import com.cydeo.accounting_app.enums.InvoiceStatus;
 import com.cydeo.accounting_app.enums.InvoiceType;
 import com.cydeo.accounting_app.exception.InvoiceNotFoundException;
+import com.cydeo.accounting_app.exception.ProductLowLimitAlertException;
 import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.repository.InvoiceRepository;
 import com.cydeo.accounting_app.service.*;
@@ -19,8 +20,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,6 +79,7 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
          * If invoice approved it needs to increase or decrease quantity stock of product.
          * Code below handles it.
          */
+        List<ProductDTO> productHasLimitAlert = new ArrayList<>();
         invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId).stream()
                 .map(invoiceProductDTO -> {
                     Long productId = invoiceProductDTO.getProduct().getId();
@@ -89,6 +90,12 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
                         productDTO.setQuantityInStock(productCurrentQuantity + IPproductQuantity);
                     } else {
                         productDTO.setQuantityInStock(productCurrentQuantity - IPproductQuantity);
+                        /**
+                         * This logic handles low product limit alert.
+                         * All low products with low limit added to the list.
+                         */
+                        if ((productCurrentQuantity - IPproductQuantity) < invoiceProductDTO.getProduct().getLowLimitAlert())
+                            productHasLimitAlert.add(invoiceProductDTO.getProduct());
                     }
                     return productDTO;
                 })
@@ -102,7 +109,7 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
          * Set RemainingQty  = Quantity for new Purchase Invoice
          * Set ProfitLoss = 0
          */
-        if(invoice.getInvoiceType().equals(InvoiceType.PURCHASE)) {
+        if (invoice.getInvoiceType().equals(InvoiceType.PURCHASE)) {
             invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId)
                     .stream()
                     .peek(invoiceProductDTO -> {
@@ -110,8 +117,7 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
                         invoiceProductDTO.setProfitLoss(new BigDecimal(BigInteger.ZERO));
                     })
                     .forEach(invoiceProductDTO -> invoiceProductService.saveInvoiceProduct(invoiceProductDTO, invoiceId));
-        }
-        else {
+        } else {
             /**
              * When we have approved sales invoice we should:
              * Calculate profitLoss for invoice
@@ -121,6 +127,9 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
         }
         invoice.setInvoiceStatus(InvoiceStatus.APPROVED);
         invoiceRepository.save(invoice);
+        for (ProductDTO each : productHasLimitAlert){
+            throw new ProductLowLimitAlertException("Stock of this " + each.getName() +  " decreased below low limit!");
+        }
     }
 
     @Override
@@ -228,6 +237,7 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
             threeLastInvoices.add(listAllApprovedInvoices().get(i));
         return threeLastInvoices;
     }
+
     @Override
     public void updateInvoice(Long invoiceId, InvoiceDTO invoiceDTO) {
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(
