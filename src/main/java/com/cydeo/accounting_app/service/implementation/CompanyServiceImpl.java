@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class CompanyServiceImpl extends LoggedInUserService implements CompanyService {
 
     @Value("${country.client.token}")
-    String authorization;
+    private String authorization;
 
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
