@@ -12,7 +12,7 @@ import com.cydeo.accounting_app.repository.UserRepository;
 import com.cydeo.accounting_app.service.CompanyService;
 import com.cydeo.accounting_app.service.LoggedInUserService;
 import com.cydeo.accounting_app.service.SecurityService;
-import lombok.Value;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,6 +23,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class CompanyServiceImpl extends LoggedInUserService implements CompanyService {
+
+    @Value("${country.client.token}")
+    String authorization;
 
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
@@ -141,7 +144,6 @@ public class CompanyServiceImpl extends LoggedInUserService implements CompanySe
     @Override
 
     public List<CountryResponseDTO> getListOfCountries() {
-        return countryClient.getCountries("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfZW1haWwiOiJib2JyaWtoMTk5MkBnbWFpbC5jb20iLCJhcGlfdG9rZW4iOiI2UDU5UTc3SnFFaGNvZTZsczU1cUZudW9tRkVGdnpTVEdGQk9BOFJzWGJsczhPc240U3FtckZ1NUI3eW1LVWdYeG5vIn0sImV4cCI6MTY4OTAxMTgwNH0.lmUr8dUdcmQdGBUSvAMkakdS4kH66BuuOksROUO_GDA");
-
+           return countryClient.getCountries(authorization);
     }
 }
