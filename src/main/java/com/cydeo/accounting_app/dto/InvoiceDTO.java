@@ -4,6 +4,8 @@ import com.cydeo.accounting_app.enums.InvoiceStatus;
 import com.cydeo.accounting_app.enums.InvoiceType;
 import java.time.LocalDate;
 import java.math.BigDecimal;
+import java.util.List;
+
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -14,6 +16,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Builder
 public class InvoiceDTO {
 
     private Long id;
@@ -28,4 +31,5 @@ public class InvoiceDTO {
     private BigDecimal price;
     private BigDecimal tax;
     private BigDecimal total;
+    private List<InvoiceProductDTO> invoiceProducts;
 }

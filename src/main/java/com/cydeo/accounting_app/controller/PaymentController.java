@@ -1,14 +1,18 @@
 package com.cydeo.accounting_app.controller;
 
+import com.cydeo.accounting_app.dto.PaymentDTO;
+import com.cydeo.accounting_app.entity.ChargeRequest;
+import com.cydeo.accounting_app.enums.Currency;
 import com.cydeo.accounting_app.service.PaymentService;
-import org.springframework.security.core.parameters.P;
+import com.cydeo.accounting_app.service.StripeService;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Charge;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Controller
@@ -16,9 +20,14 @@ import java.time.LocalDate;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final StripeService stripeService;
 
-    public PaymentController(PaymentService paymentService) {
+    @Value("${stripe.public.key}")
+    private String stripePublicKey;
+
+    public PaymentController(PaymentService paymentService, StripeService stripeService) {
         this.paymentService = paymentService;
+        this.stripeService = stripeService;
     }
 
     @GetMapping({"/list","/list/{year}"})
@@ -36,16 +45,46 @@ public class PaymentController {
 
     @GetMapping("/newpayment/{id}")
     public String paymentsPayButtn(@PathVariable("id") Long id, Model model){
+//        Hard Coded 'amount' for now
+        PaymentDTO payment = paymentService.findById(id);
+        System.out.println(payment);
 
-        var a = paymentService.findById(id);
-        model.addAttribute("payment", a);
+        model.addAttribute( "amount" ,payment.getAmount()*100);
 
-        return "payment/payment-result";
+        model.addAttribute("stripePublicKey", stripePublicKey);
+        model.addAttribute("currency", Currency.USD);
+        model.addAttribute("modelId", id);
+        return "payment/payment-method";
     }
 
-    @GetMapping("/toInvoice/{id}")
-    public String paymentsInvoiceButtn(@PathVariable("id") Long id){
+    @PostMapping("/charge/{id}")
+    public String chargeResponse(@PathVariable("id") Long id, ChargeRequest chargeRequest, Model model) throws StripeException {
 
-        return "payment/payment-result";
+        chargeRequest.setDescription("Example");
+        chargeRequest.setCurrency(Currency.USD);
+
+        Charge processedCharge = stripeService.charge(chargeRequest);
+
+        paymentService.update(id);
+//
+//        model.addAttribute("id", processedCharge.getId());
+//        model.addAttribute("status", processedCharge.getStatus());
+//        model.addAttribute("chargeId", processedCharge.getId());
+//        model.addAttribute("balance_transaction", processedCharge.getBalanceTransaction());
+//
+////        return "payment/payment-result";
+        return "redirect:/payments/list";
     }
+
+//    @GetMapping("/toInvoice/{id}")
+//    public String paymentsInvoiceButtn(@PathVariable("id") Long id, Model model){
+//
+//        var processedPayment= paymentService.findById(id);
+//
+//        model.addAttribute("id", processedPayment.getId());
+//        model.addAttribute("status", processedPayment.getIsPaid());
+//        model.addAttribute("chargeId", processedPayment.getCompanyStripeId());
+//
+//        return "payment/payment-result";
+//    }
 }

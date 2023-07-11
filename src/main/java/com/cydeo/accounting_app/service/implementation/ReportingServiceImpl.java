@@ -53,4 +53,14 @@ public class ReportingServiceImpl extends LoggedInUserService implements Reporti
 
         return map;
     }
+
+    @Override
+    public Map<String, BigDecimal> findProfitLossByMonthWithCompanyId() {
+        Map<String, BigDecimal> map = new LinkedHashMap<>();
+        for (int i = 0; i < invoiceProductRepository.getMonthlyDates(getCompany().getId()).size(); i++) {
+            map.put(invoiceProductRepository.getMonthlyDates(getCompany().getId()).get(i),
+                    invoiceProductRepository.getMonthlyProfitLoss(getCompany().getId()).get(i));
+        }
+        return map;
+    }
 }

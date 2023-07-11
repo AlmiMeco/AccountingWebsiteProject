@@ -1,6 +1,8 @@
 package com.cydeo.accounting_app.service;
 
 import com.cydeo.accounting_app.dto.CompanyDTO;
+import com.cydeo.accounting_app.dto.CountryResponseDTO;
+import com.cydeo.accounting_app.dto.CurrencyDTO;
 
 import java.util.List;
 
@@ -22,6 +24,8 @@ public interface CompanyService {
     void saveCompany(CompanyDTO companyDTO);
 
     boolean companyNameIsExist(CompanyDTO companyDTO);
+
+    List<CountryResponseDTO> getListOfCountries();
 
 }
 

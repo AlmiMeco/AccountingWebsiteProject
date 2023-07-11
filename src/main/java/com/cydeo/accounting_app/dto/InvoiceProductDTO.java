@@ -11,6 +11,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Builder
 public class InvoiceProductDTO {
 
     private Long id;

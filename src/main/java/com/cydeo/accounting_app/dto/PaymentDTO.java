@@ -17,7 +17,7 @@ public class PaymentDTO {
     private Integer year;
     private Months month;
     private LocalDate paymentDate;
-    private BigDecimal amount;
+    private int amount;
     private Boolean isPaid;
     private String companyStripeId;
     private String description;

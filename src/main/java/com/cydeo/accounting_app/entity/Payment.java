@@ -21,7 +21,7 @@ public class Payment extends BaseEntity {
 
     private int year;
 
-    private BigDecimal amount;
+    private int amount;
 
     private LocalDate paymentDate;
 

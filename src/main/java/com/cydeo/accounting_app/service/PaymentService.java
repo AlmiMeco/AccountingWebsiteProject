@@ -12,4 +12,6 @@ public interface PaymentService {
 
     PaymentDTO findById(Long id);
 
+    PaymentDTO update(Long id);
+
 }

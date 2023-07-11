@@ -10,6 +10,7 @@ import javax.validation.constraints.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class UserDTO {
 
     private Long id;

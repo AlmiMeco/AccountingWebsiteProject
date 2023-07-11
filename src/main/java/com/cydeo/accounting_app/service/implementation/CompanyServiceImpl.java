@@ -1,34 +1,44 @@
 package com.cydeo.accounting_app.service.implementation;
 
+import com.cydeo.accounting_app.client.CountryClient;
 import com.cydeo.accounting_app.dto.CompanyDTO;
-import com.cydeo.accounting_app.dto.RoleDTO;
+
+
+import com.cydeo.accounting_app.dto.CountryResponseDTO;
+
 import com.cydeo.accounting_app.entity.Company;
 import com.cydeo.accounting_app.entity.User;
 import com.cydeo.accounting_app.enums.CompanyStatus;
+import com.cydeo.accounting_app.exception.CompanyNotFoundException;
 import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.repository.CompanyRepository;
 import com.cydeo.accounting_app.repository.UserRepository;
 import com.cydeo.accounting_app.service.CompanyService;
 import com.cydeo.accounting_app.service.LoggedInUserService;
 import com.cydeo.accounting_app.service.SecurityService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class CompanyServiceImpl extends LoggedInUserService implements CompanyService {
 
+    @Value("${country.client.token}")
+    private String authorization;
+
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
+    private final CountryClient countryClient;
 
-    public CompanyServiceImpl(SecurityService securityService, MapperUtil mapperUtil, CompanyRepository companyRepository, UserRepository userRepository) {
+    public CompanyServiceImpl(SecurityService securityService, MapperUtil mapperUtil, CompanyRepository companyRepository, UserRepository userRepository, CountryClient countryClient) {
         super(securityService, mapperUtil);
         this.companyRepository = companyRepository;
         this.userRepository = userRepository;
+        this.countryClient = countryClient;
     }
 
 
@@ -63,8 +73,8 @@ public class CompanyServiceImpl extends LoggedInUserService implements CompanySe
     @Override
     public CompanyDTO findById(Long id) {
         Company company = companyRepository.findCompanyById(id).
-                orElseThrow(() -> new NoSuchElementException
-                        ("Company with id# "+id+" is not found"));
+                orElseThrow(() -> new CompanyNotFoundException(
+                        ("Company with id# "+id+" is not found")));
         return mapperUtil.convert(company, new CompanyDTO());
     }
 
@@ -90,7 +100,7 @@ public class CompanyServiceImpl extends LoggedInUserService implements CompanySe
     @Override
     public void activateCompany(Long id) {
 
-        Company foundCompany = companyRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No company found"));
+        Company foundCompany = companyRepository.findById(id).orElseThrow(() -> new CompanyNotFoundException("No Company with id#" +id+" found"));
             foundCompany.setCompanyStatus(CompanyStatus.ACTIVE);
           companyRepository.save(foundCompany);
 
@@ -100,7 +110,7 @@ public class CompanyServiceImpl extends LoggedInUserService implements CompanySe
 
         @Override
         public void deactivateCompany(Long id) {
-            Company foundCompany = companyRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No company found"));
+            Company foundCompany = companyRepository.findById(id).orElseThrow(() -> new CompanyNotFoundException("No Company with id#" +id+" found"));
             foundCompany.setCompanyStatus(CompanyStatus.PASSIVE);
            companyRepository.save(foundCompany);
 
@@ -132,5 +142,11 @@ public class CompanyServiceImpl extends LoggedInUserService implements CompanySe
             return false;
         }
         return !existingCompany.getId().equals(companyDTO.getId());
+    }
+
+    @Override
+
+    public List<CountryResponseDTO> getListOfCountries() {
+           return countryClient.getCountries(authorization);
     }
 }
