@@ -8,11 +8,13 @@ import com.cydeo.accounting_app.enums.InvoiceType;
 import com.cydeo.accounting_app.service.SecurityService;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -44,7 +46,19 @@ public interface InvoiceProductRepository extends JpaRepository<InvoiceProduct,L
             (Long companyId, InvoiceStatus invoiceStatus, InvoiceType invoiceType, boolean isDeleted,
              LocalDate startDate, LocalDate endDate);
 
+    @Query("SELECT FUNCTION('to_char', i.date, 'YYYY Month') AS date " +
+            "FROM InvoiceProduct ip JOIN ip.invoice i " +
+            "WHERE i.invoiceType = 'SALES' AND i.isDeleted = false AND i.invoiceStatus = 'APPROVED' " +
+            "      AND i.company.id = :companyId "+
+            "GROUP BY FUNCTION('to_char', i.date, 'YYYY Month')")
+    List<String> getMonthlyDates(@Param("companyId") Long companyId);
 
+    @Query("SELECT SUM(ip.profitLoss) AS profit_loss " +
+            "FROM InvoiceProduct ip JOIN ip.invoice i " +
+            "WHERE i.invoiceType = 'SALES' AND i.isDeleted = false AND i.invoiceStatus = 'APPROVED' " +
+            "      AND i.company.id = :companyId "+
+            "GROUP BY FUNCTION('to_char', i.date, 'YYYY Month')")
+    List<BigDecimal> getMonthlyProfitLoss(@Param("companyId") Long companyId);
 
 
 
