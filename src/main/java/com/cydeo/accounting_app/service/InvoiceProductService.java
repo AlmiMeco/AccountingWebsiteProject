@@ -23,7 +23,8 @@ public interface InvoiceProductService {
 
     List<InvoiceProductDTO> findAllInvoiceProductsByInvoiceStatus(InvoiceStatus invoiceStatus);
 
-    List<InvoiceProductDTO> findAllInvoiceProductsByInvoiceStatusAndId();
+
+    List<InvoiceProductDTO> findAllInvoiceProductsByStatusAndCompany();
 
 
 
