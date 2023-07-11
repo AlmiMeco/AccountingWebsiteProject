@@ -4,6 +4,7 @@ import com.cydeo.accounting_app.entity.ChargeRequest;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -13,7 +14,8 @@ import java.util.Map;
 @Service
 public class StripeService {
 
-    private final String secretKey = "sk_test_51NSOnCGGEydpGaBd2jggppmLbqmDRRdegUv3T9W7XlQiohhTOFTOQI02Zn3zu7rjLM90KBF3wo7ZA04TU0sygd6900K6BXGxTV";
+    @Value("${stripe.secret.key}")
+    private String secretKey;
 
     @PostConstruct
     public void init(){

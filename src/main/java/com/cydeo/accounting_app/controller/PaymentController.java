@@ -6,6 +6,7 @@ import com.cydeo.accounting_app.service.PaymentService;
 import com.cydeo.accounting_app.service.StripeService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,8 @@ public class PaymentController {
     private final PaymentService paymentService;
     private final StripeService stripeService;
 
-    private final String stripePublicKey = "pk_test_51NSOnCGGEydpGaBd6DpP6VecR763l5Gdmrx3k8sonXMB2A4zf4TPjlzPDEpFfzATTEjVtzIxsUdOp2kRcki1K5zq00PEk7tSN9";
+    @Value("${stripe.public.key}")
+    private String stripePublicKey;
 
     public PaymentController(PaymentService paymentService, StripeService stripeService) {
         this.paymentService = paymentService;
