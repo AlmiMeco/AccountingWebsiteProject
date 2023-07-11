@@ -17,6 +17,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,7 +59,7 @@ public class PaymentServiceImpl extends LoggedInUserService implements PaymentSe
                 Payment payment = new Payment();
                 payment.setMonth(months);
                 payment.setYear(year);
-                payment.setAmount(BigDecimal.valueOf(250));
+                payment.setAmount(250);
                 payment.setIsPaid(false);
                 payment.setCompany(loggedCompany);
 
@@ -69,7 +71,26 @@ public class PaymentServiceImpl extends LoggedInUserService implements PaymentSe
 
     @Override
     public PaymentDTO findById(Long id) {
-        return mapperUtil.convert(paymentRepository.findById(id), new PaymentDTO());
+
+        Payment payment = paymentRepository.findById(id).orElseThrow(
+                () -> new NoSuchElementException("ERROR")
+        );
+
+        return mapperUtil.convert(payment, new PaymentDTO());
+
+    }
+
+    @Override
+    public PaymentDTO update(Long id) {
+
+        Payment payment = paymentRepository.findById(id).orElseThrow(
+                () -> new NoSuchElementException("ERROR")
+        );
+
+        payment.setIsPaid(true);
+
+        paymentRepository.save(payment);
+        return mapperUtil.convert(payment, new PaymentDTO());
 
     }
 
