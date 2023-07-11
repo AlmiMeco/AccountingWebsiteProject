@@ -48,5 +48,7 @@ public interface InvoiceProductRepository extends JpaRepository<InvoiceProduct,L
 
 
 
+
+
 }
 
