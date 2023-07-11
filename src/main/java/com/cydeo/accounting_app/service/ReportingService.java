@@ -7,6 +7,6 @@ public interface ReportingService {
 
     Map<String, BigDecimal> profitLossByMonthMap();
 
-    Map<String, BigDecimal> findProfitLossByMonthWithCompanyId();
+   // Map<String, BigDecimal> findProfitLossByMonthWithCompanyId();
 
 }
