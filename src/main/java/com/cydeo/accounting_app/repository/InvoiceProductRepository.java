@@ -60,7 +60,9 @@ public interface InvoiceProductRepository extends JpaRepository<InvoiceProduct,L
             "GROUP BY FUNCTION('to_char', i.date, 'YYYY Month')")
     List<BigDecimal> getMonthlyProfitLoss(@Param("companyId") Long companyId);
 
+    List<InvoiceProduct> findByInvoiceInvoiceStatusAndInvoiceCompany(InvoiceStatus invoice_invoiceStatus, Company invoice_company);
 
+    List<InvoiceProduct> findByInvoiceInvoiceTypeAndInvoiceCompany(InvoiceType invoice_invoiceType, Company invoice_company);
 
 
 
