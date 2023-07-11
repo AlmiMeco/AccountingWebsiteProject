@@ -16,7 +16,8 @@
                 <div class="col-md-10">
                     <h1 class="display-1 fw-bold">OOPS!</h1>
                     <br><br>
-                    <p class="fs-3 text-danger" th:text="${message}"></p>
+                    <p th:if="${message}=='No message available'" class="fs-3 text-danger">This request is not correct</p>
+                    <p th:unless="${message}=='No message available'" class="fs-3 text-danger" th:text="${message}"></p>
                     <br><br><br>
                     <div class="justify-content-center">
                         <a href="javascript:history.back()" class="btn btn-primary">Go Back</a>
