@@ -1,10 +1,7 @@
 package com.cydeo.accounting_app.service.implementation;
 
-import com.cydeo.accounting_app.client.CountryClient;
 import com.cydeo.accounting_app.dto.CompanyDTO;
 
-
-import com.cydeo.accounting_app.dto.CountryResponseDTO;
 
 import com.cydeo.accounting_app.entity.Company;
 import com.cydeo.accounting_app.entity.User;
@@ -13,10 +10,10 @@ import com.cydeo.accounting_app.exception.CompanyNotFoundException;
 import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.repository.CompanyRepository;
 import com.cydeo.accounting_app.repository.UserRepository;
+import com.cydeo.accounting_app.service.AddressService;
 import com.cydeo.accounting_app.service.CompanyService;
 import com.cydeo.accounting_app.service.LoggedInUserService;
 import com.cydeo.accounting_app.service.SecurityService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,18 +24,17 @@ import java.util.stream.Collectors;
 @Service
 public class CompanyServiceImpl extends LoggedInUserService implements CompanyService {
 
-    @Value("${country.client.token}")
-    private String authorization;
-
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
-    private final CountryClient countryClient;
+    private final AddressService addressService;
 
-    public CompanyServiceImpl(SecurityService securityService, MapperUtil mapperUtil, CompanyRepository companyRepository, UserRepository userRepository, CountryClient countryClient) {
+
+    public CompanyServiceImpl(SecurityService securityService, MapperUtil mapperUtil, CompanyRepository companyRepository, UserRepository userRepository, AddressService addressService) {
         super(securityService, mapperUtil);
         this.companyRepository = companyRepository;
         this.userRepository = userRepository;
-        this.countryClient = countryClient;
+
+        this.addressService = addressService;
     }
 
 
@@ -145,8 +141,13 @@ public class CompanyServiceImpl extends LoggedInUserService implements CompanySe
     }
 
     @Override
-
-    public List<CountryResponseDTO> getListOfCountries() {
-           return countryClient.getCountries(authorization);
+    public List<String> getListOfCountries() {
+        return addressService.listOfCountries();
     }
+
+//    @Override
+//
+//    public List<CountryResponseDTO> getListOfCountries() {
+//           return countryClient.getCountries(authorization);
+//    }
 }
