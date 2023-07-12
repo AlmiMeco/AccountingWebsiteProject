@@ -6,7 +6,5 @@ public class ProductLowLimitAlertException extends RuntimeException {
         super(message);
     }
 
-    public ProductLowLimitAlertException(String message, Throwable error) {
-        super(message, error);
-    }
+
 }
