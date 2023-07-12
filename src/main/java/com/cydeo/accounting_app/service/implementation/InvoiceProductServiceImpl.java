@@ -4,7 +4,9 @@ import com.cydeo.accounting_app.dto.InvoiceDTO;
 import com.cydeo.accounting_app.dto.InvoiceProductDTO;
 import com.cydeo.accounting_app.entity.Invoice;
 import com.cydeo.accounting_app.entity.InvoiceProduct;
+import com.cydeo.accounting_app.entity.Product;
 import com.cydeo.accounting_app.enums.InvoiceStatus;
+import com.cydeo.accounting_app.enums.InvoiceType;
 import com.cydeo.accounting_app.exception.InvoiceProductNotFoundException;
 import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.repository.InvoiceProductRepository;
@@ -96,14 +98,20 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
     }
 
     @Override
-    public boolean isStockNotEnough(InvoiceProductDTO invoiceProductDTO) {
+    public boolean isStockNotEnough(InvoiceProductDTO invoiceProductDTO,Long invoiceId) {
         /**
          * Check if we have enough products to sell
          */
-        if(invoiceProductDTO.getQuantity()==null||
-           invoiceProductDTO.getProduct().getQuantityInStock()==null)
-            return false;
-        return invoiceProductDTO.getQuantity()>invoiceProductDTO.getProduct().getQuantityInStock();
+        Long productId = invoiceProductDTO.getProduct().getId();
+
+        int currentProductQuantityInInvoice = invoiceProductRepository.findAllByInvoiceId(invoiceId)
+                .stream().filter(invoiceProduct -> invoiceProduct.getProduct().getId().equals(productId))
+                .map(InvoiceProduct::getQuantity)
+                .reduce(Integer::sum)
+                .orElse(0);
+
+        int currentQuantity = currentProductQuantityInInvoice+invoiceProductDTO.getQuantity();
+        return currentQuantity>invoiceProductDTO.getProduct().getQuantityInStock();
     }
 
     @Override
@@ -123,5 +131,62 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
                 new InvoiceProductDTO())).collect(Collectors.toList());
     }
 
+
+    @Override
+    public String productsHasAlert(Long invoiceId) {
+        return invoiceProductRepository.findAllByInvoiceId(invoiceId).stream()
+                .filter(invoiceProduct ->{
+                    int productAlertQty = invoiceProduct.getProduct().getLowLimitAlert();
+                    int productsInInvoice = invoiceProductRepository.findAllByInvoiceId(invoiceProduct.getInvoice().getId())
+                            .stream().filter(invoiceProduct1 -> invoiceProduct1.getProduct().equals(invoiceProduct.getProduct()))
+                            .map(InvoiceProduct::getQuantity)
+                            .reduce(Integer::sum).orElse(0);
+                    int productsInStock = invoiceProduct.getProduct().getQuantityInStock();
+
+                    return productsInStock - productsInInvoice < productAlertQty;
+                }).map(invoiceProductDTO -> invoiceProductDTO.getProduct().getName()+" and ")
+                .distinct().reduce(String::concat).orElse("");
+    }
+
+    @Override
+    public void calculationProfitLossAllInvoiceProducts(Long invoiceId) {
+        List<InvoiceProduct> allSalesInvoiceProducts = invoiceProductRepository.findAllByInvoiceId(invoiceId);
+
+        for(InvoiceProduct salesInvoiceProduct: allSalesInvoiceProducts ){
+            int salesProductQty = salesInvoiceProduct.getQuantity();
+            while (salesProductQty>0){
+                InvoiceProduct purInvoiceProduct = invoiceProductRepository
+                        .findAllASCByProductAndRemainingQtyGreaterThan(salesInvoiceProduct.getProduct(),
+                                0).get(0);
+                if(purInvoiceProduct.getRemainingQty()>salesProductQty){
+                    BigDecimal purchasePrice = purInvoiceProduct.getPrice();
+                    BigDecimal salesPrice = salesInvoiceProduct.getPrice();
+                    BigDecimal profitLoss = salesPrice.subtract(purchasePrice).multiply(BigDecimal.valueOf(salesProductQty));
+                    BigDecimal currentProfitLoss = salesInvoiceProduct.getProfitLoss()==null?
+                            BigDecimal.ZERO:salesInvoiceProduct.getProfitLoss();
+                    BigDecimal totalProfitLoss = profitLoss.add(currentProfitLoss);
+                    salesInvoiceProduct.setProfitLoss(totalProfitLoss);
+                    invoiceProductRepository.save(salesInvoiceProduct);
+                    purInvoiceProduct.setRemainingQty(0);
+                    invoiceProductRepository.save(purInvoiceProduct);
+                    salesProductQty=0;
+                }else{
+                    int actualProductQty = purInvoiceProduct.getRemainingQty();
+                    BigDecimal purchasePrice = purInvoiceProduct.getPrice();
+                    BigDecimal salesPrice = salesInvoiceProduct.getPrice();
+                    BigDecimal priceDiff = salesPrice.subtract(purchasePrice);
+                    BigDecimal profitLoss = priceDiff.multiply(BigDecimal.valueOf(actualProductQty));
+                    BigDecimal currentProfitLoss = salesInvoiceProduct.getProfitLoss()==null?
+                            BigDecimal.ZERO:salesInvoiceProduct.getProfitLoss();
+                    BigDecimal totalProfitLoss = profitLoss.add(currentProfitLoss);
+                    salesInvoiceProduct.setProfitLoss(totalProfitLoss);
+                    invoiceProductRepository.save(salesInvoiceProduct);
+                    purInvoiceProduct.setRemainingQty(0);
+                    invoiceProductRepository.save(purInvoiceProduct);
+                    salesProductQty-=actualProductQty;
+                }
+            }
+        }
+    }
 }
 

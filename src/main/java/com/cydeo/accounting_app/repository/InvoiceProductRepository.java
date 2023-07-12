@@ -3,6 +3,7 @@ package com.cydeo.accounting_app.repository;
 import com.cydeo.accounting_app.entity.Company;
 import com.cydeo.accounting_app.entity.Invoice;
 import com.cydeo.accounting_app.entity.InvoiceProduct;
+import com.cydeo.accounting_app.entity.Product;
 import com.cydeo.accounting_app.enums.InvoiceStatus;
 import com.cydeo.accounting_app.enums.InvoiceType;
 import com.cydeo.accounting_app.service.SecurityService;
@@ -63,6 +64,13 @@ public interface InvoiceProductRepository extends JpaRepository<InvoiceProduct,L
     List<InvoiceProduct> findByInvoiceInvoiceStatusAndInvoiceCompany(InvoiceStatus invoice_invoiceStatus, Company invoice_company);
 
     List<InvoiceProduct> findByInvoiceInvoiceTypeAndInvoiceCompany(InvoiceType invoice_invoiceType, Company invoice_company);
+
+    @Query("SELECT ip " +
+            "FROM InvoiceProduct ip " +
+            "WHERE ip.product = ?1 " +
+            "AND ip.remainingQty > ?2 " +
+            "ORDER BY ip.id ASC")
+    List<InvoiceProduct> findAllASCByProductAndRemainingQtyGreaterThan(Product product, int remainingQty);
 
 
 
