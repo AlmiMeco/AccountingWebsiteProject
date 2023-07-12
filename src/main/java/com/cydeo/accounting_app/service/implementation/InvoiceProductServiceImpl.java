@@ -137,12 +137,15 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
         return invoiceProductRepository.findAllByInvoiceId(invoiceId).stream()
                 .filter(invoiceProduct ->{
                     int productAlertQty = invoiceProduct.getProduct().getLowLimitAlert();
-                    int productsInInvoice = invoiceProduct.getQuantity();
+                    int productsInInvoice = invoiceProductRepository.findAllByInvoiceId(invoiceProduct.getInvoice().getId())
+                            .stream().filter(invoiceProduct1 -> invoiceProduct1.getProduct().equals(invoiceProduct.getProduct()))
+                            .map(InvoiceProduct::getQuantity)
+                            .reduce(Integer::sum).orElse(0);
                     int productsInStock = invoiceProduct.getProduct().getQuantityInStock();
 
                     return productsInStock - productsInInvoice < productAlertQty;
-                }).map(invoiceProductDTO -> invoiceProductDTO.getProduct().getName()+" ")
-                .reduce(String::concat).orElse("");
+                }).map(invoiceProductDTO -> invoiceProductDTO.getProduct().getName()+" and ")
+                .distinct().reduce(String::concat).orElse("");
     }
 
     @Override

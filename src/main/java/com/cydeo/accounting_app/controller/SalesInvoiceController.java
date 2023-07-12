@@ -57,7 +57,9 @@ public class SalesInvoiceController {
         model.addAttribute("invoice",invoiceService.findById(invoiceId));
         model.addAttribute("invoiceProducts", invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId));
         if(!invoiceProductService.productsHasAlert(invoiceId).isEmpty()){
-            model.addAttribute("error", "Stock of " + invoiceProductService.productsHasAlert(invoiceId) + " decreased below low limit");
+            String product = invoiceProductService.productsHasAlert(invoiceId);
+            product = product.substring(0, product.length() - 4);
+            model.addAttribute("error", "Stock of " + product + " decreased below low limit");
         }
         return "invoice/sales-invoice-update";
     }
