@@ -33,4 +33,5 @@ public interface InvoiceRepository extends JpaRepository<Invoice,Long> {
     boolean existsByCompanyAndClientVendorId(Company company, Long clientVendor_id);
     List <Invoice> findAllByCompanyAndInvoiceStatus(Company company, InvoiceStatus invoiceStatus);
     List <Invoice> findAllByCompanyAndInvoiceStatusAndInvoiceType(Company company, InvoiceStatus invoiceStatus, InvoiceType invoiceType);
+
 }

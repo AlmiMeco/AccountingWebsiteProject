@@ -56,6 +56,9 @@ public class SalesInvoiceController {
         model.addAttribute("newInvoiceProduct", new InvoiceProductDTO());
         model.addAttribute("invoice",invoiceService.findById(invoiceId));
         model.addAttribute("invoiceProducts", invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId));
+        if(!invoiceProductService.productsHasAlert(invoiceId).isEmpty()){
+            model.addAttribute("error", "Stock of " + invoiceProductService.productsHasAlert(invoiceId) + " decreased below low limit");
+        }
         return "invoice/sales-invoice-update";
     }
 
@@ -93,7 +96,7 @@ public class SalesInvoiceController {
     @PostMapping("/addInvoiceProduct/{invoiceId}")
     public String insertInvoiceProduct(@ModelAttribute("newInvoiceProduct") @Valid InvoiceProductDTO invoiceProductDTO,
                                        BindingResult bindingResult, Model model, @PathVariable("invoiceId") Long invoiceId) {
-        boolean stockNotEnough = invoiceProductService.isStockNotEnough(invoiceProductDTO);
+        boolean stockNotEnough = invoiceProductService.isStockNotEnough(invoiceProductDTO,invoiceId);
         if (bindingResult.hasErrors()||stockNotEnough){
             model.addAttribute("invoice",invoiceService.findById(invoiceId));
             model.addAttribute("invoiceProducts", invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId));

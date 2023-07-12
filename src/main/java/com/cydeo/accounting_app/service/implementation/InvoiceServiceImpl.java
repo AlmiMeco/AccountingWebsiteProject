@@ -79,7 +79,6 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
          * If invoice approved it needs to increase or decrease quantity stock of product.
          * Code below handles it.
          */
-        List<ProductDTO> productHasLimitAlert = new ArrayList<>();
         invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId).stream()
                 .map(invoiceProductDTO -> {
                     Long productId = invoiceProductDTO.getProduct().getId();
@@ -90,12 +89,6 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
                         productDTO.setQuantityInStock(productCurrentQuantity + IPproductQuantity);
                     } else {
                         productDTO.setQuantityInStock(productCurrentQuantity - IPproductQuantity);
-                        /**
-                         * This logic handles low product limit alert.
-                         * All low products with low limit added to the list.
-                         */
-                        if ((productCurrentQuantity - IPproductQuantity) < invoiceProductDTO.getProduct().getLowLimitAlert())
-                            productHasLimitAlert.add(invoiceProductDTO.getProduct());
                     }
                     return productDTO;
                 })
@@ -104,7 +97,6 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
          * When invoice approves , the date of invoice changes to approval date
          */
         invoice.setDate(LocalDate.now());
-
         /**
          * Set RemainingQty  = Quantity for new Purchase Invoice
          * Set ProfitLoss = 0
@@ -127,9 +119,9 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
         }
         invoice.setInvoiceStatus(InvoiceStatus.APPROVED);
         invoiceRepository.save(invoice);
-        for (ProductDTO each : productHasLimitAlert){
-            throw new ProductLowLimitAlertException("Stock of this " + each.getName() +  " decreased below low limit!");
-        }
+
+        if(invoice.getInvoiceType().equals(InvoiceType.SALES))
+            invoiceProductService.calculationProfitLossAllInvoiceProducts(invoiceId);
     }
 
     @Override
@@ -247,4 +239,5 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
                 mapperUtil.convert(invoiceDTO.getClientVendor(), new ClientVendor()));
         invoiceRepository.save(invoice);
     }
+
 }
