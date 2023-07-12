@@ -92,7 +92,7 @@ public class CompanyController {
 }
 @ModelAttribute()
    public void commonModelAttribute(Model model) {
-    model.addAttribute("countries", companyService.getListOfCountries().stream().map(CountryResponseDTO::getCountryName).collect(Collectors.toList()));
+    model.addAttribute("countries", companyService.getListOfCountries());
 
    }
 
