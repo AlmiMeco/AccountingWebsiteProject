@@ -82,7 +82,8 @@ public class UserController {
 
 
     @PostMapping("/update/{id}")
-    public String editUserPost(@PathVariable("id") Long id,@Valid @ModelAttribute("user") UserDTO updatedUser, BindingResult bindingResult){
+    public String editUserPost(@Valid @ModelAttribute("user") UserDTO updatedUser, BindingResult bindingResult,
+                               @PathVariable("id") Long id){
 
         updatedUser.setId(id);
 

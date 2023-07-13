@@ -23,7 +23,8 @@ public class UserDTO {
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*_0-9])(.{4,})$", message = "Password should be at least 4 characters long and needs to contain 1 capital letter, 1 small letter and 1 special character or number")
     private String password;
 
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*_0-9])(.{4,})$", message = "\"Confirm Password\" must match \"Password\"")
+
+    @NotNull(message = "\"Confirm Password\" must match \"Password\"")
     private String confirmPassword;
 
     @NotBlank(message = "First Name is a required field")
@@ -34,7 +35,9 @@ public class UserDTO {
     @Size(max = 50, min = 2, message = "Last name must be between 2 and 50 characters long")
     private String lastname;
 
-    @Pattern(regexp = "^((\\(\\d{3}\\))|\\d{3})[- .]?\\d{3}[- .]?\\d{4}$", message = "Phone Number is required field and may be in any valid phone number format")
+    @Pattern(regexp = "^(\\+\\d{1,3}( )?)?((\\(\\d{3}\\))|\\d{3})[- .]?\\d{3}[- .]?\\d{4}$"
+            + "|^(\\+\\d{1,3}( )?)?(\\d{3}[ ]?){2}\\d{3}$"
+            + "|^(\\+\\d{1,3}( )?)?(\\d{3}[ ]?)(\\d{2}[ ]?){2}\\d{2}$", message = "Phone Number is required field and may be in any valid phone number format")
     private String phone;
 
     @NotNull(message = "Please select a Role")
@@ -53,10 +56,14 @@ public class UserDTO {
 
     private void checkConfirmPassword(){
 
-        if (this.password == null || this.confirmPassword == null) {
-            return;
-        }else if (!this.password.equals(this.confirmPassword))
+        if (password!=null&&!password.equals(confirmPassword)){
             this.confirmPassword = null;
+        }
+    }
+
+    public void setPassword(String password){
+        this.password = password;
+        checkConfirmPassword();
     }
 
 }

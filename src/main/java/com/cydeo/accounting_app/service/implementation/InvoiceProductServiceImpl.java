@@ -133,19 +133,19 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
 
 
     @Override
-    public String productsHasAlert(Long invoiceId) {
+    public String productLowLimitAlert(InvoiceProductDTO invoiceProductDTO, Long invoiceId) {
         return invoiceProductRepository.findAllByInvoiceId(invoiceId).stream()
+                .filter(invoiceProduct -> invoiceProduct.getProduct().getId().equals(invoiceProductDTO.getProduct().getId()))
                 .filter(invoiceProduct ->{
                     int productAlertQty = invoiceProduct.getProduct().getLowLimitAlert();
-                    int productsInInvoice = invoiceProductRepository.findAllByInvoiceId(invoiceProduct.getInvoice().getId())
+                    int productsInInvoice = invoiceProductRepository.findAllByInvoiceId(invoiceId)
                             .stream().filter(invoiceProduct1 -> invoiceProduct1.getProduct().equals(invoiceProduct.getProduct()))
                             .map(InvoiceProduct::getQuantity)
                             .reduce(Integer::sum).orElse(0);
                     int productsInStock = invoiceProduct.getProduct().getQuantityInStock();
-
                     return productsInStock - productsInInvoice < productAlertQty;
-                }).map(invoiceProductDTO -> invoiceProductDTO.getProduct().getName()+" and ")
-                .distinct().reduce(String::concat).orElse("");
+                }).map(invoiceProduct -> invoiceProduct.getProduct().getName())
+                .findAny().orElse("");
     }
 
     @Override

@@ -27,7 +27,7 @@ public interface InvoiceProductService {
     List<InvoiceProductDTO> findAllInvoiceProductsByStatusAndCompany();
 
 
-    String productsHasAlert(Long invoiceId);
+    String productLowLimitAlert(InvoiceProductDTO invoiceProductDTO, Long invoiceId);
 
     void calculationProfitLossAllInvoiceProducts(Long invoiceId);
 }
