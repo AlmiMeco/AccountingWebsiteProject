@@ -7,7 +7,6 @@ import com.cydeo.accounting_app.entity.Invoice;
 import com.cydeo.accounting_app.enums.InvoiceStatus;
 import com.cydeo.accounting_app.enums.InvoiceType;
 import com.cydeo.accounting_app.exception.InvoiceNotFoundException;
-import com.cydeo.accounting_app.exception.ProductLowLimitAlertException;
 import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.repository.InvoiceRepository;
 import com.cydeo.accounting_app.service.*;
@@ -20,7 +19,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
@@ -75,6 +73,23 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
     public void approveInvoiceById(Long invoiceId) {
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(
                 () -> new InvoiceNotFoundException("This Invoice with id " + invoiceId + " does not exist"));
+
+        if(invoice.getInvoiceType().equals(InvoiceType.PURCHASE)){
+            purchaseInvoiceApproval(invoice);
+        }else{
+            salesInvoiceApproval(invoice);
+        }
+        /**
+         * When invoice approves , the date of invoice changes to approval date
+         */
+        invoice.setDate(LocalDate.now());
+        invoice.setInvoiceStatus(InvoiceStatus.APPROVED);
+        invoiceRepository.save(invoice);
+    }
+
+
+    private void purchaseInvoiceApproval(Invoice invoice) {
+        Long invoiceId = invoice.getId();
         /**
          * If invoice approved it needs to increase or decrease quantity stock of product.
          * Code below handles it.
@@ -82,47 +97,52 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
         invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId).stream()
                 .map(invoiceProductDTO -> {
                     Long productId = invoiceProductDTO.getProduct().getId();
-                    Integer IPproductQuantity = invoiceProductDTO.getQuantity();
+                    Integer productQuantity = invoiceProductDTO.getQuantity();
                     ProductDTO productDTO = productService.findById(productId);
                     Integer productCurrentQuantity = productDTO.getQuantityInStock();
-                    if (invoice.getInvoiceType().equals(InvoiceType.PURCHASE)) {
-                        productDTO.setQuantityInStock(productCurrentQuantity + IPproductQuantity);
-                    } else {
-                        productDTO.setQuantityInStock(productCurrentQuantity - IPproductQuantity);
-                    }
+                    productDTO.setQuantityInStock(productCurrentQuantity + productQuantity);
                     return productDTO;
                 })
                 .forEach(productService::save);
         /**
-         * When invoice approves , the date of invoice changes to approval date
-         */
-        invoice.setDate(LocalDate.now());
-        /**
-         * Set RemainingQty  = Quantity for new Purchase Invoice
-         * Set ProfitLoss = 0
-         */
-        if (invoice.getInvoiceType().equals(InvoiceType.PURCHASE)) {
-            invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId)
-                    .stream()
-                    .peek(invoiceProductDTO -> {
-                        invoiceProductDTO.setRemainingQty(invoiceProductDTO.getQuantity());
-                        invoiceProductDTO.setProfitLoss(new BigDecimal(BigInteger.ZERO));
-                    })
-                    .forEach(invoiceProductDTO -> invoiceProductService.saveInvoiceProduct(invoiceProductDTO, invoiceId));
-        } else {
-            /**
-             * When we have approved sales invoice we should:
-             * Calculate profitLoss for invoice
-             * Reduce RemainingQty of products in Purchase invoices
-             */
-            invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId);
-        }
-        invoice.setInvoiceStatus(InvoiceStatus.APPROVED);
-        invoiceRepository.save(invoice);
+        * Set RemainingQty  = Quantity for new Purchase Invoice
+        * Set ProfitLoss = 0
+        */
+        invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId)
+                .stream()
+                .peek(invoiceProductDTO -> {
+                    invoiceProductDTO.setRemainingQty(invoiceProductDTO.getQuantity());
+                    invoiceProductDTO.setProfitLoss(new BigDecimal(BigInteger.ZERO));
+                })
+                .forEach(invoiceProductDTO -> invoiceProductService.saveInvoiceProduct(invoiceProductDTO, invoiceId));
 
-        if(invoice.getInvoiceType().equals(InvoiceType.SALES))
-            invoiceProductService.calculationProfitLossAllInvoiceProducts(invoiceId);
     }
+    private void salesInvoiceApproval(Invoice invoice) {
+        Long invoiceId = invoice.getId();
+        /**
+         * If invoice approved it needs to increase or decrease quantity stock of product.
+         * Code below handles it.
+         */
+
+        invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId).stream()
+                .map(invoiceProductDTO -> {
+                    Long productId = invoiceProductDTO.getProduct().getId();
+                    Integer productQuantity = invoiceProductDTO.getQuantity();
+                    ProductDTO productDTO = productService.findById(productId);
+                    Integer productCurrentQuantity = productDTO.getQuantityInStock();
+                        productDTO.setQuantityInStock(productCurrentQuantity - productQuantity);
+                    return productDTO;
+                })
+                .forEach(productService::save);
+
+        /**
+         * When we have approved sales invoice we should:
+         * Calculate profitLoss for invoice
+         * Reduce RemainingQty of products in Purchase invoices
+         */
+        invoiceProductService.calculationProfitLossAllInvoiceProducts(invoiceId);
+    }
+
 
     @Override
     public InvoiceDTO createInvoice(InvoiceType type) {

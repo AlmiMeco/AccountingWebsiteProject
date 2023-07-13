@@ -73,6 +73,5 @@ public interface InvoiceProductRepository extends JpaRepository<InvoiceProduct,L
     List<InvoiceProduct> findAllASCByProductAndRemainingQtyGreaterThan(Product product, int remainingQty);
 
 
-
 }
 
