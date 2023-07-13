@@ -1,6 +1,7 @@
 package com.cydeo.accounting_app.controller;
 
 import com.cydeo.accounting_app.dto.ProductDTO;
+import com.cydeo.accounting_app.entity.Product;
 import com.cydeo.accounting_app.enums.ProductUnit;
 import com.cydeo.accounting_app.service.CategoryService;
 import com.cydeo.accounting_app.service.ProductService;
@@ -59,6 +60,8 @@ public class ProductController {
 
     @PostMapping("/update/{productId}")
     public String updateProduct(@Valid @ModelAttribute("product") ProductDTO productDTO, BindingResult bindingResult, @PathVariable Long productId){
+        productDTO.setId(productId);
+
         if (productService.isProductNameExist(productDTO)){
             bindingResult.rejectValue("name", " ", "This Product Name already exists.");
         }

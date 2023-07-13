@@ -62,8 +62,8 @@ public class CompanyController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateCompany(@PathVariable("id") Long id, @ModelAttribute("company")
-    CompanyDTO companyDTO, BindingResult bindingResult) {
+    public String updateCompany(@Valid @ModelAttribute("company") CompanyDTO companyDTO,
+                                BindingResult bindingResult, @PathVariable("id") Long id ) {
         companyDTO.setId(id);
         boolean companyNameIsExist = companyService.companyNameIsExist(companyDTO);
 
