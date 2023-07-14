@@ -88,10 +88,19 @@ public class PaymentServiceImpl extends LoggedInUserService implements PaymentSe
         );
 
         payment.setIsPaid(true);
+        payment.setPaymentDate(LocalDate.now());
 
         paymentRepository.save(payment);
         return mapperUtil.convert(payment, new PaymentDTO());
 
+    }
+    @Override
+    public CompanyDTO getCurrentCompany() {
+        /**
+         * This method I use to send current company information to my controller
+         */
+        Company company = getCompany();
+        return mapperUtil.convert(company, new CompanyDTO());
     }
 
 }
