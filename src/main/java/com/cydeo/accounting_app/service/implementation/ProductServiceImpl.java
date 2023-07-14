@@ -63,7 +63,7 @@ public class ProductServiceImpl extends LoggedInUserService implements ProductSe
 
     @Override
     public boolean isProductNameExist(ProductDTO productDTO) {
-        Product existingProduct = productRepository.findByNameAndCategoryCompany(productDTO.getName(), getCompany());
+        Product existingProduct = productRepository.findByNameIgnoreCaseAndCategoryCompany(productDTO.getName(), getCompany());
         if (existingProduct == null) {
             return false;
         }

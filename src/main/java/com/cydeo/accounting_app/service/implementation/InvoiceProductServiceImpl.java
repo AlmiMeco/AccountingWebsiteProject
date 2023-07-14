@@ -155,7 +155,6 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
          */
         List<InvoiceProduct> allSalesInvoiceProducts = invoiceProductRepository.findAllByInvoiceId(invoiceId);
 
-
         for(InvoiceProduct salesInvoiceProduct: allSalesInvoiceProducts ){
             int salesProductQty = salesInvoiceProduct.getQuantity();
             while (salesProductQty>0){
@@ -190,8 +189,6 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
                 invoiceProductRepository.save(purInvoiceProduct);
             }
         }
-
     }
-
 }
 
