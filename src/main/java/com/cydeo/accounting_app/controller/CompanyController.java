@@ -41,7 +41,6 @@ public class CompanyController {
         }
 
         if (bindingResult.hasErrors()) {
-            //model.addAttribute("title", "Company title is a required field");
             return "/company/company-create";
         }
         companyService.saveCompany(companyDTO);

@@ -145,9 +145,4 @@ public class CompanyServiceImpl extends LoggedInUserService implements CompanySe
         return addressService.listOfCountries();
     }
 
-//    @Override
-//
-//    public List<CountryResponseDTO> getListOfCountries() {
-//           return countryClient.getCountries(authorization);
-//    }
 }
