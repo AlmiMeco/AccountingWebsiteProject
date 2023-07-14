@@ -23,6 +23,7 @@ public class DashboardController {
         model.addAttribute("summaryNumbers",dashboardService.summaryNumbers());
         model.addAttribute("invoices",invoiceService.list3LastApprovalInvoicesForDashboard());
         model.addAttribute("exchangeRates",dashboardService.getExchangeRates());
+        model.addAttribute("title", "Cydeo Accounting-Dashboard");
         return "/dashboard";
     }
 }
