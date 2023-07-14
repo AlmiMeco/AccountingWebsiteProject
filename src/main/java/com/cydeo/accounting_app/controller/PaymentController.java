@@ -87,4 +87,9 @@ public class PaymentController {
 //
 //        return "payment/payment-result";
 //    }
+
+    @ModelAttribute()
+    public void commonModelAttribute(Model model) {
+        model.addAttribute("title", "Cydeo Accounting-Payment");
+    }
 }

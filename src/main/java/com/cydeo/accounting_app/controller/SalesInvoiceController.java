@@ -127,6 +127,7 @@ public class SalesInvoiceController {
         model.addAttribute("invoices",invoiceService.listAllInvoicesByType(InvoiceType.SALES));
         model.addAttribute("products", productService.findAllProductsByCompany());
         model.addAttribute("company", invoiceService.getCurrentCompany());
+        model.addAttribute("title", "Cydeo Accounting-Sales");
     }
 
 }

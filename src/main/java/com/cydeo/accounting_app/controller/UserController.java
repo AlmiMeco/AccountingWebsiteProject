@@ -105,8 +105,8 @@ public class UserController {
     public void commonAttributes(Model model){
         model.addAttribute("userRoles", roleService.listAllRoles());
         model.addAttribute("companies", companyService.listAllCompanies());
+        model.addAttribute("title", "Cydeo Accounting-User");
     }
-
 
 
 }
