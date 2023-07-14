@@ -37,7 +37,7 @@ public class AddressServiceImpl implements AddressService {
             String token = "Bearer " + tokenForCountry.getAuthToken();
             return token;
         }
-        throw new NoSuchElementException("Authorization token not found");
+        throw new NoSuchElementException("Authorization token not found or reload the page again, please ");
     }
 
     @Override
