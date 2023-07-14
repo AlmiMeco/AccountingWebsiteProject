@@ -150,41 +150,43 @@ public class InvoiceProductServiceImpl extends LoggedInUserService implements In
 
     @Override
     public void calculationProfitLossAllInvoiceProducts(Long invoiceId) {
+        /**
+         * Get all invoiceProducts from approving Invoice
+         */
         List<InvoiceProduct> allSalesInvoiceProducts = invoiceProductRepository.findAllByInvoiceId(invoiceId);
 
         for(InvoiceProduct salesInvoiceProduct: allSalesInvoiceProducts ){
             int salesProductQty = salesInvoiceProduct.getQuantity();
             while (salesProductQty>0){
                 InvoiceProduct purInvoiceProduct = invoiceProductRepository
-                        .findAllASCByProductAndRemainingQtyGreaterThan(salesInvoiceProduct.getProduct(),
-                                0).get(0);
-                if(purInvoiceProduct.getRemainingQty()>salesProductQty){
-                    BigDecimal purchasePrice = purInvoiceProduct.getPrice();
-                    BigDecimal salesPrice = salesInvoiceProduct.getPrice();
-                    BigDecimal profitLoss = salesPrice.subtract(purchasePrice).multiply(BigDecimal.valueOf(salesProductQty));
-                    BigDecimal currentProfitLoss = salesInvoiceProduct.getProfitLoss()==null?
+                        .findFirstByProductAndRemainingQtyGreaterThanOrderById(salesInvoiceProduct.getProduct(),
+                                0);
+                BigDecimal profitLoss,currentProfitLoss;
+                BigDecimal purchasePrice = purInvoiceProduct.getPrice();
+                /**
+                 * Getting Prices with tax
+                 */
+                purchasePrice = purchasePrice.add(purchasePrice.multiply(BigDecimal.valueOf(purInvoiceProduct.getTax()).movePointLeft(2)));
+                BigDecimal salesPrice = salesInvoiceProduct.getPrice();
+                salesPrice = salesPrice.add(salesPrice.multiply(BigDecimal.valueOf(salesInvoiceProduct.getTax()).movePointLeft(2)));
+                if(purInvoiceProduct.getRemainingQty()>=salesProductQty){
+                    profitLoss = salesPrice.subtract(purchasePrice).multiply(BigDecimal.valueOf(salesProductQty));
+                    currentProfitLoss = salesInvoiceProduct.getProfitLoss()==null?
                             BigDecimal.ZERO:salesInvoiceProduct.getProfitLoss();
-                    BigDecimal totalProfitLoss = profitLoss.add(currentProfitLoss);
-                    salesInvoiceProduct.setProfitLoss(totalProfitLoss);
-                    invoiceProductRepository.save(salesInvoiceProduct);
-                    purInvoiceProduct.setRemainingQty(0);
-                    invoiceProductRepository.save(purInvoiceProduct);
                     salesProductQty=0;
                 }else{
                     int actualProductQty = purInvoiceProduct.getRemainingQty();
-                    BigDecimal purchasePrice = purInvoiceProduct.getPrice();
-                    BigDecimal salesPrice = salesInvoiceProduct.getPrice();
                     BigDecimal priceDiff = salesPrice.subtract(purchasePrice);
-                    BigDecimal profitLoss = priceDiff.multiply(BigDecimal.valueOf(actualProductQty));
-                    BigDecimal currentProfitLoss = salesInvoiceProduct.getProfitLoss()==null?
+                    profitLoss = priceDiff.multiply(BigDecimal.valueOf(actualProductQty));
+                    currentProfitLoss = salesInvoiceProduct.getProfitLoss()==null?
                             BigDecimal.ZERO:salesInvoiceProduct.getProfitLoss();
-                    BigDecimal totalProfitLoss = profitLoss.add(currentProfitLoss);
-                    salesInvoiceProduct.setProfitLoss(totalProfitLoss);
-                    invoiceProductRepository.save(salesInvoiceProduct);
-                    purInvoiceProduct.setRemainingQty(0);
-                    invoiceProductRepository.save(purInvoiceProduct);
                     salesProductQty-=actualProductQty;
                 }
+                BigDecimal totalProfitLoss = profitLoss.add(currentProfitLoss);
+                salesInvoiceProduct.setProfitLoss(totalProfitLoss);
+                purInvoiceProduct.setRemainingQty(0);
+                invoiceProductRepository.save(salesInvoiceProduct);
+                invoiceProductRepository.save(purInvoiceProduct);
             }
         }
     }

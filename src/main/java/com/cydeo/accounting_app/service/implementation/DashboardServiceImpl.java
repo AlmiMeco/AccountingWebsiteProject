@@ -45,9 +45,9 @@ public class DashboardServiceImpl extends LoggedInUserService implements Dashboa
                 .map(InvoiceDTO::getPrice)
                 .reduce(BigDecimal::add).orElseGet(
                         () -> new BigDecimal(0));
-        BigDecimal profitLoss = invoiceProductService.findAllInvoiceProductsByInvoiceStatus(InvoiceStatus.APPROVED)
+        BigDecimal profitLoss = invoiceProductService.findAllInvoiceProductsByStatusAndCompany()
                 .stream()
-                .filter(invoiceProductDTO -> invoiceProductDTO.getInvoice().getCompany().getId().equals(getCompany().getId()))
+                .filter(invoiceProductDTO -> invoiceProductDTO.getInvoice().getInvoiceType().equals(InvoiceType.SALES))
                 .map(InvoiceProductDTO::getProfitLoss)
                 .reduce(BigDecimal::add).orElseGet(
                         () -> new BigDecimal(0));
