@@ -4,9 +4,12 @@ import com.cydeo.accounting_app.dto.*;
 import com.cydeo.accounting_app.entity.ClientVendor;
 import com.cydeo.accounting_app.entity.Company;
 import com.cydeo.accounting_app.entity.Invoice;
+import com.cydeo.accounting_app.entity.InvoiceProduct;
 import com.cydeo.accounting_app.enums.InvoiceStatus;
 import com.cydeo.accounting_app.enums.InvoiceType;
 import com.cydeo.accounting_app.exception.InvoiceNotFoundException;
+import com.cydeo.accounting_app.exception.InvoiceProductNotFoundException;
+import com.cydeo.accounting_app.exception.ProductNotFoundException;
 import com.cydeo.accounting_app.mapper.MapperUtil;
 import com.cydeo.accounting_app.repository.InvoiceRepository;
 import com.cydeo.accounting_app.service.*;
@@ -77,6 +80,7 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
         if(invoice.getInvoiceType().equals(InvoiceType.PURCHASE)){
             purchaseInvoiceApproval(invoice);
         }else{
+            isValidSalesApprove(invoiceId);
             salesInvoiceApproval(invoice);
         }
         /**
@@ -85,6 +89,26 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
         invoice.setDate(LocalDate.now());
         invoice.setInvoiceStatus(InvoiceStatus.APPROVED);
         invoiceRepository.save(invoice);
+    }
+
+    private void isValidSalesApprove(Long invoiceId) {
+        List<InvoiceProductDTO> allInvoiceProductsDTO  = invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId)
+                .stream()
+                .distinct()
+                .toList();
+        for (InvoiceProductDTO each : allInvoiceProductsDTO) {
+            int productQuantityInStock = each.getProduct().getQuantityInStock();
+            int productQuantityInInvoice = invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId)
+                    .stream()
+                    .filter(ip-> ip.getProduct().getId().equals(each.getProduct().getId()))
+                    .map(InvoiceProductDTO::getQuantity)
+                    .reduce(Integer::sum)
+                    .orElse(0);
+
+            if (productQuantityInStock<productQuantityInInvoice) {
+                throw new ProductNotFoundException("This sale cannot be completed due to insufficient quantity of the product");
+            }
+        }
     }
 
 
@@ -106,7 +130,7 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
                 .forEach(productService::save);
         /**
         * Set RemainingQty  = Quantity for new Purchase Invoice
-        * Set ProfitLoss = 0
+        * Set ProfitLoss = 0 forever
         */
         invoiceProductService.findAllInvoiceProductsByInvoiceId(invoiceId)
                 .stream()
@@ -134,7 +158,6 @@ public class InvoiceServiceImpl extends LoggedInUserService implements InvoiceSe
                     return productDTO;
                 })
                 .forEach(productService::save);
-
         /**
          * When we have approved sales invoice we should:
          * Calculate profitLoss for invoice
