@@ -1,8 +1,11 @@
 package com.cydeo.accounting_app.controller;
 
+import com.cydeo.accounting_app.dto.CompanyDTO;
 import com.cydeo.accounting_app.dto.PaymentDTO;
 import com.cydeo.accounting_app.entity.ChargeRequest;
 import com.cydeo.accounting_app.enums.Currency;
+import com.cydeo.accounting_app.service.CompanyService;
+import com.cydeo.accounting_app.service.InvoiceService;
 import com.cydeo.accounting_app.service.PaymentService;
 import com.cydeo.accounting_app.service.StripeService;
 import com.stripe.exception.StripeException;
@@ -21,13 +24,16 @@ public class PaymentController {
 
     private final PaymentService paymentService;
     private final StripeService stripeService;
+    private final CompanyService companyService;
+
 
     @Value("${stripe.public.key}")
     private String stripePublicKey;
 
-    public PaymentController(PaymentService paymentService, StripeService stripeService) {
+    public PaymentController(PaymentService paymentService, StripeService stripeService, CompanyService companyService) {
         this.paymentService = paymentService;
         this.stripeService = stripeService;
+        this.companyService = companyService;
     }
 
     @GetMapping({"/list","/list/{year}"})
@@ -76,15 +82,25 @@ public class PaymentController {
         return "redirect:/payments/list";
     }
 
-//    @GetMapping("/toInvoice/{id}")
-//    public String paymentsInvoiceButtn(@PathVariable("id") Long id, Model model){
-//
-//        var processedPayment= paymentService.findById(id);
-//
-//        model.addAttribute("id", processedPayment.getId());
-//        model.addAttribute("status", processedPayment.getIsPaid());
-//        model.addAttribute("chargeId", processedPayment.getCompanyStripeId());
-//
-//        return "payment/payment-result";
-//    }
+    @GetMapping("/toInvoice/{id}")
+    public String paymentsInvoiceButtn(@PathVariable("id") Long id, Model model){
+
+        CompanyDTO companyDTOCydeo = companyService.findById(1L);
+        CompanyDTO currentCompanyDTO =  paymentService.getCurrentCompany();
+
+        var processedPayment= paymentService.findById(id);
+
+        model.addAttribute("company",companyDTOCydeo);
+        model.addAttribute("clientCompany", currentCompanyDTO);
+        model.addAttribute("payment", processedPayment);
+
+        return "payment/payment-invoice_print";
+
+
+    }
+
+    @ModelAttribute()
+    public void commonModelAttribute(Model model) {
+        model.addAttribute("title", "Cydeo Accounting-Payment");
+    }
 }

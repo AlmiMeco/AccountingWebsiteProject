@@ -114,6 +114,6 @@ public class PurchasesInvoiceController {
         model.addAttribute("invoices",invoiceService.listAllInvoicesByType(InvoiceType.PURCHASE));
         model.addAttribute("products", productService.findAllProductsByCompany());
         model.addAttribute("company", invoiceService.getCurrentCompany());
+        model.addAttribute("title", "Cydeo Accounting-Purchase");
     }
-
 }
