@@ -25,8 +25,7 @@ import org.modelmapper.ModelMapper;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -75,25 +74,11 @@ public class ClientVendorServiceImpl_UnitTest {
     }
 
     @Test
-    @DisplayName("get_All_Client_Vendors")
-    void getAllClientVendors() {
-
-    }
-
-
-    @Test
+    @DisplayName("create_Client_Vendor")
     void createClientVendor() {
+        testCreateClientVendor();
     }
 
-
-    @Test
-    void listAllClientVendorsByTypeAndCompany() {
-    }
-
-    @Test
-    void companyNameIsExist() {
-
-    }
 
     @Test
     @DisplayName("clients_vendors_types_existing")
@@ -108,9 +93,7 @@ public class ClientVendorServiceImpl_UnitTest {
         delete_client_vendor();
     }
 
-    @Test
-    void updateClientVendor() {
-    }
+
 
 
     @Test
@@ -150,8 +133,27 @@ public class ClientVendorServiceImpl_UnitTest {
 
     @Test
     @DisplayName("create_client_vendor")
-    public void create_client_vendor() {
+    public void testCreateClientVendor() {
+        // Given
+        UserDTO loggedInUser = new UserDTO();
+        CompanyDTO companyDTO = new CompanyDTO();
+        companyDTO.setId(1L);
+        loggedInUser.setCompany(companyDTO);
 
+        ClientVendorDTO clientVendorDTO = new ClientVendorDTO();
+        clientVendorDTO.setClientVendorName("Test Vendor");
+        // Set other fields as needed for the test
+
+        when(securityService.getLoggedInUser()).thenReturn(loggedInUser);
+
+        // When
+        ClientVendorDTO result = clientVendorService.createClientVendor(clientVendorDTO);
+
+        // Then
+        assertEquals(loggedInUser.getCompany(), clientVendorDTO.getCompany());
+        // Add additional assertions as needed to verify the behavior and result.
+        // For example, you can verify that the save method of the repository is called.
+        verify(clientVendorRepository, times(1)).save(any(ClientVendor.class));
     }
 
     @Test
@@ -167,9 +169,23 @@ public class ClientVendorServiceImpl_UnitTest {
     }
 
     @Test
-    @DisplayName("update_client_vendor")
-    public void update_client_vendor() {
+    @DisplayName("update_client_vendor_not_found")
+    public void testUpdateClientVendorNotFound() {
+        // Given
+        Long clientId = 1L;
+        ClientVendorDTO clientVendorDTO = new ClientVendorDTO();
+        clientVendorDTO.setId(clientId);
+        clientVendorDTO.setClientVendorName("Updated Vendor");
+        // Set other fields as needed for the test
 
+        // When
+        when(clientVendorRepository.findById(clientId)).thenReturn(Optional.empty());
+
+        // Then
+        assertThrows(ClientVendorNotFoundException.class, () -> clientVendorService.updateClientVendor(clientId, clientVendorDTO));
+        // Verify that the findById and save methods are called with the correct arguments
+        verify(clientVendorRepository, times(1)).findById(clientId);
+        verify(clientVendorRepository, never()).save(any(ClientVendor.class));
     }
 
 
