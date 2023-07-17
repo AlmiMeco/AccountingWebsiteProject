@@ -35,7 +35,7 @@ public class ClientVendorServiceImpl extends LoggedInUserService implements Clie
     }
 
     @Override
-    protected User getCurrentUser() {
+    public User getCurrentUser() {
         return super.getCurrentUser();
     }
 
@@ -63,7 +63,6 @@ public class ClientVendorServiceImpl extends LoggedInUserService implements Clie
 
     @Override
     public ClientVendorDTO createClientVendor(ClientVendorDTO clientVendorDTO) {
-
         clientVendorDTO.setCompany(securityService.getLoggedInUser().getCompany());
         ClientVendor clientVendor = mapperUtil.convert(clientVendorDTO, new ClientVendor());
         clientVendorRepository.save(clientVendor);
